@@ -7,9 +7,9 @@ probabilistic load model, validates every forecast and publishes day-ahead dispa
 a synthetic grid operator — on Kubernetes (kind), orchestrated by Prefect, observed with
 OpenTelemetry, Prometheus, Loki, Tempo and Grafana.
 
-Its purpose is to be the **controlled world Lumis is tested in**: nine reproducible incidents
+Its purpose is to be the **controlled world Lumis is tested in**: ten reproducible incidents
 (bad releases, stale vendor data, credential rotation, OOM, model promotion, compound changes,
-schema drift, silent unit changes, vendor outages) can be injected through realistic channels,
+schema drift, silent unit changes, vendor outages, and a deterministic reference case) can be injected through realistic channels,
 each with hidden ground truth for evaluation. GridCast knows nothing about Lumis.
 
 ```mermaid
@@ -64,7 +64,7 @@ uv run gridcastctl chaos revert
 | B | vendor serves stale data with fresh timestamps | G | vendor schema break |
 | C | DB credential rotated for one consumer only | H | vendor silently switches MW → kW |
 | D | memory limit cut below working set (OOM) | I | weather vendor outage |
-| E | model promotion slows inference 265× | | |
+| E | model promotion slows inference 265× | J | planning-api left scaled to 0 (deterministic case) |
 
 ## What's inside
 
@@ -90,7 +90,10 @@ uv run gridcastctl chaos revert
 | [docs/scenarios.md](docs/scenarios.md) | incident catalogue with causal diagrams, ground truth format, drill procedure |
 | [docs/operations.md](docs/operations.md) | `gridcastctl` reference, common tasks, troubleshooting |
 | [docs/testing.md](docs/testing.md) | test layers and the pre-push manual test plan |
-| [docs/lumis-integration.md](docs/lumis-integration.md) | how Lumis will connect (SDK mapping, lumis.yaml, evidence queries, evaluation harness), OpenRouter check |
+| [docs/lumis-integration.md](docs/lumis-integration.md) | how Lumis connects: what it reads, incident lifecycle, deterministic triage, agent, how to run, reports, production intake, results |
+| [lumis/README.md](lumis/README.md) | the `gridcast-lumis` harness: drills, benchmarks, experiments, reports |
+| [lumis/experiments/README.md](lumis/experiments/README.md) | experiment protocol, systems, metric definitions (SEAMS plan), results layout |
+| [docs/lumis-sdk-findings.md](docs/lumis-sdk-findings.md) | SDK issues found in live runs, with evidence, workarounds and suggested fixes |
 
 ## Repository layout
 
@@ -106,7 +109,7 @@ gridcast/
 │   ├── quality/         data-quality and validation checks
 │   ├── weather/ demand/ simulation (Open-Meteo client, synthetic weather, demand model)
 │   ├── db/              schema, Alembic migrations, reference data
-│   ├── chaos/           scenario catalogue + ground-truth store
+│   ├── chaos/           scenario catalogue (A–J) + ground-truth store
 │   ├── ctl/             gridcastctl (estate lifecycle, GitOps, verify, llm check)
 │   └── cli.py           `gridcast` in-container entrypoint
 ├── deploy/
@@ -114,12 +117,24 @@ gridcast/
 │   ├── docker/          runtime + release Dockerfiles
 │   └── k8s/             kustomize: namespaces, platform bridges, vendors, estate, collector, job template
 ├── infra/               compose + Postgres, pgAdmin, SeaweedFS, Prometheus, Loki, Tempo, Grafana, kind
+├── lumis/               Lumis integration (separate uv project): lumis.yaml, gridcast-lumis CLI
 ├── tests/
 └── docs/
 ```
 
 Runtime state (ignored by git): `.gridcast/gitops` (desired-state repo) and
 `.gridcast/chaos/runs` (ground truth).
+
+## Run Lumis against it
+
+```bash
+cd lumis && uv sync
+uv run gridcast-lumis drill J            # deterministic diagnosis, ~0.3 s from alert to report
+uv run gridcast-lumis drill A --use-agent
+uv run gridcast-lumis report             # results/summary.md + charts
+```
+
+See [docs/lumis-integration.md](docs/lumis-integration.md).
 
 ## Everyday commands
 

@@ -102,12 +102,22 @@ Tick each item; expected results come from real runs on this estate.
 - [ ] **G** `chaos inject G` → `curl localhost:8083/status` shows `ContractViolation … api_version=2.0`.
 - [ ] **I** `chaos inject I` → ingestion status `HTTP 503 from weather-primary…`; `config weather-provider wx-secondary` recovers freshness.
 - [ ] **B** `chaos inject B`, wait ≥ 35 min → `quality.check_results` has `variability.weather_observations` = warn for every station; plans still publish.
+- [ ] **J** `chaos inject J` → within ~2 min alert `PlanningApiUnreachable`; `kubectl -n gridcast get deploy planning-api` shows 0/0.
 - [ ] **F** `chaos inject F` → two deploy commits 45 s apart in `gitops log`; symptoms as A only.
 - [ ] After every revert: `gridcastctl verify` all PASS.
 
 **Teardown**
 - [ ] `make down` then `gridcastctl up --skip-build` comes back with data and models intact.
 - [ ] `make purge` removes everything.
+
+## 5. Lumis against the estate
+
+```bash
+cd lumis && uv sync && uv run pytest     # offline signature tests
+uv run gridcast-lumis drill J             # expect: route deterministic, correct_diagnosis
+uv run gridcast-lumis drill A             # expect: route human, escalated_with_correct_lead
+uv run gridcast-lumis report
+```
 
 ## Continuous checks
 

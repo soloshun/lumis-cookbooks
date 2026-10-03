@@ -24,7 +24,7 @@ flowchart LR
 
 | Cookbook | What it is | Status |
 |---|---|---|
-| [gridcast](gridcast/README.md) | Short-horizon load forecasting for a synthetic national grid: weather/demand vendors, ingestion, features, probabilistic model, validation gate, dispatch plans; 9 injectable incidents (A–I) | Estate complete; Lumis integration pending the SDK refactor |
+| [gridcast](gridcast/README.md) | Short-horizon load forecasting for a synthetic national grid: weather/demand vendors, ingestion, features, probabilistic model, validation gate, dispatch plans; 10 injectable incidents (A–J) | Estate complete; Lumis integration and experiments in [gridcast/lumis](gridcast/lumis/README.md) |
 
 ## Quick start (GridCast)
 
