@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gridcast
+  labels: { app.kubernetes.io/part-of: gridcast, gridcast.dev/tier: estate }
+  annotations: { gridcast.dev/description: "The forecasting estate GridCast operates" }
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vendors
+  labels: { app.kubernetes.io/part-of: gridcast, gridcast.dev/tier: external }
+  annotations: { gridcast.dev/description: "Simulated third-party providers. Not owned or operable by GridCast." }
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: observability
+  labels: { app.kubernetes.io/part-of: gridcast, gridcast.dev/tier: platform }
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform
+  labels: { app.kubernetes.io/part-of: gridcast, gridcast.dev/tier: platform }
+  annotations: { gridcast.dev/description: "DNS bridges to managed services running outside the cluster" }

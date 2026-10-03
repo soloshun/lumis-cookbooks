@@ -1,0 +1,27 @@
+# GridCast estate desired state. `gridcastctl` copies this directory into a local GitOps
+# repository (.gridcast/gitops), and every change to the estate — releases, config changes,
+# resource changes, rollbacks — is a commit there followed by `kubectl apply -k`.
+# Secrets are created out-of-band from .env and never committed.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespaces.yaml
+  - platform/external-services.yaml
+  - observability/otel-collector.yaml
+  - vendors/vendors.yaml
+  - estate/config.yaml
+  - estate/ingestion.yaml
+  - estate/feature-service.yaml
+  - estate/forecast-service.yaml
+  - estate/planning-api.yaml
+  - estate/forecast-pipeline.yaml
+  - estate/grid-operator.yaml
+images:
+  - { name: gridcast/weather-vendor,    newName: localhost:5001/gridcast/weather-vendor,    newTag: 1.0.0 }
+  - { name: gridcast/grid-telemetry,    newName: localhost:5001/gridcast/grid-telemetry,    newTag: 1.4.0 }
+  - { name: gridcast/ingestion,         newName: localhost:5001/gridcast/ingestion,         newTag: 1.4.2 }
+  - { name: gridcast/feature-service,   newName: localhost:5001/gridcast/feature-service,   newTag: 1.6.0 }
+  - { name: gridcast/forecast-service,  newName: localhost:5001/gridcast/forecast-service,  newTag: 2.1.0 }
+  - { name: gridcast/planning-api,      newName: localhost:5001/gridcast/planning-api,      newTag: 2.3.0 }
+  - { name: gridcast/forecast-pipeline, newName: localhost:5001/gridcast/forecast-pipeline, newTag: 1.2.0 }
+  - { name: gridcast/grid-operator,     newName: localhost:5001/gridcast/grid-operator,     newTag: 1.0.0 }

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grid-operator
+  namespace: gridcast
+  labels: { app.kubernetes.io/name: grid-operator, app.kubernetes.io/component: consumer, app.kubernetes.io/part-of: gridcast }
+  annotations:
+    gridcast.dev/description: "Synthetic control-room consumer of dispatch plans"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }
+  selector: { matchLabels: { app.kubernetes.io/name: grid-operator } }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: grid-operator, app.kubernetes.io/component: consumer, app.kubernetes.io/part-of: gridcast }
+    spec:
+      terminationGracePeriodSeconds: 20
+      securityContext: { runAsNonRoot: true, runAsUser: 10001, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: grid-operator
+          imagePullPolicy: Always  # dev registry: tags may be rebuilt
+          image: gridcast/grid-operator
+          args: ["serve", "grid-operator"]
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: gridcast-runtime }
+            - configMapRef: { name: operator-config }
+          env:
+            - name: K8S_POD_NAME
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+            - name: K8S_NAMESPACE
+              valueFrom: { fieldRef: { fieldPath: metadata.namespace } }
+            - name: K8S_NODE_NAME
+              valueFrom: { fieldRef: { fieldPath: spec.nodeName } }
+            - { name: K8S_DEPLOYMENT_NAME, value: grid-operator }
+          readinessProbe: { httpGet: { path: /readyz, port: http }, periodSeconds: 10, failureThreshold: 3 }
+          livenessProbe: { httpGet: { path: /healthz, port: http }, periodSeconds: 20, timeoutSeconds: 5, failureThreshold: 3 }
+          startupProbe: { httpGet: { path: /healthz, port: http }, periodSeconds: 5, failureThreshold: 60 }
+          resources:
+            requests: { cpu: 20m, memory: 96Mi }
+            limits: { cpu: "200m", memory: 192Mi }
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } }
+          volumeMounts: [{ name: tmp, mountPath: /tmp }]
+      volumes: [{ name: tmp, emptyDir: {} }]

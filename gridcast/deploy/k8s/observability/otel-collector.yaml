@@ -1,0 +1,246 @@
+# OpenTelemetry Collector (DaemonSet; one per node, so one in the single-node kind cluster).
+#
+# Signals in:
+#   otlp         traces + metrics pushed by GridCast services and vendors
+#   filelog      every container's stdout in gridcast/vendors/observability (JSON parsed)
+#   k8sobjects   Kubernetes events (scheduling, OOMKilled, probe failures, rollouts) as logs
+#   kubeletstats node/pod/container CPU, memory, network, filesystem
+#   k8s_cluster  desired vs. available replicas, restarts, container limits, pod phases
+#   prometheus   kubelet cAdvisor: CPU throttling, OOM events, working set
+# Signals out (to the managed backends outside the cluster):
+#   traces -> Tempo, metrics -> Prometheus (OTLP), logs -> Loki (OTLP)
+apiVersion: v1
+kind: ServiceAccount
+metadata: { name: otel-collector, namespace: observability }
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata: { name: gridcast-otel-collector }
+rules:
+  - apiGroups: [""]
+    resources: [nodes, nodes/stats, nodes/proxy, nodes/metrics, pods, namespaces, events, services, endpoints, replicationcontrollers, resourcequotas, persistentvolumes, persistentvolumeclaims]
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [deployments, replicasets, statefulsets, daemonsets]
+    verbs: [get, list, watch]
+  - apiGroups: [batch]
+    resources: [jobs, cronjobs]
+    verbs: [get, list, watch]
+  - apiGroups: [autoscaling]
+    resources: [horizontalpodautoscalers]
+    verbs: [get, list, watch]
+  - apiGroups: [events.k8s.io]
+    resources: [events]
+    verbs: [get, list, watch]
+  - nonResourceURLs: [/metrics, /metrics/cadvisor]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata: { name: gridcast-otel-collector }
+roleRef: { apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: gridcast-otel-collector }
+subjects: [{ kind: ServiceAccount, name: otel-collector, namespace: observability }]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: otel-collector, namespace: observability }
+data:
+  config.yaml: |
+    extensions:
+      health_check: { endpoint: 0.0.0.0:13133 }
+
+    receivers:
+      otlp:
+        protocols:
+          grpc: { endpoint: 0.0.0.0:4317 }
+          http: { endpoint: 0.0.0.0:4318 }
+
+      filelog:
+        include:
+          - /var/log/pods/gridcast_*/*/*.log
+          - /var/log/pods/vendors_*/*/*.log
+        start_at: end
+        include_file_path: true
+        operators:
+          - type: container
+            id: container-parser
+          - type: json_parser
+            id: app-json
+            if: 'body matches "^\\{"'
+            parse_from: body
+            parse_to: attributes
+            on_error: send_quiet
+          - type: severity_parser
+            if: 'attributes.level != nil'
+            parse_from: attributes.level
+            on_error: send_quiet
+          - type: move
+            if: 'attributes.msg != nil'
+            from: attributes.msg
+            to: body
+          - type: move
+            if: 'attributes.service != nil'
+            from: attributes.service
+            to: resource["service.name"]
+          - type: move
+            if: 'attributes.version != nil'
+            from: attributes.version
+            to: resource["service.version"]
+
+      k8sobjects:
+        auth_type: serviceAccount
+        objects:
+          - name: events
+            mode: watch
+            group: events.k8s.io
+            namespaces: [gridcast, vendors, observability]
+
+      kubeletstats:
+        collection_interval: 15s
+        auth_type: serviceAccount
+        endpoint: https://${env:K8S_NODE_IP}:10250
+        insecure_skip_verify: true
+        metric_groups: [node, pod, container]
+        extra_metadata_labels: [container.id]
+        metrics:
+          k8s.container.cpu_limit_utilization: { enabled: true }
+          k8s.container.memory_limit_utilization: { enabled: true }
+          k8s.pod.cpu_limit_utilization: { enabled: true }
+          k8s.pod.memory_limit_utilization: { enabled: true }
+
+      k8s_cluster:
+        auth_type: serviceAccount
+        collection_interval: 15s
+        node_conditions_to_report: [Ready, MemoryPressure, DiskPressure, PIDPressure]
+        allocatable_types_to_report: [cpu, memory]
+
+      prometheus/cadvisor:
+        config:
+          scrape_configs:
+            - job_name: cadvisor
+              scrape_interval: 15s
+              scheme: https
+              metrics_path: /metrics/cadvisor
+              authorization:
+                credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+              tls_config: { insecure_skip_verify: true }
+              static_configs:
+                - targets: ["${env:K8S_NODE_IP}:10250"]
+              metric_relabel_configs:
+                - source_labels: [namespace]
+                  regex: (gridcast|vendors|observability)
+                  action: keep
+                - source_labels: [__name__]
+                  regex: container_(cpu_cfs_throttled_periods_total|cpu_cfs_periods_total|cpu_cfs_throttled_seconds_total|cpu_usage_seconds_total|memory_working_set_bytes|oom_events_total|spec_cpu_quota|spec_memory_limit_bytes)
+                  action: keep
+                - source_labels: [container]
+                  regex: ""
+                  action: drop
+
+    processors:
+      memory_limiter: { check_interval: 1s, limit_percentage: 80, spike_limit_percentage: 25 }
+      batch: { send_batch_size: 2048, timeout: 5s }
+      k8sattributes:
+        auth_type: serviceAccount
+        passthrough: false
+        extract:
+          metadata: [k8s.namespace.name, k8s.pod.name, k8s.pod.uid, k8s.deployment.name, k8s.node.name, k8s.container.name, container.image.name, container.image.tag]
+          labels:
+            - { tag_name: app.kubernetes.io/component, key: app.kubernetes.io/component, from: pod }
+        pod_association:
+          - sources: [{ from: resource_attribute, name: k8s.pod.name }, { from: resource_attribute, name: k8s.namespace.name }]
+          - sources: [{ from: resource_attribute, name: k8s.pod.uid }]
+          - sources: [{ from: connection }]
+      resource/cluster:
+        attributes:
+          - { key: k8s.cluster.name, value: gridcast, action: upsert }
+          - { key: deployment.environment.name, value: local, action: insert }
+      resource/k8s-events:
+        attributes:
+          - { key: service.name, value: kubernetes-events, action: upsert }
+      resource/k8s-service-name:
+        # Signals without an application-level service.name (k8s receivers, raw container
+        # logs) are attributed to their workload.
+        attributes:
+          - { key: service.name, from_attribute: k8s.deployment.name, action: insert }
+          - { key: service.name, from_attribute: k8s.container.name, action: insert }
+
+    exporters:
+      otlphttp/prometheus:
+        metrics_endpoint: http://prometheus.platform.svc.cluster.local:9090/api/v1/otlp/v1/metrics
+        tls: { insecure: true }
+      otlp/tempo:
+        endpoint: tempo.platform.svc.cluster.local:4317
+        tls: { insecure: true }
+      otlphttp/loki:
+        endpoint: http://loki.platform.svc.cluster.local:3100/otlp
+        tls: { insecure: true }
+
+    service:
+      extensions: [health_check]
+      telemetry:
+        logs: { level: warn }
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, k8sattributes, resource/cluster, batch]
+          exporters: [otlp/tempo]
+        metrics:
+          receivers: [otlp, kubeletstats, k8s_cluster, prometheus/cadvisor]
+          processors: [memory_limiter, k8sattributes, resource/cluster, resource/k8s-service-name, batch]
+          exporters: [otlphttp/prometheus]
+        logs:
+          receivers: [filelog]
+          processors: [memory_limiter, k8sattributes, resource/cluster, resource/k8s-service-name, batch]
+          exporters: [otlphttp/loki]
+        logs/k8s-events:
+          receivers: [k8sobjects]
+          processors: [memory_limiter, resource/cluster, resource/k8s-events, batch]
+          exporters: [otlphttp/loki]
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: otel-collector
+  namespace: observability
+  labels: { app.kubernetes.io/name: otel-collector, app.kubernetes.io/part-of: gridcast }
+spec:
+  selector: { matchLabels: { app.kubernetes.io/name: otel-collector } }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: otel-collector, app.kubernetes.io/part-of: gridcast }
+    spec:
+      serviceAccountName: otel-collector
+      containers:
+        - name: otel-collector
+          image: otel/opentelemetry-collector-contrib:0.132.0
+          args: ["--config=/conf/config.yaml"]
+          env:
+            - name: K8S_NODE_IP
+              valueFrom: { fieldRef: { fieldPath: status.hostIP } }
+            - name: K8S_NODE_NAME
+              valueFrom: { fieldRef: { fieldPath: spec.nodeName } }
+          ports:
+            - { name: otlp-grpc, containerPort: 4317 }
+            - { name: otlp-http, containerPort: 4318 }
+          readinessProbe: { httpGet: { path: /, port: 13133 } }
+          livenessProbe: { httpGet: { path: /, port: 13133 }, periodSeconds: 30 }
+          resources:
+            requests: { cpu: 100m, memory: 192Mi }
+            limits: { cpu: "1", memory: 512Mi }
+          volumeMounts:
+            - { name: config, mountPath: /conf }
+            - { name: varlogpods, mountPath: /var/log/pods, readOnly: true }
+      securityContext: { runAsUser: 0 }
+      volumes:
+        - { name: config, configMap: { name: otel-collector } }
+        - { name: varlogpods, hostPath: { path: /var/log/pods } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: otel-collector, namespace: observability }
+spec:
+  selector: { app.kubernetes.io/name: otel-collector }
+  ports:
+    - { name: otlp-grpc, port: 4317, targetPort: otlp-grpc }
+    - { name: otlp-http, port: 4318, targetPort: otlp-http }
