@@ -33,7 +33,7 @@ from gridcast.db.schema import (
     weather_observations,
 )
 from gridcast.services.common import create_app, serve
-from gridcast.telemetry import SECONDS_BUCKETS
+from gridcast.telemetry import SECONDS_BUCKETS, initialize_counters
 from gridcast.weather.model import VARIABLES
 
 log = logging.getLogger(__name__)
@@ -345,6 +345,13 @@ def create(settings: Settings | None = None) -> FastAPI:
     async def lifespan(app: FastAPI):
         ingestor = build_ingestor(settings)
         holder["ingestor"] = ingestor
+        initialize_counters(BATCHES, [
+            {"dataset": dataset, "source": source, "status": status}
+            for dataset, source in (("weather_observations", settings.weather_provider),
+                                    ("weather_forecasts", settings.weather_provider),
+                                    ("demand", "grid-telemetry"))
+            for status in ("ok", "error")
+        ])
 
         def freshness_cb(options):  # noqa: ANN001
             from opentelemetry.metrics import Observation

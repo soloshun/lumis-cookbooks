@@ -15,6 +15,11 @@ from sqlalchemy import Connection, text
 from gridcast.catalog import catalog
 
 Status = Literal["pass", "warn", "fail"]
+KNOWN_CHECKS = (
+    "freshness.weather_observations", "freshness.weather_forecasts", "freshness.demand",
+    "variability.weather_observations", "range.demand", "completeness.demand",
+    "completeness.forecast", "range.forecast", "stability.forecast_vs_published",
+)
 
 
 @dataclass

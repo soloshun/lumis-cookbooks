@@ -6,7 +6,7 @@ minutes the realized forecast accuracy. It exports what the business cares about
     gridcast_consumer_plan_age_seconds      how old the plan in use is
     gridcast_consumer_forecast_mape_ratio   rolling 6 h MAPE of published forecasts
     gridcast_consumer_coverage_ratio        share of actuals inside the p10-p90 band
-    gridcast_consumer_requests_total        planning-api calls by outcome
+    gridcast_consumer_requests_total        planning-api calls by endpoint/status/outcome
 """
 
 import asyncio
@@ -55,12 +55,15 @@ def create(settings: Settings | None = None) -> FastAPI:
     async def get(client: httpx.AsyncClient, path: str, **params) -> dict | None:
         try:
             response = await client.get(f"{settings.planning_api_url}{path}", params=params)
-            REQUESTS.add(1, {"endpoint": path, "status": str(response.status_code)})
+            outcome = "ok" if response.is_success else "http_error"
+            REQUESTS.add(1, {"endpoint": path, "status": str(response.status_code),
+                             "outcome": outcome})
             response.raise_for_status()
             return response.json()
         except httpx.HTTPError as exc:
             if not isinstance(exc, httpx.HTTPStatusError):
-                REQUESTS.add(1, {"endpoint": path, "status": "transport_error"})
+                REQUESTS.add(1, {"endpoint": path, "status": "transport_error",
+                                 "outcome": "transport_error"})
             log.warning("planning api call failed", extra={"endpoint": path, "error": str(exc)[:200]})
             return None
 
@@ -91,8 +94,15 @@ def create(settings: Settings | None = None) -> FastAPI:
         yield
         task.cancel()
 
+    from gridcast.telemetry import initialize_counters
+
     app = create_app("grid-operator", lifespan=lifespan,
                      description="Synthetic downstream consumer of dispatch plans.")
+
+    initialize_counters(REQUESTS, [
+        {"endpoint": endpoint, "status": "transport_error", "outcome": "transport_error"}
+        for endpoint in ("/v1/plans/current", "/v1/accuracy")
+    ])
 
     @app.get("/status", tags=["ops"])
     def status() -> dict:

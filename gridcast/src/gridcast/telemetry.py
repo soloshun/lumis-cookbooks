@@ -79,6 +79,16 @@ def setup_telemetry(service: str, version: str, environment: str = "local") -> N
     log.info("telemetry configured", extra={"otlp_endpoint": os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"]})
 
 
+def initialize_counters(counter: Any, label_sets: list[dict[str, str]]) -> None:
+    """Export known label combinations at 0 so the *first* real increment is visible.
+
+    Without this, a series such as `{status="failed"}` is born at 1 and PromQL `increase()`
+    over it reports 0 for the very first failures. Call after `setup_telemetry`.
+    """
+    for labels in label_sets:
+        counter.add(0, labels)
+
+
 def instrument_fastapi(app: Any) -> None:
     if not enabled():
         return

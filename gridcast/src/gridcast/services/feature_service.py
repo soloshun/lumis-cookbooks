@@ -21,7 +21,7 @@ from gridcast.db.schema import feature_runs, forecast_features
 from gridcast.features.engineering import MissingHistory, floor_hour
 from gridcast.features.store import BUILDERS, QueryCount, install_query_counter
 from gridcast.services.common import create_app, serve
-from gridcast.telemetry import SECONDS_BUCKETS
+from gridcast.telemetry import SECONDS_BUCKETS, initialize_counters
 
 log = logging.getLogger(__name__)
 tracer = trace.get_tracer("gridcast.features")
@@ -67,17 +67,28 @@ def create(settings: Settings | None = None) -> FastAPI:
         raise RuntimeError(f"unknown lag_resolution flag {resolution!r}")
     builder = BUILDERS[resolution]
     log.info("feature builder selected", extra={"lag_resolution": resolution})
+    initialize_counters(BUILDS, [{"lag_resolution": resolution, "status": s}
+                                 for s in ("completed", "failed")])
 
     @app.post("/v1/feature-runs", response_model=FeatureRunResult, tags=["features"])
     def build(request: FeatureRunRequest) -> FeatureRunResult:
         as_of = floor_hour((request.as_of or datetime.now(UTC)).astimezone(UTC))
         run_id = uuid.uuid4()
         attrs = {"lag_resolution": resolution}
-        with engine.begin() as conn:
-            conn.execute(insert(feature_runs).values(
-                feature_run_id=run_id, as_of=as_of, horizon_hours=request.horizon_hours,
-                status="running", builder_version=release.version, lag_resolution=resolution,
-            ))
+        try:
+            with engine.begin() as conn:
+                conn.execute(insert(feature_runs).values(
+                    feature_run_id=run_id, as_of=as_of, horizon_hours=request.horizon_hours,
+                    status="running", builder_version=release.version, lag_resolution=resolution,
+                ))
+        except Exception as exc:
+            # A build that cannot even be recorded (e.g. the database refuses the connection)
+            # is still a failed build.
+            BUILDS.add(1, {**attrs, "status": "failed"})
+            log.error("feature build failed", extra={
+                "feature_run_id": str(run_id), "stage": "register",
+                "error": f"{type(exc).__name__}: {exc}"[:2000]})
+            raise HTTPException(503, f"feature build could not start: {type(exc).__name__}") from exc
         t0 = time.perf_counter()
         with tracer.start_as_current_span("build features", attributes={
             "gridcast.feature_run_id": str(run_id), "gridcast.lag_resolution": resolution,

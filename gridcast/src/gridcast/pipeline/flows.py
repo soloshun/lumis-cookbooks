@@ -27,7 +27,7 @@ from sqlalchemy import insert
 from gridcast.db.engine import make_engine
 from gridcast.db.schema import check_results, forecast_validations
 from gridcast.quality import checks
-from gridcast.telemetry import SECONDS_BUCKETS
+from gridcast.telemetry import SECONDS_BUCKETS, initialize_counters
 
 log = logging.getLogger(__name__)
 tracer = trace.get_tracer("gridcast.pipeline")
@@ -206,6 +206,11 @@ def run_forever() -> None:
     provider alive, so pipeline counters and histograms are continuous series.
     """
     settings = Settings()
+    initialize_counters(RUNS, [{"status": s} for s in ("published", "held", "failed")])
+    initialize_counters(CHECKS, [
+        {"check": check, "status": status}
+        for check in checks.KNOWN_CHECKS for status in ("pass", "warn", "fail")
+    ])
     log.info("pipeline worker started", extra={"interval_seconds": settings.interval_seconds})
     while True:
         started = time.monotonic()
