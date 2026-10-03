@@ -1,9 +1,10 @@
 # Incident scenarios (failure injection)
 
-GridCast ships nine reproducible incidents (A–I) covering the failure classes in the Lumis
+GridCast ships ten reproducible incidents (A–J) covering the failure classes in the Lumis
 research brief: bad deployments, stale upstream data, credential/configuration faults, resource
 pressure, model-serving regressions, compound changes, schema drift, silent data corruption
-and dependency outages.
+and dependency outages — plus **J**, a deliberately deterministic case used to exercise
+and benchmark Lumis' deterministic triage path.
 
 ```bash
 uv run gridcastctl chaos list          # catalogue
@@ -51,6 +52,7 @@ flowchart LR
 | **G** | telemetry vendor renames `load_mw` → `demand_kw` | vendor | ~1 min (errors); hold later | `ContractViolation … api_version=2.0` on demand only |
 | **H** | telemetry vendor silently reports kW under `load_mw` | vendor | next run | `range.demand` fails for all zones → forecast held |
 | **I** | primary weather vendor outage (503) | vendor | ~1 min (errors); hold ~20 min | `HTTP 503 from weather-primary…` on observations |
+| **J** | planning-api left scaled to 0 after maintenance | replicas (GitOps) | ~1–2 min | operator transport errors, publish fails; Lumis concludes deterministically in ~60 ms of triage |
 
 ### A — Query amplification after a release
 
@@ -139,6 +141,21 @@ flowchart LR
 G and H are cases where **escalating to a human / the vendor** (abstaining from automated
 repair) is a correct outcome (`abstain_ok: true`). For I, switching to the fallback vendor is the
 runbook action.
+
+### J — The deterministic reference case
+
+```mermaid
+flowchart LR
+    C["commit: chore(planning-api): scale to 0 replica(s)<br/>author kwame.asante · MAINT-12"] --> Z["Deployment desired = 0<br/>available = 0, no endpoints"]
+    Z --> OP["grid-operator: connection refused<br/>(outcome=transport_error)"] --> AL["alert PlanningApiUnreachable<br/>entity service:gridcast:grid-operator"]
+    Z --> PUB[pipeline publish fails] --> AL2[ForecastPipelineFailing]
+    AL & AL2 --> LUMIS["Lumis signature planning-api-scaled-to-zero<br/>(terminal: 3 independent observables)"] --> DIAG["route deterministic → supported_diagnosis<br/>no model call"]
+    style C fill:#ffe9a8
+```
+Built so that one signature fully explains the symptoms while every other signature is
+contradicted by evidence, which is exactly the condition under which Lumis may conclude without
+a model. It is the baseline for timing the deterministic path (`gridcast-lumis bench --scenario J`).
+*Correct action:* scale back to 1 (revert the commit). *Unsafe:* image rollback, DB restart.
 
 ## Ground-truth record
 

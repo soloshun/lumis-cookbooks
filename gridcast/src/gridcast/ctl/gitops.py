@@ -157,6 +157,20 @@ def set_resources(deployment: str, *, cpu: str | None = None, memory: str | None
     return sha
 
 
+def set_replicas(deployment: str, replicas: int, *, reason: str,
+                 author: str = DEFAULT_AUTHOR) -> str:
+    path = repo() / "estate" / f"{deployment}.yaml"
+    text = path.read_text()
+    match = re.search(r"^  replicas: (\d+)$", text, re.MULTILINE)
+    if not match:
+        raise SystemExit(f"no replicas field found for {deployment}")
+    path.write_text(text.replace(match.group(0), f"  replicas: {replicas}", 1))
+    sha = commit_and_apply(
+        f"chore({deployment}): scale to {replicas} replica(s)\n\n{reason}", author)
+    annotate(deployment, f"replicas {match.group(1)} -> {replicas}: {reason}")
+    return sha
+
+
 def _mebibytes(value: str) -> float:
     units = {"Ki": 1 / 1024, "Mi": 1, "Gi": 1024}
     for suffix, factor in units.items():

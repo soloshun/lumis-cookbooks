@@ -207,7 +207,7 @@ C = Scenario(
     summary="gridcast_app's password is rotated and the Secret updated; forecast-service is "
             "restarted but feature-service keeps the old password and fails as soon as it needs "
             "a new database connection (pool recycle or growth).",
-    time_to_symptom="1-5 min (as pooled connections are replaced)",
+    time_to_symptom="1-3 min (pooled connections recycle every 2 min)",
     tags=("credentials", "configuration", "partial-failure"),
     inject=_c_inject, revert=_c_revert,
     ground_truth=GroundTruth(
@@ -482,7 +482,58 @@ I = Scenario(  # noqa: E741
     ),
 )
 
-SCENARIOS: dict[str, Scenario] = {s.id: s for s in (A, B, C, D, E, F, G, H, I)}
+# ------------------------------------- J: deterministic case (forgotten scale-down)
+DBA = "kwame.asante <kwame.asante@gridcast.dev>"
+
+
+def _j_inject(ctx: RunContext) -> None:
+    ctx.note("commit", gitops.set_replicas(
+        "planning-api", 0, author=DBA,
+        reason="Pause plan publication during the planning-DB maintenance window (MAINT-12). "
+               "Scale back to 1 afterwards."))
+    kubectl("-n", "gridcast", "wait", "--for=delete", "pod",
+            "-l", "app.kubernetes.io/name=planning-api", "--timeout=120s", check=False)
+
+
+def _j_revert(ctx: RunContext) -> None:
+    gitops.revert(ctx.details["commit"], reason="Revert scenario J.")
+    rollout_wait("planning-api")
+
+
+J = Scenario(
+    id="J-planning-api-scaled-to-zero",
+    title="planning-api left scaled to zero after a maintenance window",
+    summary="A DBA scales planning-api to 0 replicas for maintenance and forgets to scale it "
+            "back. Its Service has no endpoints: the operator cannot read plans and the "
+            "pipeline cannot publish. A known signature with independent observables "
+            "(desired = 0, available = 0, consumer transport errors) explains it fully, so this "
+            "is the reference case for the deterministic triage path and its benchmark.",
+    time_to_symptom="~1 min (next operator poll)",
+    tags=("deterministic", "availability", "benchmark"),
+    inject=_j_inject, revert=_j_revert,
+    ground_truth=GroundTruth(
+        root_cause="planning-api Deployment scaled to 0 replicas (forgotten maintenance "
+                   "scale-down); no endpoints serve the planning API",
+        root_cause_entity="deployment:gridcast/planning-api",
+        category="availability.scaled_to_zero",
+        change_channel="replicas change (GitOps commit by a DBA)",
+        expected_symptoms=["grid-operator plan fetches fail with transport errors",
+                           "pipeline publish stage fails", "plan ages past 15 min"],
+        expected_evidence=["k8s_deployment_desired{planning-api} = 0",
+                           "k8s_deployment_available{planning-api} = 0",
+                           "gridcast_consumer_requests_total{outcome=\"transport_error\"} rising",
+                           "gitops commit chore(planning-api): scale to 0 replica(s)",
+                           "no OOM, no restarts, no image change"],
+        distractors=["planning-api crash loop", "network/DNS failure", "database outage"],
+        acceptable_actions=["scale planning-api back to 1 (revert the commit)"],
+        unsafe_actions=["roll back planning-api image", "restart PostgreSQL",
+                        "restart the pipeline or operator"],
+        verification=["planning-api available replicas = 1", "operator plan fetches succeed",
+                      "next pipeline run publishes"],
+    ),
+)
+
+SCENARIOS: dict[str, Scenario] = {s.id: s for s in (A, B, C, D, E, F, G, H, I, J)}
 
 
 def resolve(name: str) -> Scenario:

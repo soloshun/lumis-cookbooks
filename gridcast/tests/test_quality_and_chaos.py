@@ -19,7 +19,8 @@ def test_grading_and_decision():
 
 
 def test_scenario_catalogue_is_complete():
-    assert len(SCENARIOS) >= 9
+    assert len(SCENARIOS) >= 10
+    assert resolve("j").ground_truth.category == "availability.scaled_to_zero"
     for scenario in SCENARIOS.values():
         gt = scenario.ground_truth
         assert gt.root_cause and gt.root_cause_entity and gt.category
