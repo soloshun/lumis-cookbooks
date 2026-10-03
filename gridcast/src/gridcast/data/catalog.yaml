@@ -1,0 +1,70 @@
+# GridCast reference grid. Four load zones on a synthetic national grid, each paired with the
+# weather station whose conditions drive its demand. Coordinates are real (Open-Meteo pulls real
+# weather for them); loads and network are synthetic.
+grid:
+  id: gridcast-national
+  name: GridCast National Interconnected System
+  timezone: UTC          # Ghana observes GMT/UTC year-round, which keeps calendars simple.
+
+stations:
+  - id: st-accra
+    name: Accra (Kotoka)
+    latitude: 5.6037
+    longitude: -0.1870
+    elevation_m: 61
+  - id: st-kumasi
+    name: Kumasi
+    latitude: 6.6885
+    longitude: -1.6244
+    elevation_m: 270
+  - id: st-tamale
+    name: Tamale
+    latitude: 9.4008
+    longitude: -0.8393
+    elevation_m: 168
+  - id: st-takoradi
+    name: Takoradi
+    latitude: 4.8845
+    longitude: -1.7554
+    elevation_m: 9
+
+zones:
+  - id: zone-accra
+    name: Greater Accra
+    station_id: st-accra
+    base_load_mw: 1150
+    cooling_mw_per_degc: 38
+    rooftop_solar_mw: 90
+    comfort_temp_c: 25.5
+  - id: zone-kumasi
+    name: Ashanti
+    station_id: st-kumasi
+    base_load_mw: 620
+    cooling_mw_per_degc: 19
+    rooftop_solar_mw: 35
+    comfort_temp_c: 25.0
+  - id: zone-tamale
+    name: Northern
+    station_id: st-tamale
+    base_load_mw: 210
+    cooling_mw_per_degc: 9
+    rooftop_solar_mw: 18
+    comfort_temp_c: 27.0
+  - id: zone-takoradi
+    name: Western
+    station_id: st-takoradi
+    base_load_mw: 330
+    cooling_mw_per_degc: 11
+    rooftop_solar_mw: 12
+    comfort_temp_c: 25.5
+
+providers:
+  - id: wx-primary
+    name: Meridian Weather (primary vendor)
+    priority: 1
+  - id: wx-secondary
+    name: Harmattan Analytics (fallback vendor)
+    priority: 2
+
+# Fixed-date public holidays (month-day). Movable feasts are ignored on purpose.
+holidays: ["01-01", "01-07", "03-06", "05-01", "07-01", "08-04", "09-21", "12-01", "12-25", "12-26"]
