@@ -8,6 +8,8 @@ data:
   GRIDCAST_DB_HOST: postgres.platform.svc.cluster.local
   GRIDCAST_DB_PORT: "5432"
   GRIDCAST_DB_NAME: gridcast
+  # Pooled connections are recycled every 2 minutes (credential changes surface within ~2 min).
+  GRIDCAST_DB_POOL_RECYCLE_SECONDS: "120"
   OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector.observability.svc.cluster.local:4317
   OTEL_METRIC_EXPORT_INTERVAL: "15000"
   S3_ENDPOINT_URL: http://s3.platform.svc.cluster.local:8333

@@ -70,15 +70,19 @@ every signal can be joined on the same identity.
 | `gridcast_consumer_plan_age_seconds` | gauge | | age of the plan operators use (SLO) |
 | `gridcast_consumer_forecast_mape_ratio` | gauge | | rolling 6 h realized MAPE (SLO) |
 | `gridcast_consumer_coverage_ratio` | gauge | | realized p10–p90 coverage |
-| `gridcast_consumer_requests_total` | counter | `endpoint`, `status` | planning-api calls by the operator |
+| `gridcast_consumer_requests_total` | counter | `endpoint`, `status`, `outcome` = ok / http_error / transport_error | planning-api calls by the operator |
 
 ## Alerts (symptoms, never causes)
 
-Defined in `infra/prometheus/rules/gridcast.yml`, visible at <http://localhost:9090/alerts>:
+Defined in `infra/prometheus/rules/gridcast.yml`, visible at <http://localhost:9090/alerts>.
+Every alert carries an **`entity` label**: the canonical graph ID (`service:gridcast:<name>`) of
+the component where the symptom is observed. The Lumis integration turns firing alerts into an
+incident's affected entities from this label alone.
 
 | Alert | Fires when | Typical scenarios |
 |---|---|---|
-| `ForecastPlanStale` (page) | plan in use older than 15 min | C, D, G, H, I |
+| `PlanningApiUnreachable` (page) | operator plan reads fail to connect | J |
+| `ForecastPlanStale` (page) | plan in use older than 15 min | C, D, G, H, I, J |
 | `ForecastPipelineFailing` (page) | ≥ 2 held/failed runs in 15 min | C, D, G, H |
 | `ForecastPipelineSlow` | pipeline p95 > 5 s | A, E, F |
 | `FeatureBuildSlow` | feature build p95 > 2 s | A, F |
@@ -91,6 +95,10 @@ Defined in `infra/prometheus/rules/gridcast.yml`, visible at <http://localhost:9
 | `DataQualityWarnings` | a warn-level check repeating | B |
 | `ForecastAccuracyDegraded` | rolling MAPE > 8 % for 10 min | B (slowly) |
 | `ServiceErrorRate` | 5xx ratio > 5 % | C |
+
+Counters with known label sets (pipeline outcomes, build statuses, ingestion batches, quality
+checks, operator outcomes) are exported at 0 on start-up, so the first failure is visible to
+`increase()`.
 
 Thresholds are calibrated to the healthy estate (pipeline ≈ 1 s, feature build ≈ 0.06 s,
 inference ≈ 0.1 s).

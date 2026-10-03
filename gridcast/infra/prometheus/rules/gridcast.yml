@@ -1,5 +1,8 @@
 # Recording rules give stable, human-meaningful series; alerting rules are the symptoms an
 # operator (or Lumis) would be paged on. Alerts describe *symptoms*, never causes.
+# Every alert carries an `entity` label: the canonical graph ID (service:gridcast:<name>) of the
+# component where the symptom is observed. The Lumis harness turns firing alerts into an
+# incident's affected entities using exactly this label.
 groups:
   - name: gridcast-recording
     rules:
@@ -23,7 +26,7 @@ groups:
       - alert: ForecastPlanStale
         expr: max(gridcast_consumer_plan_age_seconds) > 900
         for: 2m
-        labels: { severity: page, slo: forecast-freshness }
+        labels: { entity: 'service:gridcast:grid-operator', severity: page, slo: forecast-freshness }
         annotations:
           summary: Published dispatch plan is older than 15 minutes
           description: Operators are planning on a plan {{ $value | humanizeDuration }} old.
@@ -32,63 +35,72 @@ groups:
       - alert: ForecastPipelineSlow
         expr: gridcast:pipeline_duration_seconds:p95_15m > 5
         for: 5m
-        labels: { severity: ticket, slo: pipeline-latency }
+        labels: { entity: 'service:gridcast:forecast-pipeline', severity: ticket, slo: pipeline-latency }
         annotations:
           summary: Forecast pipeline p95 duration above 5s
       - alert: FeatureBuildSlow
         expr: gridcast:feature_build_seconds:p95_15m > 2
         for: 5m
-        labels: { severity: ticket }
+        labels: { entity: 'service:gridcast:feature-service', severity: ticket }
         annotations:
           summary: Feature build p95 above 2s
       - alert: InferenceSlow
         expr: gridcast:inference_seconds:p95_15m > 2
         for: 5m
-        labels: { severity: ticket }
+        labels: { entity: 'service:gridcast:forecast-service', severity: ticket }
         annotations:
           summary: Model inference p95 above 2s
+      - alert: PlanningApiUnreachable
+        expr: sum(increase(gridcast_consumer_requests_total{endpoint="/v1/plans/current",outcome="transport_error"}[5m])) > 0
+        for: 1m
+        labels: { entity: 'service:gridcast:grid-operator', severity: page, slo: forecast-freshness }
+        annotations:
+          summary: The grid operator cannot reach the planning API
       - alert: ForecastPipelineFailing
         expr: sum(increase(gridcast_pipeline_runs_total{status!="published"}[15m])) >= 2
-        labels: { severity: page, slo: forecast-freshness }
+        labels: { entity: 'service:gridcast:forecast-pipeline', severity: page, slo: forecast-freshness }
         annotations:
           summary: Forecast pipeline held or failed at least twice in 15 minutes
       - alert: ForecastAccuracyDegraded
         expr: max(gridcast_consumer_forecast_mape_ratio) > 0.08
         for: 10m
-        labels: { severity: ticket, slo: forecast-accuracy }
+        labels: { entity: 'service:gridcast:grid-operator', severity: ticket, slo: forecast-accuracy }
         annotations:
           summary: Rolling forecast MAPE above 8%
       - alert: InputDataStale
-        expr: max by (dataset) (gridcast_data_freshness_seconds) > 600
+        # Observations/demand arrive every minute; vendor forecasts are issued hourly.
+        expr: |
+          max by (dataset) (gridcast_data_freshness_seconds{dataset!="weather_forecasts"}) > 600
+            or max by (dataset) (gridcast_data_freshness_seconds{dataset="weather_forecasts"}) > 10800
         for: 2m
-        labels: { severity: ticket, slo: data-freshness }
+        labels: { entity: 'service:gridcast:ingestion', severity: ticket, slo: data-freshness }
         annotations:
           summary: "{{ $labels.dataset }} has not advanced for 10 minutes"
       - alert: IngestionErrors
         expr: sum by (dataset) (increase(gridcast_ingest_batches_total{status="error"}[10m])) > 3
-        labels: { severity: ticket }
+        labels: { entity: 'service:gridcast:ingestion', severity: ticket }
         annotations:
           summary: "Ingestion of {{ $labels.dataset }} is failing"
       - alert: DatabaseScanSurge
         expr: gridcast:db_tuples_returned:rate5m > 50000
         for: 5m
-        labels: { severity: ticket }
+        labels: { entity: 'service:gridcast:postgres', severity: ticket }
         annotations:
           summary: PostgreSQL rows scanned/s is ~10x above normal
       - alert: PodCrashLooping
         expr: delta(k8s_container_restarts{k8s_namespace_name="gridcast"}[10m]) > 2
-        labels: { severity: page }
+        labels: { entity: 'service:gridcast:{{ $labels.k8s_container_name }}', severity: page }
         annotations:
           summary: "{{ $labels.k8s_container_name }} restarted more than twice in 10 minutes"
       - alert: DeploymentReplicasUnavailable
         expr: k8s_deployment_available{k8s_namespace_name="gridcast"} < k8s_deployment_desired{k8s_namespace_name="gridcast"}
         for: 3m
-        labels: { severity: ticket }
+        labels: { entity: 'service:gridcast:{{ $labels.k8s_deployment_name }}', severity: ticket }
         annotations:
           summary: "{{ $labels.k8s_deployment_name }} has unavailable replicas"
       - alert: DataQualityWarnings
         expr: sum by (check) (increase(gridcast_quality_checks_total{status="warn"}[30m])) > 3
-        labels: { severity: ticket }
+        labels: { entity: 'service:gridcast:forecast-pipeline', severity: ticket }
         annotations:
           summary: "Quality check {{ $labels.check }} warning repeatedly"
       - alert: ServiceErrorRate
@@ -96,6 +108,6 @@ groups:
           sum by (service_name) (rate(http_server_duration_milliseconds_count{http_status_code=~"5.."}[5m]))
             / sum by (service_name) (rate(http_server_duration_milliseconds_count[5m])) > 0.05
         for: 3m
-        labels: { severity: ticket }
+        labels: { entity: 'service:gridcast:{{ $labels.service_name }}', severity: ticket }
         annotations:
           summary: "{{ $labels.service_name }} 5xx ratio above 5%"
