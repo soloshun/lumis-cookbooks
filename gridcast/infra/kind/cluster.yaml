@@ -1,0 +1,28 @@
+# Single-node kind cluster for the GridCast estate.
+# Host ports map onto NodePort services so the estate's APIs are reachable from the laptop.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: gridcast
+nodes:
+  - role: control-plane
+    image: kindest/node:v1.34.0
+    labels:
+      gridcast.dev/node-pool: general
+    extraPortMappings:
+      - { containerPort: 30080, hostPort: 8080, protocol: TCP }  # planning-api
+      - { containerPort: 30081, hostPort: 8081, protocol: TCP }  # forecast-service
+      - { containerPort: 30082, hostPort: 8082, protocol: TCP }  # feature-service
+      - { containerPort: 30083, hostPort: 8083, protocol: TCP }  # ingestion
+      - { containerPort: 30084, hostPort: 8084, protocol: TCP }  # vendors: weather primary
+      - { containerPort: 30085, hostPort: 8085, protocol: TCP }  # vendors: weather secondary
+      - { containerPort: 30086, hostPort: 8086, protocol: TCP }  # vendors: grid telemetry
+    kubeadmConfigPatches:
+      - |
+        kind: KubeletConfiguration
+        cpuCFSQuota: true
+        serializeImagePulls: false
+# Pull images from the local registry container (gridcast-registry) on the shared network.
+containerdConfigPatches:
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry]
+      config_path = "/etc/containerd/certs.d"

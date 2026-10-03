@@ -1,0 +1,39 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "GridCast (owner - full ERD and DDL)",
+      "Group": "GridCast",
+      "Host": "gridcast-postgres",
+      "Port": 5432,
+      "MaintenanceDB": "gridcast",
+      "Username": "gridcast_owner",
+      "PassFile": "/var/lib/pgadmin/pgpass",
+      "SSLMode": "disable",
+      "Comment": "Schema owner. Right-click the gridcast database > ERD For Database to see the full ER diagram.",
+      "Shared": true
+    },
+    "2": {
+      "Name": "GridCast (read-only observer)",
+      "Group": "GridCast",
+      "Host": "gridcast-postgres",
+      "Port": 5432,
+      "MaintenanceDB": "gridcast",
+      "Username": "gridcast_readonly",
+      "PassFile": "/var/lib/pgadmin/pgpass",
+      "SSLMode": "disable",
+      "Comment": "What Grafana, postgres-exporter and Lumis see.",
+      "Shared": true
+    },
+    "3": {
+      "Name": "Platform superuser (prefect + gridcast DBs)",
+      "Group": "Platform",
+      "Host": "gridcast-postgres",
+      "Port": 5432,
+      "MaintenanceDB": "postgres",
+      "Username": "postgres",
+      "PassFile": "/var/lib/pgadmin/pgpass",
+      "SSLMode": "disable",
+      "Shared": true
+    }
+  }
+}

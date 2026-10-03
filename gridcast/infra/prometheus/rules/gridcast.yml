@@ -1,0 +1,101 @@
+# Recording rules give stable, human-meaningful series; alerting rules are the symptoms an
+# operator (or Lumis) would be paged on. Alerts describe *symptoms*, never causes.
+groups:
+  - name: gridcast-recording
+    rules:
+      - record: gridcast:pipeline_duration_seconds:p95_15m
+        expr: histogram_quantile(0.95, sum by (le) (rate(gridcast_pipeline_run_duration_seconds_bucket[15m])))
+      - record: gridcast:feature_build_seconds:p95_15m
+        expr: histogram_quantile(0.95, sum by (le) (rate(gridcast_feature_build_duration_seconds_bucket[15m])))
+      - record: gridcast:inference_seconds:p95_15m
+        expr: histogram_quantile(0.95, sum by (le) (rate(gridcast_inference_duration_seconds_bucket[15m])))
+      - record: gridcast:http_server_p95_seconds:5m
+        expr: histogram_quantile(0.95, sum by (le, service_name, http_target) (rate(http_server_duration_milliseconds_bucket[5m]))) / 1000
+      - record: gridcast:db_tuples_fetched:rate5m
+        expr: sum by (datname) (rate(pg_stat_database_tup_fetched{datname="gridcast"}[5m]))
+      - record: gridcast:db_tuples_returned:rate5m
+        expr: sum(rate(pg_stat_database_tup_returned{datname="gridcast"}[5m]))
+      - record: gridcast:db_calls:rate5m
+        expr: sum(rate(pg_stat_statements_calls_total{datname="gridcast"}[5m]))
+
+  - name: gridcast-slo
+    rules:
+      - alert: ForecastPlanStale
+        expr: max(gridcast_consumer_plan_age_seconds) > 900
+        for: 2m
+        labels: { severity: page, slo: forecast-freshness }
+        annotations:
+          summary: Published dispatch plan is older than 15 minutes
+          description: Operators are planning on a plan {{ $value | humanizeDuration }} old.
+      # Latency thresholds are calibrated to the healthy estate (pipeline ~1 s, feature build
+      # ~0.06 s, inference ~0.1 s on the standard model) with generous headroom.
+      - alert: ForecastPipelineSlow
+        expr: gridcast:pipeline_duration_seconds:p95_15m > 5
+        for: 5m
+        labels: { severity: ticket, slo: pipeline-latency }
+        annotations:
+          summary: Forecast pipeline p95 duration above 5s
+      - alert: FeatureBuildSlow
+        expr: gridcast:feature_build_seconds:p95_15m > 2
+        for: 5m
+        labels: { severity: ticket }
+        annotations:
+          summary: Feature build p95 above 2s
+      - alert: InferenceSlow
+        expr: gridcast:inference_seconds:p95_15m > 2
+        for: 5m
+        labels: { severity: ticket }
+        annotations:
+          summary: Model inference p95 above 2s
+      - alert: ForecastPipelineFailing
+        expr: sum(increase(gridcast_pipeline_runs_total{status!="published"}[15m])) >= 2
+        labels: { severity: page, slo: forecast-freshness }
+        annotations:
+          summary: Forecast pipeline held or failed at least twice in 15 minutes
+      - alert: ForecastAccuracyDegraded
+        expr: max(gridcast_consumer_forecast_mape_ratio) > 0.08
+        for: 10m
+        labels: { severity: ticket, slo: forecast-accuracy }
+        annotations:
+          summary: Rolling forecast MAPE above 8%
+      - alert: InputDataStale
+        expr: max by (dataset) (gridcast_data_freshness_seconds) > 600
+        for: 2m
+        labels: { severity: ticket, slo: data-freshness }
+        annotations:
+          summary: "{{ $labels.dataset }} has not advanced for 10 minutes"
+      - alert: IngestionErrors
+        expr: sum by (dataset) (increase(gridcast_ingest_batches_total{status="error"}[10m])) > 3
+        labels: { severity: ticket }
+        annotations:
+          summary: "Ingestion of {{ $labels.dataset }} is failing"
+      - alert: DatabaseScanSurge
+        expr: gridcast:db_tuples_returned:rate5m > 50000
+        for: 5m
+        labels: { severity: ticket }
+        annotations:
+          summary: PostgreSQL rows scanned/s is ~10x above normal
+      - alert: PodCrashLooping
+        expr: delta(k8s_container_restarts{k8s_namespace_name="gridcast"}[10m]) > 2
+        labels: { severity: page }
+        annotations:
+          summary: "{{ $labels.k8s_container_name }} restarted more than twice in 10 minutes"
+      - alert: DeploymentReplicasUnavailable
+        expr: k8s_deployment_available{k8s_namespace_name="gridcast"} < k8s_deployment_desired{k8s_namespace_name="gridcast"}
+        for: 3m
+        labels: { severity: ticket }
+        annotations:
+          summary: "{{ $labels.k8s_deployment_name }} has unavailable replicas"
+      - alert: DataQualityWarnings
+        expr: sum by (check) (increase(gridcast_quality_checks_total{status="warn"}[30m])) > 3
+        labels: { severity: ticket }
+        annotations:
+          summary: "Quality check {{ $labels.check }} warning repeatedly"
+      - alert: ServiceErrorRate
+        expr: |
+          sum by (service_name) (rate(http_server_duration_milliseconds_count{http_status_code=~"5.."}[5m]))
+            / sum by (service_name) (rate(http_server_duration_milliseconds_count[5m])) > 0.05
+        for: 3m
+        labels: { severity: ticket }
+        annotations:
+          summary: "{{ $labels.service_name }} 5xx ratio above 5%"

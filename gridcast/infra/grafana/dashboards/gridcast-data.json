@@ -1,0 +1,290 @@
+{
+ "uid": "gridcast-data",
+ "title": "GridCast \u2014 Data, models and decisions",
+ "description": "SQL views over the GridCast database: forecasts vs actuals, registry, validation gate, feature builds.",
+ "tags": [
+  "gridcast"
+ ],
+ "timezone": "utc",
+ "schemaVersion": 41,
+ "version": 1,
+ "refresh": "30s",
+ "time": {
+  "from": "now-3h",
+  "to": "now"
+ },
+ "annotations": {
+  "list": [
+   {
+    "builtIn": 1,
+    "datasource": {
+     "type": "grafana",
+     "uid": "-- Grafana --"
+    },
+    "enable": true,
+    "hide": true,
+    "iconColor": "rgba(0, 211, 255, 1)",
+    "name": "Annotations & Alerts",
+    "type": "dashboard"
+   },
+   {
+    "name": "Model registry changes",
+    "enable": true,
+    "iconColor": "purple",
+    "datasource": {
+     "type": "grafana-postgresql-datasource",
+     "uid": "gridcast-db"
+    },
+    "target": {
+     "refId": "Anno",
+     "rawQuery": true,
+     "format": "table",
+     "editorMode": "code",
+     "rawSql": "SELECT at AS time, 'model ' || event || coalesce(' ' || alias, '') || ' -> v' || version || ' by ' || actor AS text FROM ml.model_events WHERE $__timeFilter(at)"
+    }
+   }
+  ]
+ },
+ "panels": [
+  {
+   "id": 1,
+   "type": "row",
+   "title": "Forecast vs actual (from PostgreSQL)",
+   "collapsed": false,
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 24,
+    "h": 1
+   },
+   "panels": []
+  },
+  {
+   "id": 2,
+   "type": "timeseries",
+   "title": "System load: published forecast (p10/p50/p90) vs actual",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "gridcast-db"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 1,
+    "w": 24,
+    "h": 10
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "MW",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "gridcast-db"
+     },
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT date_trunc('hour', ts) AS time, sum(load_mw)/count(DISTINCT date_trunc('minute', ts)) * 1 AS actual_mw FROM (SELECT ts, sum(load_mw) AS load_mw FROM raw.demand_readings WHERE $__timeFilter(ts) GROUP BY ts) s GROUP BY 1 ORDER BY 1"
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "gridcast-db"
+     },
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT f.target_ts AS time, sum(f.load_mw_p50) AS forecast_p50, sum(f.load_mw_p10) AS forecast_p10, sum(f.load_mw_p90) AS forecast_p90 FROM planning.dispatch_plans p JOIN ml.forecasts f USING (forecast_run_id) WHERE p.status = 'active' GROUP BY 1 ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "type": "table",
+   "title": "Model registry",
+   "description": "",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "gridcast-db"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 11,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "gridcast-db"
+     },
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT m.version, m.profile, m.algorithm, round((m.metrics->>'mape_p50')::numeric,4) AS holdout_mape, round((m.metrics->>'coverage_p10_p90')::numeric,3) AS coverage, string_agg(a.alias, ',') AS aliases, m.created_by, m.created_at FROM ml.models m LEFT JOIN ml.model_aliases a USING (model_name, version) GROUP BY m.model_name, m.version ORDER BY m.version DESC"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "type": "table",
+   "title": "Model registry events",
+   "description": "",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "gridcast-db"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 11,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "gridcast-db"
+     },
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT at, event, alias, version, previous_version, actor, reason FROM ml.model_events ORDER BY at DESC LIMIT 20"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "type": "table",
+   "title": "Recent validation decisions",
+   "description": "",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "gridcast-db"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 19,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "gridcast-db"
+     },
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT validated_at, decision, failed_checks, warnings FROM quality.forecast_validations ORDER BY validated_at DESC LIMIT 25"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "type": "table",
+   "title": "Recent feature builds",
+   "description": "",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "gridcast-db"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 19,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "gridcast-db"
+     },
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT created_at, builder_version, lag_resolution, status, rows, db_queries, round(duration_ms::numeric,1) AS duration_ms, error FROM features.feature_runs ORDER BY created_at DESC LIMIT 25"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "type": "table",
+   "title": "Ingestion batches (latest per dataset/status)",
+   "description": "",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "gridcast-db"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 27,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "gridcast-db"
+     },
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT DISTINCT ON (dataset, status) dataset, source, status, rows, started_at, error FROM raw.ingestion_batches ORDER BY dataset, status, started_at DESC"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "type": "table",
+   "title": "Forecast runs",
+   "description": "",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "gridcast-db"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 27,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "grafana-postgresql-datasource",
+      "uid": "gridcast-db"
+     },
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT created_at, model_version, server_version, rows, round(inference_ms::numeric,1) AS inference_ms FROM ml.forecast_runs ORDER BY created_at DESC LIMIT 25"
+    }
+   ]
+  }
+ ],
+ "templating": {
+  "list": []
+ }
+}

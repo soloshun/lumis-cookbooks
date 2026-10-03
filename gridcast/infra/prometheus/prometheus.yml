@@ -1,0 +1,45 @@
+# Metrics arrive two ways:
+#  - pushed: the in-cluster OpenTelemetry Collector sends OTLP to /api/v1/otlp (app + k8s
+#    metrics) and Tempo's metrics-generator remote-writes service-graph / span metrics;
+#  - pulled: the scrape jobs below for platform components.
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    estate: gridcast
+
+otlp:
+  promote_resource_attributes:
+    - service.name
+    - service.namespace
+    - service.version
+    - service.instance.id
+    - deployment.environment.name
+    - k8s.namespace.name
+    - k8s.pod.name
+    - k8s.deployment.name
+    - k8s.container.name
+    - k8s.node.name
+  translation_strategy: UnderscoreEscapingWithSuffixes
+  keep_identifying_resource_attributes: true
+
+storage:
+  tsdb:
+    out_of_order_time_window: 30m
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs: [{ targets: ["localhost:9090"] }]
+  - job_name: postgres
+    static_configs: [{ targets: ["gridcast-postgres-exporter:9187"], labels: { db_cluster: gridcast-postgres } }]
+  - job_name: tempo
+    static_configs: [{ targets: ["gridcast-tempo:3200"] }]
+  - job_name: loki
+    static_configs: [{ targets: ["gridcast-loki:3100"] }]
+  - job_name: prefect
+    metrics_path: /api/health
+    static_configs: [{ targets: ["gridcast-prefect:4200"] }]
+    scrape_interval: 60s
