@@ -1,0 +1,7 @@
+injecting A-query-amplification: Query amplification after a feature-service release
+committed 18cf450 deploy(feature-service): 1.6.0 -> 1.7.0
+Waiting for deployment "feature-service" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "feature-service" rollout to finish: 1 old replicas are pending termination...
+deployment "feature-service" successfully rolled out
+run 20261003T150139Z-A-query-amplification-79aa (ground truth: .gridcast/chaos/runs/20261003T150139Z-A-query-amplification-79aa.json)
+symptoms expected: next pipeline run (<= 5 min)

@@ -1,0 +1,9 @@
+injecting F-compound-change: Two releases in one window; only one is causal
+committed b5632db deploy(planning-api): 2.3.0 -> 2.3.1
+committed be3ab3e deploy(feature-service): 1.6.0 -> 1.7.0
+deployment "planning-api" successfully rolled out
+Waiting for deployment "feature-service" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "feature-service" rollout to finish: 1 old replicas are pending termination...
+deployment "feature-service" successfully rolled out
+run 20261003T153641Z-F-compound-change-3bb0 (ground truth: .gridcast/chaos/runs/20261003T153641Z-F-compound-change-3bb0.json)
+symptoms expected: next pipeline run (<= 5 min)

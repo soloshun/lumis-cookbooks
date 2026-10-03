@@ -1,0 +1,11 @@
+{
+ "id": "gridcast-20261003T144429Z-32b92f",
+ "affected_entities": [
+  "service:gridcast:grid-operator"
+ ],
+ "symptoms": [
+  "PlanningApiUnreachable: The grid operator cannot reach the planning API"
+ ],
+ "started_at": "2026-10-03T14:11:27Z",
+ "ended_at": "2026-10-03T14:44:29Z"
+}
