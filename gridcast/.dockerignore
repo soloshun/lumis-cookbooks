@@ -1,0 +1,12 @@
+.venv
+.git
+.gridcast
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+infra
+docs
+tests
+.env
