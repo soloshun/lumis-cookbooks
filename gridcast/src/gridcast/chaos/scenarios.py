@@ -651,7 +651,7 @@ M = Scenario(
     summary="A right-sizing bot lowers feature-service's CPU limit to 50m from a 7-day p95 that "
             "missed the build bursts. Builds are CPU-throttled and slow: the same symptoms as a "
             "query regression (A/F), but SQL per build and database scans are normal.",
-    time_to_symptom="1-5 min",
+    time_to_symptom="~20-25 min (a slow burn: build p95 creeps past the 2 s alert)",
     tags=("kubernetes", "resources", "cpu", "lookalike", "hard"),
     inject=_m_inject, revert=_m_revert,
     ground_truth=GroundTruth(

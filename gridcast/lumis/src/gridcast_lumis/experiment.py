@@ -476,7 +476,7 @@ def run(name: str, scenarios: list[str], systems: list[str], repeats: int, rules
                 break
         try:
             rows = asyncio.run(run_scenario(folder, scenario, systems, repeats, rules_repeats,
-                                            model, 3600 if scenario.upper()[0] in "BLO" else 1500, log))
+                                            model, 3600 if scenario.upper()[0] in "BLMO" else 1500, log))
         except Exception:
             log(f"[{scenario}] harness error:\n{traceback.format_exc()}")
             try:
