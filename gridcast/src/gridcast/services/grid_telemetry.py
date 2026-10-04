@@ -7,7 +7,8 @@ weather vendor degrades, reality and GridCast's view of it genuinely diverge.
 Supported vendor faults:
   outage        503 for every data request
   slow          added latency
-  gap           data stops advancing (the historian's export job is stuck)
+  gap           data stops advancing (the historian's export job is stuck); with `zones`,
+                only for those zones
   unit_change   values silently switch from MW to kW (an unannounced API change)
   schema_break  `load_mw` is renamed to `demand_kw` (API v2 shipped without notice)
 """
@@ -61,10 +62,10 @@ def create(settings: Settings | None = None) -> FastAPI:
                     "quality": "good"}
         return {"zone_id": zone_id, "ts": ts, "load_mw": value, "quality": "good"}
 
-    def horizon() -> datetime:
+    def horizon(zone_id: str | None = None) -> datetime:
         now = datetime.now(UTC) - timedelta(seconds=settings.publish_delay_seconds)
         fault = faults.state
-        if fault.mode == "gap" and fault.since:
+        if fault.mode == "gap" and fault.since and fault.affects(zone_id):
             now = min(now, fault.since)
         return datetime.fromtimestamp(now.timestamp() // 60 * 60, UTC)
 
@@ -86,7 +87,7 @@ def create(settings: Settings | None = None) -> FastAPI:
             cat.zone(zone_id)
         except StopIteration:
             raise HTTPException(404, f"unknown zone {zone_id}") from None
-        last = horizon()
+        last = horizon(zone_id)
         end = min(end or last, last)
         if start.tzinfo is None or end - start > MAX_RANGE:
             raise HTTPException(422, "start must be timezone-aware and range <= 2 days")
@@ -102,7 +103,7 @@ def create(settings: Settings | None = None) -> FastAPI:
 
     @app.get("/v1/load/latest", tags=["data"])
     def latest(zone_id: str) -> dict:
-        ts = horizon()
+        ts = horizon(zone_id)
         row = reading(zone_id, ts)
         row["ts"] = ts.isoformat()
         return row

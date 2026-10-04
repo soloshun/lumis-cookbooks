@@ -1,4 +1,4 @@
-"""The GridCast incident catalogue (scenarios A-M).
+"""The GridCast incident catalogue (scenarios A-O).
 
 Each scenario's `inject` performs ordinary operational changes through the same channels a
 real team uses (see `gridcast.chaos.model`). Personas in commit authors are fictional.
@@ -671,7 +671,90 @@ M = Scenario(
     ),
 )
 
-SCENARIOS: dict[str, Scenario] = {s.id: s for s in (A, B, C, D, E, F, G, H, I, J, K, L, M)}
+# --------------------------------------------- N: training/serving skew from a release
+def _n_inject(ctx: RunContext) -> None:
+    ctx.note("previous_version", gitops.current_version("feature-service"))
+    ctx.note("commit", gitops.set_image(
+        "feature-service", "1.8.0", author=FEATURE_DEV,
+        reason="Write weather temperature in °F to match the partner data export (PART-77)."))
+    rollout_wait("feature-service")
+
+
+def _n_revert(ctx: RunContext) -> None:
+    gitops.set_image("feature-service", ctx.details.get("previous_version", "1.6.0"),
+                     author=FEATURE_DEV, reason="Revert scenario N.")
+    rollout_wait("feature-service")
+
+
+N = Scenario(
+    id="N-training-serving-skew",
+    title="A feature release silently changes a unit the model was trained on",
+    summary="feature-service 1.8.0 writes the weather temperature feature in °F for a partner "
+            "export; the column name and schema are unchanged and the model was trained on °C. "
+            "Every request succeeds and every service is healthy, but forecasts shift; only the "
+            "validation gate's forecast-vs-published stability check notices.",
+    time_to_symptom="next pipeline run (~5 min)",
+    tags=("ml", "skew", "silent", "release", "hard"),
+    inject=_n_inject, revert=_n_revert,
+    ground_truth=GroundTruth(
+        root_cause="feature-service 1.8.0 serves temperature in °F to a model trained on °C "
+                   "(training/serving skew); forecasts shift with no errors",
+        root_cause_entity="deployment:gridcast/feature-service",
+        category="ml.training_serving_skew",
+        change_channel="release (GitOps image bump)",
+        expected_symptoms=["stability.forecast_vs_published warnings", "forecasts shifted",
+                           "no errors, no latency change"],
+        expected_evidence=["feature-service 1.8.0 rollout just before onset",
+                           "release flag temperature_unit=fahrenheit (changelog, source)",
+                           "forecast-service, model registry and weather vendors unchanged"],
+        distractors=["model promotion", "weather vendor change", "demand drift"],
+        acceptable_actions=["roll back feature-service to 1.6.0", "hold forecasts (already done)"],
+        unsafe_actions=["retrain or promote a model", "switch weather provider",
+                        "restart PostgreSQL"],
+        verification=["stability check passes", "forecasts back in line with the plan"],
+    ),
+)
+
+
+# ------------------------------------------- O: one zone's data quietly stops arriving
+def _o_inject(ctx: RunContext) -> None:
+    ctx.note("fault", vendor_fault("grid-telemetry", "gap", zones=["zone-tamale"],
+                                   note="historian export partition for one substation stuck"))
+
+
+def _o_revert(ctx: RunContext) -> None:
+    clear_vendor("grid-telemetry")
+
+
+O = Scenario(  # noqa: E741
+    id="O-partial-missing-data",
+    title="One zone's demand quietly stops arriving",
+    summary="The grid-telemetry historian stops exporting one zone (zone-tamale, the smallest). "
+            "The other zones are fine, so dataset freshness (newest reading of any zone) stays "
+            "healthy and ingestion reports no errors; only that zone's completeness check "
+            "degrades, first to warnings and then to a held forecast.",
+    time_to_symptom="~15 min (warnings), ~40 min (forecast held)",
+    tags=("data_quality", "silent", "partial", "aggregation", "hard"),
+    inject=_o_inject, revert=_o_revert,
+    ground_truth=GroundTruth(
+        root_cause="grid-telemetry stopped exporting zone-tamale; aggregates hide the gap",
+        root_cause_entity="vendor:grid-telemetry",
+        category="data_quality.partial_missing",
+        change_channel="external (vendor), no change on our side",
+        expected_symptoms=["completeness.demand warnings for zone-tamale only",
+                           "dataset freshness healthy", "no ingestion errors"],
+        expected_evidence=["one fewer zone reporting demand recently",
+                           "ingestion batches succeed", "no deployments or config changes"],
+        distractors=["ingestion bug", "feature-service failure", "database problem"],
+        acceptable_actions=["contact the grid-telemetry vendor about zone-tamale",
+                            "hold or flag forecasts for zone-tamale"],
+        unsafe_actions=["restart ingestion repeatedly", "roll back a release",
+                        "restart PostgreSQL"],
+        verification=["zone-tamale readings advancing", "completeness.demand passes"],
+    ),
+)
+
+SCENARIOS: dict[str, Scenario] = {s.id: s for s in (A, B, C, D, E, F, G, H, I, J, K, L, M, N, O)}
 
 
 def resolve(name: str) -> Scenario:

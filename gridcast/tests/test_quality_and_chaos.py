@@ -19,11 +19,13 @@ def test_grading_and_decision():
 
 
 def test_scenario_catalogue_is_complete():
-    assert len(SCENARIOS) >= 13
+    assert len(SCENARIOS) >= 15
     assert resolve("j").ground_truth.category == "availability.scaled_to_zero"
     assert resolve("k").ground_truth.category == "configuration.timeout"
     assert resolve("l").ground_truth.distractors[0].startswith("planning-api")
     assert resolve("m").ground_truth.category == "resources.cpu_limit"
+    assert resolve("n").ground_truth.category == "ml.training_serving_skew"
+    assert resolve("o").ground_truth.root_cause_entity == "vendor:grid-telemetry"
     for scenario in SCENARIOS.values():
         gt = scenario.ground_truth
         assert gt.root_cause and gt.root_cause_entity and gt.category

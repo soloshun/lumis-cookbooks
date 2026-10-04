@@ -26,6 +26,7 @@ class FaultRequest(BaseModel):
     latency_ms: int = Field(default=0, ge=0, le=120_000)
     note: str | None = None
     since: datetime | None = Field(default=None, description="Backdate the fault start")
+    zones: list[str] | None = Field(default=None, description="Limit a data fault to these zones")
 
 
 class FaultState(BaseModel):
@@ -33,6 +34,10 @@ class FaultState(BaseModel):
     latency_ms: int = 0
     since: datetime | None = None
     note: str | None = None
+    zones: list[str] | None = None
+
+    def affects(self, zone_id: str | None) -> bool:
+        return self.zones is None or zone_id is None or zone_id in self.zones
 
 
 class Faults:
@@ -55,6 +60,7 @@ class Faults:
                 latency_ms=request.latency_ms,
                 since=None if request.mode == "none" else (request.since or datetime.now(UTC)),
                 note=request.note,
+                zones=request.zones,
             )
             return self._state.model_copy()
 
