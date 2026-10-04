@@ -73,7 +73,7 @@ Ground-truth entities (`deployment:/vendor:/model:`) are mapped onto graph IDs
 |---|---|
 | `2026-10-03-pilot-deepseek-v4-pro/` | Pilot: harness shake-out, **not for reporting** (see its `PILOT.md`) |
 | `2026-10-03-main-deepseek-v4-pro/` | Main run: all ten scenarios, rules ×5, single-pass ×2, Lumis ×2, `deepseek/deepseek-v4-pro-0813` | Post-run analysis in its `analysis/` (corrected and mechanism scores, estate defects found) |
-| `2026-10-04-followup-deepseek-v4-pro/` | Follow-up: same protocol and model on the fixed SDK (#105, #106) and fixed estate, scenarios A–M (K, L, M new). Reported separately from the main run |
+| `2026-10-04-followup-deepseek-v4-pro/` | Follow-up: same protocol and model on the fixed SDK (#105, #106) and fixed estate, scenarios A–O (K–O new). Reported separately from the main run |
 
 ## Folder layout
 
