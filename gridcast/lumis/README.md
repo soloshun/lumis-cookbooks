@@ -7,16 +7,16 @@ Lumis, and Lumis never imports GridCast. Full design, diagrams and coverage:
 
 ```text
 lumis/
-├── lumis.yaml                 Lumis project: sources, declared graph, 25 evidence queries (Prometheus, Loki, Tempo, Prefect, SQL shim),
-│                              10 diagnostic signatures, agent allowlist, budgets
+├── lumis.yaml                 Lumis project: sources, declared graph, 37 evidence queries (Prometheus, Loki, Tempo, Prefect,
+│                              SQL, change records), 10 diagnostic signatures, agent allowlist, budgets
 ├── src/gridcast_lumis/
 │   ├── alerts.py              firing Prometheus alerts -> Incident (entity labels)
 │   ├── runner.py              prepare + handle_incident, timings, saving
-│   ├── external_evidence.py   TEMPORARY SQL observations (until the SDK has a SQL provider)
-│   ├── investigator.py        TEMPORARY OpenRouter investigator (see docs/lumis-sdk-findings.md)
+│   ├── investigator.py        experiment-only: the SDK investigator with pydantic-ai caps lifted and cost accounting
 │   ├── experiment.py          controlled experiments: rules vs single-pass LLM vs Lumis
 │   ├── experiment_report.py   metrics.json, results.csv, summary.md, charts
 │   ├── scoring.py             report vs hidden ground truth (after the report only)
+│   ├── rescore.py             post-hoc re-scoring of a finished experiment from raw artefacts
 │   ├── results.py             results/*.jsonl, summary.md, charts
 │   └── cli.py                 gridcast-lumis CLI
 ├── tests/test_signatures.py   offline: schema + what each signature concludes

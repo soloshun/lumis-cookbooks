@@ -29,10 +29,9 @@ import httpx
 from lumis_sdk.core import Incident
 from lumis_sdk.runtime import PreparedProject
 
-from gridcast_lumis import external_evidence
 from gridcast_lumis.alerts import firing_alerts, incident_from_alerts
 from gridcast_lumis.investigator import openrouter_investigator
-from gridcast_lumis.runner import GRIDCAST, HERE, PROJECT_FILE, load_model_credentials, load_project
+from gridcast_lumis.runner import GRIDCAST, HERE, PROJECT_FILE, load_model_credentials, load_project, load_sql_dsn
 from gridcast_lumis.scoring import graph_entity, score
 
 EXPERIMENTS = HERE / "experiments"
@@ -152,32 +151,32 @@ def transcript_cost(transcript: list) -> float:
 async def run_system(system: str, prepared: PreparedProject, incident: Incident, out: Path,
                      ) -> dict:
     out.mkdir(parents=True, exist_ok=True)
-    observations, sql_errors = external_evidence.collect(prepared.config, incident, GRIDCAST)
     t0 = time.perf_counter()
-    row: dict = {"system": system, "sql_errors": sql_errors}
+    row: dict = {"system": system}
     try:
         if system == "rules":
-            report = await prepared.handle_incident(incident, observations=observations)
+            report = await prepared.handle_incident(incident)
             (out / "report.json").write_text(report.model_dump_json(indent=1))
             row["report"] = report
         elif system == "lumis":
             assert prepared.config.models is not None
-            async with openrouter_investigator(prepared.config.models, timeout=300,
+            retries = prepared.config.investigator.budget.validation_retries
+            async with openrouter_investigator(prepared.config.models, timeout=300, retries=retries,
                                                unbounded=True) as investigator:
                 try:
-                    report = await prepared.handle_incident(incident, observations=observations,
-                                                            investigator=investigator)
+                    report = await prepared.handle_incident(incident, investigator=investigator)
                 finally:
                     transcript = json.loads(investigator.transcript)
                     (out / "transcript.json").write_text(json.dumps(transcript, indent=1))
                     (out / "reasoning.md").write_text(thinking_markdown(transcript))
-                    row["agent_error"] = investigator.error
                     row["cost_usd"] = round(transcript_cost(transcript), 6)
                     row["thinking_chars"] = sum(
                         len(p.get("content", "")) for m in transcript for p in m.get("parts", [])
                         if p.get("part_kind") == "thinking")
             (out / "report.json").write_text(report.model_dump_json(indent=1))
             row["report"] = report
+            if report.stop_reason not in {"agent_completed", "sufficient_terminal_signature"}:
+                row["agent_error"] = report.stop_reason
         elif system == "single_pass":
             # Baseline (ii): the same evidence bundle as triage, then ONE structured completion
             # through the SDK's own OpenRouter adapter (same schema, same redaction). The raw
@@ -199,8 +198,7 @@ async def run_system(system: str, prepared: PreparedProject, incident: Incident,
             bundle = PreparedProject(
                 cfg.model_copy(update={"initial_query_ids": evidence_ids}), prepared.base,
                 prepared.graph, prepared.discovery)
-            collected = await bundle.investigate(incident, observations=observations,
-                                                 generation_only=True)   # evidence only, no model
+            collected = await bundle.investigate(incident, generation_only=True)  # evidence only
             context = collected.context
             assert cfg.models is not None
             async with httpx.AsyncClient(timeout=300, trust_env=False) as client:
@@ -261,13 +259,13 @@ async def run_system(system: str, prepared: PreparedProject, incident: Incident,
     return row
 
 
-def metrics_for(row: dict, truth: dict) -> dict:
+def metrics_for(row: dict, truth: dict, hosts: dict[str, str] | None = None) -> dict:
     """SEAMS research-plan metric families for one run (see experiments/README)."""
     gt = truth["ground_truth"]
     expected = graph_entity(gt["root_cause_entity"])
     m: dict = {"system": row["system"], "seconds": row["seconds"], "error": row.get("error"),
                "agent_error": row.get("agent_error"), "cost_usd": row.get("cost_usd", 0.0),
-               "thinking_chars": row.get("thinking_chars", 0), "sql_errors": row.get("sql_errors")}
+               "thinking_chars": row.get("thinking_chars", 0)}
     if "report" in row:
         report = row["report"]
         s = score(report, truth)
@@ -314,7 +312,10 @@ def metrics_for(row: dict, truth: dict) -> dict:
                   "finish_reason": row.get("finish_reason")})
     else:
         paths = []
-    firsts = [p[0] for p in paths]
+    # A resource node that hosts the expected service (e.g. its Kubernetes Deployment) counts as
+    # that service; the literal comparison is kept as top1_literal.
+    m["top1_literal"] = bool(paths) and paths[0][0] == expected
+    firsts = [(hosts or {}).get(p[0], p[0]) for p in paths]
     m["top1"] = bool(firsts[:1]) and firsts[0] == expected
     m["top3"] = expected in firsts[:3]
     m["top5"] = expected in firsts[:5]
@@ -347,7 +348,8 @@ async def run_scenario(name: Path, scenario: str, systems: list[str], repeats: i
         return []
     log(f"[{scenario}] injecting")
     (raw / "inject.txt").write_text(gridcastctl("chaos", "inject", scenario))
-    gridcastctl("job", "pipeline")
+    # No extra pipeline run: the worker runs every 5 minutes. In the main run a second in-pod
+    # process corrupted pipeline metrics and raised a spurious alert after every injection.
     injected = datetime.now(UTC)
     clock = HostClock()
     fired = wait_fresh(injected, alert_timeout)
@@ -389,7 +391,9 @@ async def run_scenario(name: Path, scenario: str, systems: list[str], repeats: i
             "rows flagged (host_sleep_s) and should be re-run")
     results = []
     for row in rows:
-        metrics = metrics_for(row, truth)
+        hosts = {edge.source: edge.target for edge in prepared.discovery.graph.relationships
+                 if edge.kind == "hosts"}
+        metrics = metrics_for(row, truth, hosts)
         metrics.update({"scenario": scenario, "scenario_id": truth["scenario"]["id"],
                         "repeat": row["repeat"], "incident": incident.id, "model":
                         model if row["system"] != "rules" else None,
@@ -415,14 +419,18 @@ def manifest(name: Path, args: dict) -> None:
         "python": platform.python_version(), "platform": platform.platform(),
         "budgets": "SDK investigator/evidence budgets raised to schema maxima; "
                    "no pydantic-ai request/tool/token caps (see experiment.unbounded)",
-        "workarounds": ["investigator.py: no parallel_tool_calls, tool retries=2, reasoning on",
-                        "external_evidence.py: SQL via snapshot provider"],
+        "workarounds": [],
+        "experiment_settings": ["investigator.py: pydantic-ai caps lifted (unbounded) and OpenRouter "
+                                "usage accounting on; otherwise the SDK reference investigator",
+                                "single-pass: replica of the SDK OpenRouter request with reasoning "
+                                "and usage on, candidates judged individually"],
     }, indent=1))
 
 
 def run(name: str, scenarios: list[str], systems: list[str], repeats: int, rules_repeats: int,
         model: str, alert_timeout: int) -> Path:
     load_model_credentials()
+    load_sql_dsn()
     folder = EXPERIMENTS / name
     folder.mkdir(parents=True, exist_ok=True)
     manifest(folder, {"scenarios": scenarios, "systems": systems, "repeats": repeats,

@@ -94,6 +94,7 @@ uv run gridcastctl chaos revert
 | [lumis/README.md](lumis/README.md) | the `gridcast-lumis` harness: drills, benchmarks, experiments, reports |
 | [lumis/experiments/README.md](lumis/experiments/README.md) | experiment protocol, systems, metric definitions (SEAMS plan), results layout |
 | [docs/lumis-sdk-findings.md](docs/lumis-sdk-findings.md) | SDK issues found in live runs, with evidence, workarounds and suggested fixes |
+| [docs/research-notes.md](docs/research-notes.md) | Experiment setup, results, caveats and what changed (for the paper) |
 
 ## Repository layout
 

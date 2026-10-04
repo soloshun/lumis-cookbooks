@@ -1,9 +1,10 @@
 # Lumis × GridCast integration
 
-> **Status (2026-10-03):** working against the refactored SDK (`lumis-sdk` `dev`, c757a74 — Loki,
-> Tempo and Prefect connectors included;
-> `0.1.0rc1` metadata). The deterministic path is exercised end to end on the live estate; the
-> agent path is wired (OpenRouter) and opt-in. Code lives in [`gridcast/lumis/`](../lumis/).
+> **Status (2026-10-04):** working against `lumis-sdk` `dev` (f42b8e8: PRs #105 and #106 add native
+> SQL, typed change records and the agent fixes found here; `0.1.0rc1` metadata). The cookbook no
+> longer carries SDK workarounds. The main experiment ran on c757a74 with the workarounds described
+> in [lumis-sdk-findings.md](lumis-sdk-findings.md); see [research-notes.md](research-notes.md).
+> Code lives in [`gridcast/lumis/`](../lumis/).
 
 ## 1. Who does what
 
@@ -139,12 +140,13 @@ Loki, Tempo and Prefect are native SDK connectors (`sources.loki|tempo|prefect`,
 | `feature-service-error-log`, `ingestion-error-log` | loki (entries) | redacted error messages for the agent |
 | `slow-pipeline-traces` | tempo (duration_ms) | forecast-pipeline traces slower than 3 s |
 | `prefect-failed-flow-runs`, `prefect-flow-runs` | prefect | failed count / run list (initial query) |
-| `model-production-alias-changes` | snapshot ← SQL *(temporary)* | `ml.model_events` alias moves, 30 min |
+| `model-production-alias-changes` | sql (native) | `ml.model_events` alias moves, 30 min |
+| `<service>-changes-60m` (×5) | changes (native) | GitOps commits (by path and conventional-commit scope) and rollouts in the last hour |
 
-**Temporary SQL shim.** The SDK has no SQL provider yet, so `src/gridcast_lumis/external_evidence.py`
-runs that one read-only query (`gridcast_readonly`, read-only transaction, 5 s timeout) and hands
-Lumis a normalized observation through the `snapshot` provider. When a SQL provider ships, change
-the provider, keep the id/key, and delete the module and its call in `runner.py`.
+**SQL and change records** are native SDK providers. SQL runs as `gridcast_readonly` in a
+read-only transaction with a 5 s timeout; the DSN is set in the environment by `runner.py`.
+Change records come from the GitOps repository and Kubernetes ReplicaSets, and the agent also
+reads them through `inspect(changes)`.
 
 ## 4. Deterministic triage
 
@@ -185,12 +187,11 @@ leak or a spike caused it; failing builds do not say why they fail (C needs logs
 
 ### The agent path (when triage is inconclusive)
 
-`--use-agent` injects a cookbook investigator through the SDK's `investigator=` extension port
-(`src/gridcast_lumis/investigator.py`, TEMPORARY). It is the SDK's own Pydantic AI investigator
-— same instructions, the same two read-only tools (`inspect`, `probe`), the same output contract
-and mechanical assessment — with fixes for the issues found in the first live runs (OpenRouter
-routing with DeepSeek, zero retries, all-or-nothing output acceptance), reasoning enabled and the
-full transcript kept. See [lumis-sdk-findings.md](lumis-sdk-findings.md).
+`--use-agent` runs the SDK's own Pydantic AI investigator (`models` in `lumis.yaml`, reasoning
+effort high). The fixes for the issues found in the first live runs (OpenRouter routing with
+DeepSeek, zero retries, all-or-nothing output acceptance) are in the SDK now. Experiments inject a
+thin subclass (`src/gridcast_lumis/investigator.py`) that only lifts pydantic-ai's caps and turns
+on cost accounting. See [lumis-sdk-findings.md](lumis-sdk-findings.md).
 
 ```mermaid
 sequenceDiagram

@@ -1,6 +1,5 @@
 """Run one incident through the SDK and keep everything needed to audit or score it later."""
 
-import asyncio
 import json
 import os
 import time
@@ -10,9 +9,6 @@ from pathlib import Path
 from lumis_sdk.core import Incident
 from lumis_sdk.investigation.contracts import IncidentReport
 from lumis_sdk.runtime import IncidentStore, YamlProject
-
-from gridcast_lumis import external_evidence
-from gridcast_lumis.investigator import openrouter_investigator
 
 HERE = Path(__file__).resolve().parents[2]          # gridcast/lumis
 PROJECT_FILE = HERE / "lumis.yaml"
@@ -32,10 +28,26 @@ def load_model_credentials(keys: tuple[str, ...] = ("OPENROUTER_API_KEY",)) -> N
                 os.environ[key.strip()] = value.strip()
 
 
+SQL_DSN_ENV = "GRIDCAST_LUMIS_SQL_DSN"
+
+
+def load_sql_dsn() -> None:
+    """Point lumis.yaml's `sources.sql.dsn_env` at the estate DB as the read-only role. The
+    password comes from gridcast/.env (local default otherwise) and is never printed."""
+    if os.environ.get(SQL_DSN_ENV):
+        return
+    password = "readonly-local"
+    env_file = GRIDCAST / ".env"
+    for line in env_file.read_text().splitlines() if env_file.exists() else []:
+        if line.startswith("GRIDCAST_READONLY_PASSWORD=") and line.split("=", 1)[1].strip():
+            password = line.split("=", 1)[1].strip()
+    os.environ[SQL_DSN_ENV] = (
+        f"postgresql://gridcast_readonly:{password}@localhost:5432/gridcast?connect_timeout=5")
+
+
 @dataclass
 class Timings:
     prepare_s: float = 0.0          # discovery: declared + Kubernetes + service graph, ID binding
-    external_s: float = 0.0         # TEMPORARY Loki / SQL / Prefect normalizer (see external_evidence)
     handle_s: float = 0.0           # scoping, evidence queries, triage, optional agent, report
     total_s: float = 0.0
 
@@ -63,31 +75,17 @@ async def run_incident(incident: Incident, *, use_agent: bool = False,
                        model: str | None = None) -> RunResult:
     if use_agent:
         load_model_credentials()
+    load_sql_dsn()
     timings = Timings()
     t0 = time.perf_counter()
     if prepared is None:
         prepared = await load_project(project_file, model).prepare(at=incident.ended_at)
     t1 = time.perf_counter()
-    observations, external_errors = await asyncio.to_thread(
-        external_evidence.collect, prepared.config, incident, GRIDCAST)
-    te = time.perf_counter()
-    models = prepared.config.models
-    if use_agent and models is not None and models.provider == "openrouter":
-        # TEMPORARY: inject the patched investigator (see investigator.py) through the SDK's
-        # extension port; triage still runs first and the agent only runs if it is inconclusive.
-        async with openrouter_investigator(
-            models, timeout=prepared.config.budget.source_timeout_seconds
-        ) as investigator:
-            report = await prepared.handle_incident(
-                incident, observations=observations, investigator=investigator)
-    else:
-        report = await prepared.handle_incident(
-            incident, observations=observations, use_agent=use_agent)
+    # The SDK's own investigator (agent runs only if deterministic triage is inconclusive).
+    report = await prepared.handle_incident(incident, use_agent=use_agent)
     t2 = time.perf_counter()
-    timings.prepare_s, timings.external_s = t1 - t0, te - t1
-    timings.handle_s, timings.total_s = t2 - te, t2 - t0
+    timings.prepare_s, timings.handle_s, timings.total_s = t1 - t0, t2 - t1, t2 - t0
     discovery = {s.name: s.status for s in prepared.discovery.sources}
-    discovery["external_evidence_errors"] = external_errors
     discovery["model"] = prepared.config.models.model if (use_agent and prepared.config.models) else None
     discovery["entities"] = len(prepared.discovery.graph.entities)
     discovery["relationships"] = len(prepared.discovery.graph.relationships)

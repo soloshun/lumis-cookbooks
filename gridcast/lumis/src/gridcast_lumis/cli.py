@@ -76,7 +76,7 @@ def show(result: RunResult, scored: dict | None = None) -> None:
         console.print(f"model: {result.discovery['model']}")
     console.print(f"route [bold]{r.route}[/bold] · conclusion [{colour}]{r.conclusion}[/{colour}] "
                   f"· stop {r.stop_reason}")
-    console.print(f"time: prepare {t.prepare_s:.2f}s + sql {t.external_s * 1000:.0f} ms + handle "
+    console.print(f"time: prepare {t.prepare_s:.2f}s + handle "
                   f"{t.handle_s * 1000:.0f} ms "
                   f"= {t.total_s:.2f}s · queries {r.metrics.evidence_queries} · model requests "
                   f"{r.metrics.model_requests} · tokens {r.metrics.input_tokens}/{r.metrics.output_tokens}")
@@ -159,7 +159,8 @@ def drill(
             raise typer.Exit("estate did not become quiet; fix it before drilling")
     console.print(f"injecting {scenario} …")
     gridcastctl("chaos", "inject", scenario)
-    gridcastctl("job", "pipeline", check=False)  # don't wait up to 5 min for the next run
+    # No extra pipeline run: the worker runs every 5 minutes, and a second in-pod process
+    # once corrupted the pipeline metrics (see experiments/2026-10-03-main.../analysis).
     injected = datetime.now(UTC)
     fired = wait_for_alerts(alert_timeout, since=injected)
     if not fired:
