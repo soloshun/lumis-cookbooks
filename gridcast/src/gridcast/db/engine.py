@@ -1,6 +1,7 @@
 """SQLAlchemy engine factory with production-style pooling and per-session timeouts."""
 
 import logging
+import socket
 
 from sqlalchemy import Engine, create_engine, event
 
@@ -25,6 +26,21 @@ def make_engine(settings: DatabaseSettings | None = None, *, application_name: s
             "options": f"-c statement_timeout={settings.statement_timeout_ms}",
         },
     )
+
+    @event.listens_for(engine, "do_connect")
+    def _ipv4_only(dialect, connection_record, cargs, cparams):  # noqa: ANN001
+        # The kind network publishes AAAA records with no IPv6 route. libpq tries every address
+        # and reports the last failure first, so a real error (e.g. "password authentication
+        # failed") was buried under "Network is unreachable". Connect to the IPv4 address only,
+        # re-resolved for every new connection.
+        host = cparams.get("host")
+        if host and "hostaddr" not in cparams:
+            try:
+                infos = socket.getaddrinfo(host, cparams.get("port") or 5432, socket.AF_INET,
+                                           socket.SOCK_STREAM)
+                cparams["hostaddr"] = infos[0][4][0]
+            except OSError:
+                pass
 
     @event.listens_for(engine, "connect")
     def _on_connect(dbapi_connection, connection_record):  # noqa: ANN001
