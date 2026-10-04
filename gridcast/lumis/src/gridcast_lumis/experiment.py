@@ -94,6 +94,22 @@ def _env() -> dict:
 
 
 COOLDOWN_S = 1200      # minimum time between a revert and the next injection
+MIN_CREDIT_USD = 1.5   # stop before a scenario if the OpenRouter balance is below this
+
+
+def openrouter_credit_remaining() -> float | None:
+    """Account balance (credits minus usage), or None if it cannot be read."""
+    import os
+
+    key = os.environ.get("OPENROUTER_API_KEY")
+    if not key:
+        return None
+    try:
+        data = httpx.get("https://openrouter.ai/api/v1/credits", timeout=10,
+                         headers={"Authorization": f"Bearer {key}"}).json()["data"]
+        return round(float(data["total_credits"]) - float(data["total_usage"]), 4)
+    except Exception:  # noqa: BLE001
+        return None
 LOOKBACK = timedelta(minutes=10)   # incident window starts this long before the first alert
 
 
@@ -370,15 +386,22 @@ async def run_scenario(name: Path, scenario: str, systems: list[str], repeats: i
     prepared = unbounded(await load_project(model=model).prepare(at=incident.ended_at))
     (raw / "graph.json").write_text(prepared.discovery.model_dump_json(indent=1))
     rows = []
-    plan = [(s, rules_repeats if s == "rules" else repeats) for s in systems]
-    for system, n in plan:
-        for k in range(1, n + 1):
-            event = incident.model_copy(update={"id": f"{incident.id}-{system}-r{k}"})
-            row = await run_system(system, prepared, event, raw / f"{system}-r{k}")
-            row["repeat"] = k
-            rows.append(row)
-            log(f"[{scenario}] {system} r{k}: {row.get('error') or row.get('agent_error') or 'ok'} "
-                f"({row['seconds']}s)")
+    plan = [(s, k) for s in systems for k in range(1, (rules_repeats if s == "rules" else repeats) + 1)]
+
+    async def one(system: str, k: int) -> dict:
+        event = incident.model_copy(update={"id": f"{incident.id}-{system}-r{k}"})
+        row = await run_system(system, prepared, event, raw / f"{system}-r{k}")
+        row["repeat"] = k
+        log(f"[{scenario}] {system} r{k}: {row.get('error') or row.get('agent_error') or 'ok'} "
+            f"({row['seconds']}s)")
+        return row
+
+    # Rules (milliseconds) run first; the model systems then run concurrently on the same frozen
+    # incident. Every evidence query is pinned to the incident window, so concurrency does not
+    # change what any system sees; per-run seconds are measured under this concurrency.
+    for system, k in [item for item in plan if item[0] == "rules"]:
+        rows.append(await one(system, k))
+    rows += await asyncio.gather(*(one(system, k) for system, k in plan if system != "rules"))
     truth_runs = sorted((GRIDCAST / ".gridcast" / "chaos" / "runs").glob("*.json"))
     truth = json.loads(truth_runs[-1].read_text())          # read only after all runs
     (raw / "ground_truth.json").write_text(json.dumps(truth, indent=1))
@@ -444,9 +467,16 @@ def run(name: str, scenarios: list[str], systems: list[str], repeats: int, rules
             handle.write(line + "\n")
 
     for scenario in scenarios:
+        remaining = openrouter_credit_remaining() if set(systems) - {"rules"} else None
+        if remaining is not None:
+            log(f"[{scenario}] OpenRouter balance ${remaining:.2f}")
+            if remaining < MIN_CREDIT_USD:
+                log(f"[{scenario}] stopping: balance below ${MIN_CREDIT_USD:.2f}; top up and resume "
+                    f"with --scenarios {','.join(scenarios[scenarios.index(scenario):])}")
+                break
         try:
             rows = asyncio.run(run_scenario(folder, scenario, systems, repeats, rules_repeats,
-                                            model, 3600 if scenario.upper().startswith("B") else 1500, log))
+                                            model, 3600 if scenario.upper()[0] in "BLO" else 1500, log))
         except Exception:
             log(f"[{scenario}] harness error:\n{traceback.format_exc()}")
             try:

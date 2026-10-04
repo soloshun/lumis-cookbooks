@@ -39,6 +39,12 @@ Systems (all read-only; none can act on the estate):
 
 The unguided tool agent (baseline iii) is not run yet.
 
+**Changes between the main run and the follow-up** (see `../../docs/research-notes.md` §6): no
+extra pipeline trigger after injection (it corrupted pipeline metrics); SDK fixes merged instead
+of cookbook workarounds; corrected OOM/model evidence; top-1 maps a resource node that `hosts`
+the expected service to that service (the literal comparison is kept as `top1_literal`);
+mechanism labels are assigned after each run with a rationale per label.
+
 Model runs use OpenRouter with the same model for `single_pass` and `lumis`; reasoning is
 requested and every transcript (including thinking) is saved. Budgets are lifted for the
 experiment: no pydantic-ai request/tool/token caps; SDK broker budgets at their schema maxima.
@@ -66,7 +72,8 @@ Ground-truth entities (`deployment:/vendor:/model:`) are mapped onto graph IDs
 | Folder | Status |
 |---|---|
 | `2026-10-03-pilot-deepseek-v4-pro/` | Pilot: harness shake-out, **not for reporting** (see its `PILOT.md`) |
-| `2026-10-03-main-deepseek-v4-pro/` | Main run: all ten scenarios, rules ×5, single-pass ×2, Lumis ×2, `deepseek/deepseek-v4-pro-0813` |
+| `2026-10-03-main-deepseek-v4-pro/` | Main run: all ten scenarios, rules ×5, single-pass ×2, Lumis ×2, `deepseek/deepseek-v4-pro-0813` | Post-run analysis in its `analysis/` (corrected and mechanism scores, estate defects found) |
+| `2026-10-04-followup-deepseek-v4-pro/` | Follow-up: same protocol and model on the fixed SDK (#105, #106) and fixed estate, scenarios A–M (K, L, M new). Reported separately from the main run |
 
 ## Folder layout
 

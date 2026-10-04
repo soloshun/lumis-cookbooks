@@ -85,7 +85,7 @@ def test_project_validates(project):
     assert {r.id for r in project.checks} == set(SIGNATURES)
     providers = [q.provider for q in project.queries]
     assert providers.count("loki") == 5 and providers.count("tempo") == 1
-    assert providers.count("prefect") == 2 and providers.count("sql") == 1
+    assert providers.count("prefect") == 2 and providers.count("sql") == 3
     assert providers.count("changes") == 5 and "snapshot" not in providers
     assert project.sources.sql.enabled and project.sources.changes.enabled
     assert [r.id for r in project.checks if r.terminal] == ["planning-api-scaled-to-zero"]

@@ -2,10 +2,15 @@
 
 Tested: `lumis-sdk` `dev` at **c757a74** (Loki/Tempo/Prefect connectors), against the live
 GridCast estate, OpenRouter models `deepseek/deepseek-v4-flash` and `deepseek/deepseek-v4-pro-0813`.
-Each finding has the evidence, its effect, the cookbook-side workaround (if any) and a suggested
-SDK fix. Workarounds live in `gridcast/lumis/src/gridcast_lumis/` and are marked TEMPORARY.
+Each finding has the evidence, its effect, the cookbook-side workaround used at the time, and
+the SDK fix.
 
-| # | Finding | Severity | Workaround in cookbook | SDK fix (lumis-sdk branch `feat/gridcast-integration-hardening`) |
+> **Status (2026-10-04):** all fixes are merged into `lumis-sdk` `dev` (#105, plus #106 for
+> competing supported candidates, found in the main-run analysis), and the cookbook no longer
+> carries any of the workarounds. The main experiment ran on c757a74 *with* them; the follow-up
+> runs on the fixed SDK without them.
+
+| # | Finding | Severity | Workaround used in the main run (now removed) | SDK fix (merged in #105) |
 |---|---|---|---|---|
 | 1 | `parallel_tool_calls: false` + OpenRouter `require_parameters: true` → no DeepSeek endpoint qualifies (HTTP 404) | blocks agent | `investigator.py` omits the parameter | **fixed** 8009c9a: parameter no longer sent |
 | 2 | Agent `retries=0`: one malformed tool argument aborts the whole investigation | high | `investigator.py`: retries = 2 | **fixed** 8009c9a: `investigator.budget.validation_retries` (default 2) |
@@ -22,11 +27,8 @@ SDK fix. Workarounds live in `gridcast/lumis/src/gridcast_lumis/` and are marked
 | — | Reasoning effort not configurable | — | `investigator.py` sets `openrouter_reasoning` | **added**: `models.reasoning` (Pydantic AI `thinking`) |
 | — | Agent transcript not retrievable | — | `capture_run_messages` in `investigator.py` | **added**: `PydanticInvestigator.messages` |
 
-The SDK fixes (and the root-cause notes behind them, in the SDK's `docs/design-notes/gridcast-integration-lessons.md`) were made after the main experiment started; that run keeps the workarounds (its
-process had loaded SDK c757a74) so all scenarios use the same code. The cookbook switches to the
-fixed SDK after it finishes: `investigator.py` shrinks to the experiment-only unbounded subclass
-(`usage_limits()` / `run_settings()` hooks), `external_evidence.py` is deleted (query becomes
-`provider: sql`), and the PromQL `round()` wrappers become optional.
+The root-cause notes behind each fix are in the SDK's
+`docs/design-notes/gridcast-integration-lessons.md`.
 
 ## 1. OpenRouter routing fails for DeepSeek models
 

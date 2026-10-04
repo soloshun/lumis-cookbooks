@@ -50,7 +50,7 @@ sources:
   # plus Kubernetes rollouts. A change is evidence about a service, not a graph node.
   changes:
     enabled: true
-    lookback_seconds: 3600
+    lookback_seconds: 1200
     kubernetes_rollouts: true
     git:
       - id: gitops
@@ -129,7 +129,7 @@ graph:
     - {source: 'service:gridcast:weather-vendor-wx-secondary', target: 'service:gridcast:ingestion', kind: serves, provenance: [declared]}
     - {source: 'service:gridcast:grid-telemetry', target: 'service:gridcast:ingestion', kind: serves, provenance: [declared]}
 
-# Operator-registered observations: 23 Prometheus, 5 Loki, 1 Tempo, 2 Prefect, 1 SQL, 5 change
+# Operator-registered observations: 24 Prometheus, 5 Loki, 1 Tempo, 2 Prefect, 3 SQL, 5 change
 # records. Each PromQL returns exactly one sample at the incident end time. `or vector(0)` is used
 # only for series that exist whenever their subject exists (pre-initialised application counters);
 # infrastructure facts use `or (0 * <visibility series>)` so a blind source yields no fact rather
@@ -216,9 +216,9 @@ queries:
   - id: forecast-model-reloads
     provider: prometheus
     entity_id: 'service:gridcast:forecast-service'
-    key: model_loads_30m
-    description: Model versions forecast-service loaded in the last 30 minutes (including at start-up)
-    parameters: {promql: 'count(max_over_time(gridcast_model_loaded_at_seconds[30m]) > (time() - 1800)) or (0 * max(gridcast_model_loaded_at_seconds))'}
+    key: model_loads_20m
+    description: Model versions forecast-service loaded in the last 20 minutes (including at start-up)
+    parameters: {promql: 'count(max_over_time(gridcast_model_loaded_at_seconds[20m]) > (time() - 1200)) or (0 * max(gridcast_model_loaded_at_seconds))'}
   - id: forecast-inference-max
     provider: prometheus
     entity_id: 'service:gridcast:forecast-service'
@@ -326,9 +326,27 @@ queries:
   - id: demand-completeness-failures
     provider: prometheus
     entity_id: 'service:gridcast:forecast-pipeline'
-    key: completeness_demand_failures_30m
-    description: Pipeline validation-gate completeness.demand checks that warned or failed in the last 30 minutes
-    parameters: {promql: 'round(sum(increase(gridcast_quality_checks_total{check="completeness.demand",status=~"warn|fail"}[30m])) or vector(0), 0.001)'}
+    key: completeness_demand_failures_20m
+    description: Pipeline validation-gate completeness.demand checks that warned or failed in the last 20 minutes
+    parameters: {promql: 'round(sum(increase(gridcast_quality_checks_total{check="completeness.demand",status=~"warn|fail"}[20m])) or vector(0), 0.001)'}
+  - id: forecast-stability-warnings
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-pipeline'
+    key: stability_warnings_20m
+    description: Validation-gate checks that the new forecast deviates from the published plan (warn or fail) in the last 20 minutes
+    parameters: {promql: 'round(sum(increase(gridcast_quality_checks_total{check="stability.forecast_vs_published",status=~"warn|fail"}[20m])) or vector(0), 0.001)'}
+  - id: demand-zones-reporting
+    provider: sql
+    entity_id: 'service:gridcast:grid-telemetry'
+    key: zones_reporting_demand_20m
+    description: Load zones with at least one demand reading in the 20 minutes before incident end (the catalogue has 4)
+    parameters: {sql: "SELECT count(DISTINCT zone_id) FROM raw.demand_readings WHERE ts > %(ended_at)s - interval '20 minutes' AND ts <= %(ended_at)s"}
+  - id: temperature-feature-mean
+    provider: sql
+    entity_id: 'service:gridcast:feature-service'
+    key: temperature_feature_mean_20m
+    description: Mean of the temperature_c model feature in feature runs built in the 20 minutes before incident end (feature monitoring)
+    parameters: {sql: "SELECT round(avg(f.temperature_c)::numeric, 2) FROM features.forecast_features f JOIN features.feature_runs r USING (feature_run_id) WHERE r.created_at > %(ended_at)s - interval '20 minutes' AND r.created_at <= %(ended_at)s"}
   - id: feature-cpu-throttling
     provider: prometheus
     entity_id: 'service:gridcast:feature-service'
@@ -339,42 +357,43 @@ queries:
   - id: model-production-alias-changes
     provider: sql
     entity_id: 'service:gridcast:forecast-service'
-    key: production_alias_changes_30m
-    description: Model-registry moves of the production alias in the 30 minutes before incident end
-    parameters: {sql: "SELECT count(*) FROM ml.model_events WHERE event = 'alias_set' AND alias = 'production' AND at > %(ended_at)s - interval '30 minutes' AND at <= %(ended_at)s"}
+    key: production_alias_changes_20m
+    description: Model-registry moves of the production alias in the 20 minutes before incident end
+    parameters: {sql: "SELECT count(*) FROM ml.model_events WHERE event = 'alias_set' AND alias = 'production' AND at > %(ended_at)s - interval '20 minutes' AND at <= %(ended_at)s"}
 
-  # Recent changes per service (GitOps commits and rollouts in the hour before incident end). Zero
-  # is an observation: Git history is authoritative.
-  - id: feature-service-changes-60m
+  # Recent changes per service (GitOps commits and rollouts in the 20 minutes before incident end).
+  # Zero is an observation: Git history is authoritative. 20 minutes keeps the previous scenario's
+  # revert (at least one cooldown earlier) out of the window.
+  - id: feature-service-changes-20m
     provider: changes
     entity_id: 'service:gridcast:feature-service'
-    key: changes_60m
-    description: GitOps commits and rollouts touching feature-service in the hour before incident end
-    parameters: {output: count, lookback_seconds: "3600"}
-  - id: forecast-service-changes-60m
+    key: changes_20m
+    description: GitOps commits and rollouts touching feature-service in the 20 minutes before incident end
+    parameters: {output: count, lookback_seconds: "1200"}
+  - id: forecast-service-changes-20m
     provider: changes
     entity_id: 'service:gridcast:forecast-service'
-    key: changes_60m
-    description: GitOps commits and rollouts touching forecast-service in the hour before incident end
-    parameters: {output: count, lookback_seconds: "3600"}
-  - id: planning-api-changes-60m
+    key: changes_20m
+    description: GitOps commits and rollouts touching forecast-service in the 20 minutes before incident end
+    parameters: {output: count, lookback_seconds: "1200"}
+  - id: planning-api-changes-20m
     provider: changes
     entity_id: 'service:gridcast:planning-api'
-    key: changes_60m
-    description: GitOps commits and rollouts touching planning-api in the hour before incident end
-    parameters: {output: count, lookback_seconds: "3600"}
-  - id: ingestion-changes-60m
+    key: changes_20m
+    description: GitOps commits and rollouts touching planning-api in the 20 minutes before incident end
+    parameters: {output: count, lookback_seconds: "1200"}
+  - id: ingestion-changes-20m
     provider: changes
     entity_id: 'service:gridcast:ingestion'
-    key: changes_60m
-    description: GitOps commits and rollouts touching ingestion in the hour before incident end
-    parameters: {output: count, lookback_seconds: "3600"}
-  - id: forecast-pipeline-changes-60m
+    key: changes_20m
+    description: GitOps commits and rollouts touching ingestion in the 20 minutes before incident end
+    parameters: {output: count, lookback_seconds: "1200"}
+  - id: forecast-pipeline-changes-20m
     provider: changes
     entity_id: 'service:gridcast:forecast-pipeline'
-    key: changes_60m
-    description: GitOps commits and rollouts touching forecast-pipeline in the hour before incident end
-    parameters: {output: count, lookback_seconds: "3600"}
+    key: changes_20m
+    description: GitOps commits and rollouts touching forecast-pipeline in the 20 minutes before incident end
+    parameters: {output: count, lookback_seconds: "1200"}
 
 # Collected for every incident (orchestration context in each report).
 initial_query_ids: [prefect-failed-flow-runs]
@@ -458,8 +477,8 @@ checks:
       evidence_needed: [forecast-inference-max, forecast-model-reloads, forecast-restarts, model-production-alias-changes]
       predictions:
         - {entity_id: 'service:gridcast:forecast-service', key: inference_max_10m_seconds, operator: gt, value: 2}
-        - {entity_id: 'service:gridcast:forecast-service', key: model_loads_30m, operator: gt, value: 0}
-        - {entity_id: 'service:gridcast:forecast-service', key: production_alias_changes_30m, operator: gt, value: 0}
+        - {entity_id: 'service:gridcast:forecast-service', key: model_loads_20m, operator: gt, value: 0}
+        - {entity_id: 'service:gridcast:forecast-service', key: production_alias_changes_20m, operator: gt, value: 0}
       falsifiers:
         - {entity_id: 'service:gridcast:forecast-service', key: inference_max_10m_seconds, operator: lt, value: 1}
         - {entity_id: 'service:gridcast:forecast-service', key: restarts_15m, operator: gt, value: 0}
