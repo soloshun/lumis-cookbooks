@@ -22,6 +22,9 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --no-editable ${EXTRAS}
 
 FROM ${PYTHON_IMAGE} AS runtime
+# Prefer IPv4 in getaddrinfo: the kind network publishes AAAA records without an IPv6 route, so
+# libpq otherwise reports "Network is unreachable" ahead of the real connection error.
+RUN echo "precedence ::ffff:0:0/96  100" > /etc/gai.conf
 RUN groupadd --gid 10001 gridcast && useradd --uid 10001 --gid gridcast --no-create-home gridcast \
  && mkdir -p /app /tmp/prefect && chown -R gridcast:gridcast /app /tmp/prefect
 COPY --from=build /opt/venv /opt/venv

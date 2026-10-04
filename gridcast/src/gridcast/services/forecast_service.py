@@ -39,6 +39,26 @@ INFERENCE_SECONDS = meter.create_histogram(
 )
 RUNS = meter.create_counter("gridcast.forecast.runs", description="Forecast runs by status")
 MODEL_LOADS = meter.create_counter("gridcast.model.loads", description="Model (re)loads")
+# Gauges for facts that must be visible the moment they happen. A counter or histogram series
+# that is born at a new label value (a new model_version) starts above zero, and Prometheus
+# rate()/increase() cannot see that first event; a gauge is read as-is.
+_GAUGE_STATE: dict[str, tuple[float, dict[str, str]]] = {}
+
+
+def _observe(key: str):  # noqa: ANN202
+    def callback(_options):  # noqa: ANN001, ANN202
+        if key in _GAUGE_STATE:
+            value, attributes = _GAUGE_STATE[key]
+            yield metrics.Observation(value, attributes)
+    return callback
+
+
+meter.create_observable_gauge(
+    "gridcast.model.loaded_at", callbacks=[_observe("loaded_at")], unit="s",
+    description="Unix time the serving model was loaded (one series per loaded version)")
+meter.create_observable_gauge(
+    "gridcast.inference.last_duration", callbacks=[_observe("last_inference")], unit="s",
+    description="Duration of the most recent model inference")
 
 
 class Settings(BaseSettings):
@@ -92,6 +112,8 @@ def create(settings: Settings | None = None) -> FastAPI:
         with lock:
             state["model"] = LoadedModel(version, estimator, time.time())
         MODEL_LOADS.add(1, {"model_version": str(version.version), "profile": version.profile})
+        _GAUGE_STATE["loaded_at"] = (
+            time.time(), {"model_version": str(version.version), "profile": version.profile})
         log.info("model loaded", extra={
             "model_name": version.model_name, "model_version": version.version,
             "profile": version.profile, "algorithm": version.algorithm,
@@ -161,6 +183,7 @@ def create(settings: Settings | None = None) -> FastAPI:
             quantiles = model.estimator.predict_quantiles(to_matrix(records))
             elapsed = time.perf_counter() - t0
         INFERENCE_SECONDS.record(elapsed, labels)
+        _GAUGE_STATE["last_inference"] = (elapsed, labels)
         cat = catalog()
         run_id = uuid.uuid4()
         rows = []

@@ -15,6 +15,7 @@ Kept on argparse (no extra dependencies) so every image can run it.
 import argparse
 import json
 import logging
+import os
 import sys
 
 from gridcast import telemetry
@@ -81,6 +82,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.group == "pipeline":
+        if args.action == "run-once":
+            os.environ.setdefault("GRIDCAST_INSTANCE_ROLE", f"run-once-{os.getpid()}")
         _job("forecast-pipeline")
         from gridcast.pipeline import flows
 

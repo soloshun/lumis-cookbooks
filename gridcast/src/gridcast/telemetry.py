@@ -42,6 +42,11 @@ def _resource(service: str, version: str, environment: str) -> Resource:
     for key, env in downward.items():
         if value := os.environ.get(env):
             attributes[key] = value
+    # A second process in the same pod (e.g. `gridcast pipeline run-once` next to the worker)
+    # must not share the pod's series: two processes exporting one cumulative series look like
+    # counter resets to Prometheus and corrupt every rate() over it.
+    if role := os.environ.get("GRIDCAST_INSTANCE_ROLE"):
+        attributes["service.instance.id"] = f"{attributes.get('service.instance.id', service)}/{role}"
     return Resource.create(attributes)
 
 
