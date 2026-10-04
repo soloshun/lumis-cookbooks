@@ -19,10 +19,11 @@ HEALTHY = {
     "planning-desired-replicas": 1, "planning-available-replicas": 1,
     "operator-plan-fetch-transport-errors": 0, "pipeline-failed-runs": 0,
     "feature-sql-per-build": 4, "feature-build-p95": 0.05, "feature-failed-builds": 0,
-    "postgres-rows-scanned": 6000, "forecast-oom-kills": 0, "forecast-restarts": 0,
-    "forecast-inference-p95": 0.1, "forecast-model-reloads": 0, "ingestion-demand-errors": 0,
+    "postgres-rows-scanned": 6000, "forecast-oom-killed": 0, "forecast-memory-ratio": 0.3,
+    "forecast-restarts": 0, "forecast-inference-p95": 0.1, "forecast-inference-max": 0.1,
+    "forecast-model-reloads": 0, "ingestion-demand-errors": 0,
     "ingestion-weather-errors": 0, "demand-range-failures": 0, "weather-variability-warnings": 0,
-    # Prefect failed_count is a real 0 when runs exist; SQL (temporary shim) returns a real 0.
+    # Prefect failed_count is a real 0 when runs exist; the SQL count returns a real 0.
     # Loki counts are *absent* when nothing matches (native connector semantics).
     "prefect-failed-flow-runs": 0, "model-production-alias-changes": 0,
 }
@@ -31,8 +32,8 @@ SCENARIOS = {
     "J": {"planning-desired-replicas": 0, "planning-available-replicas": 0,
           "operator-plan-fetch-transport-errors": 3, "pipeline-failed-runs": 2},
     "A": {"feature-sql-per-build": 2499, "feature-build-p95": 5.6, "postgres-rows-scanned": 120000},
-    "D": {"forecast-oom-kills": 3, "forecast-restarts": 3},
-    "E": {"forecast-inference-p95": 8.0, "forecast-model-reloads": 1,
+    "D": {"forecast-oom-killed": 1, "forecast-memory-ratio": 1.2, "forecast-restarts": 3},
+    "E": {"forecast-inference-p95": 8.0, "forecast-inference-max": 9.5, "forecast-model-reloads": 1,
           "model-production-alias-changes": 1},
     "G": {"ingestion-demand-errors": 5, "ingestion-contract-violations": 5},
     "C": {"feature-failed-builds": 4, "feature-auth-failures": 12, "pipeline-failed-runs": 2,
@@ -84,7 +85,9 @@ def test_project_validates(project):
     assert {r.id for r in project.checks} == set(SIGNATURES)
     providers = [q.provider for q in project.queries]
     assert providers.count("loki") == 5 and providers.count("tempo") == 1
-    assert providers.count("prefect") == 2 and providers.count("snapshot") == 1
+    assert providers.count("prefect") == 2 and providers.count("sql") == 1
+    assert providers.count("changes") == 5 and "snapshot" not in providers
+    assert project.sources.sql.enabled and project.sources.changes.enabled
     assert [r.id for r in project.checks if r.terminal] == ["planning-api-scaled-to-zero"]
 
 
