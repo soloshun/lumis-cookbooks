@@ -35,7 +35,7 @@ We also ask what it costs, and whether it is safe.
 | Item | Value |
 |---|---|
 | Estate | GridCast (`gridcast/`), kind cluster + Docker platform; see `docs/architecture.md` |
-| Scenarios | Main run: A–J (10). Follow-up: A–M (13; K, L, M added after the main run). See `docs/scenarios.md` |
+| Scenarios | Main run: A–J (10). Follow-up: A–O (15; K–O added after the main run). See `docs/scenarios.md` |
 | Systems | **rules**: Lumis deterministic triage only (×5). **single_pass**: same evidence bundle, one structured LLM completion, candidates judged by Lumis (×2). **lumis**: triage → tool-using agent → mechanical assessment (×2) |
 | Model | `deepseek/deepseek-v4-pro-0813`, reasoning effort high, OpenRouter (`allow_fallbacks: false`, `require_parameters: true`) |
 | Budgets | pydantic-ai request/tool/token caps lifted; SDK broker budgets at schema maxima ("let the model do its own thing") |
@@ -140,7 +140,8 @@ Each change has a commit and a recorded reason:
 | Estate | Distinct OTel identity per process; gauges for model load and last inference; kube-state-metrics for termination reasons; IPv4-first DNS in images | gridcast `src/`, `deploy/` |
 | Harness | No extra pipeline trigger; loud failures; host-sleep detection; hosts-aware scoring | `experiment.py` |
 | Lumis config | OOM from termination reason plus memory ratio; model load and inference from gauges; LogQL field fix; native SQL; change records; no false zeros for infrastructure facts | `lumis/lumis.yaml` |
-| Scenarios | K (timeout meets slow vendor), L (decoy release during a silent data gap), M (CPU limit squeeze). No rule signatures for K–M, by design | `src/gridcast/chaos/scenarios.py` |
+| Scenarios | K (timeout meets slow vendor), L (decoy release during a silent data gap), M (CPU limit squeeze), N (training/serving skew: load features in kW, model trained on MW), O (one zone missing, aggregates healthy). No rule signatures for K–O, by design | `src/gridcast/chaos/scenarios.py` |
+| Harness | Single-pass and Lumis run concurrently on the frozen incident (every query is pinned to its window; per-run seconds are measured under concurrency, unlike the main run); credit guard stops before a scenario when the balance is under $1.50; evidence windows of 20 minutes so the previous scenario's revert is not "recent" | `experiment.py`, `lumis.yaml` |
 
 ## 7. Follow-up run
 
@@ -156,14 +157,16 @@ and not merged with the main run.*
 * Post-hoc scoring corrections and LLM-assigned mechanism labels (reported next to the originals).
 * The estate defects above affected the main run; the follow-up fixes them, but there may be
   others we have not found.
-* Rule signatures were written by people who knew the scenarios. That is why K–M have none.
+* Rule signatures were written by people who knew the scenarios. That is why K–O have none.
+* Follow-up latencies are measured with the model systems running concurrently; they are not
+  directly comparable with the main run's sequential timings.
 
 ## 9. Reproduce
 
 ```bash
 cd gridcast && make up && make verify
 cd lumis && uv sync
-uv run gridcast-lumis experiment --name <name> --scenarios J,A,F,C,D,E,G,H,I,B,K,L,M \
+uv run gridcast-lumis experiment --name <name> --scenarios J,A,F,C,D,E,G,H,I,B,K,L,M,N,O \
   --repeats 2 --rules-repeats 5 --model deepseek/deepseek-v4-pro-0813
 uv run gridcast-lumis experiment-report experiments/<name>
 ```

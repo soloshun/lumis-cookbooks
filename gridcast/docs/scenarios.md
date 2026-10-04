@@ -53,6 +53,11 @@ flowchart LR
 | **H** | telemetry vendor silently reports kW under `load_mw` | vendor | next run | `range.demand` fails for all zones → forecast held |
 | **I** | primary weather vendor outage (503) | vendor | ~1 min (errors); hold ~20 min | `HTTP 503 from weather-primary…` on observations |
 | **J** | planning-api left scaled to 0 after maintenance | replicas (GitOps) | ~1–2 min | operator transport errors, publish fails; Lumis concludes deterministically in ~60 ms of triage |
+| **K** | ingestion timeout lowered to 2 s while the telemetry vendor answers in ~4 s | config (GitOps) + slow vendor | ~4 min after the commit | demand batches time out (`ReadTimeout contacting vendor`), demand batch p95 17.8 s; weather unaffected |
+| **L** | logging-only planning-api release, then the telemetry export silently stops | release (decoy) + vendor | ~15 min | *(validation drill pending)* |
+| **M** | right-sizing bot cuts feature-service CPU limit to 50m | resources (GitOps) | ~24 min (slow burn) | build p95 ~0.1 s → 2.35 s; SQL per build unchanged (4); query-amplification signature contradicted |
+| **N** | feature-service 1.8.0 writes the load features in kW; the model was trained on MW | release (GitOps) | next run | *(validation drill pending)* |
+| **O** | the telemetry historian stops exporting one zone; the others are fine | vendor (partial) | ~15–40 min | *(validation drill pending)* |
 
 ### A — Query amplification after a release
 
@@ -156,6 +161,60 @@ Built so that one signature fully explains the symptoms while every other signat
 contradicted by evidence, which is exactly the condition under which Lumis may conclude without
 a model. It is the baseline for timing the deterministic path (`gridcast-lumis bench --scenario J`).
 *Correct action:* scale back to 1 (revert the commit). *Unsafe:* image rollback, DB restart.
+
+### K–O — Harder cases added after the main experiment
+
+Added after analysing the main run, to test weaknesses it exposed. **No rule signature covers
+them**: they are failure classes the rule tier has not seen, so only the agent can diagnose them,
+from evidence an operator would already chart (demand batch latency, data freshness, CPU
+throttling, change records, a feature monitor, zones reporting).
+
+```mermaid
+flowchart LR
+    subgraph K["K: compound trigger"]
+        K1["vendor slow (~4 s), harmless at 15 s timeout"] --> K3
+        K2["commit: chore(ingestion): set INGEST_HTTP_TIMEOUT_SECONDS=2"] --> K3["every demand call times out"]
+    end
+    subgraph L["L: recency trap"]
+        L1["planning-api 2.3.1 (logging only)"] -.->|"2 min earlier, decoy"| L3
+        L2["historian export stuck (no errors)"] --> L3["demand freshness grows, completeness fails, forecast held"]
+    end
+    subgraph M["M: lookalike mechanism"]
+        M1["commit: CPU limit 50m (right-sizing bot)"] --> M2["builds CPU-throttled"] --> M3["slow builds<br/>(like A/F, but SQL per build normal)"]
+    end
+    subgraph N["N: training/serving skew"]
+        N1["feature-service 1.8.0: load features in kW"] --> N2["inputs pass, model off-scale"] --> N3["forecast shifts; only output checks notice"]
+    end
+    subgraph O["O: hidden by aggregation"]
+        O1["one zone stops arriving"] --> O2["freshness (any zone) healthy, no errors"] --> O3["that zone's completeness degrades"]
+    end
+```
+
+* **K** tests compound causes. The surface reading ("vendor timeouts, so a vendor problem") is
+  wrong: the vendor is up and was harmless until our own config change.
+* **L** tests the change-record recency bias seen in the main run (B): the most recent change in
+  the blast radius is irrelevant, and the real fault produces no errors at all.
+* **M** tests mechanism discrimination: A/F-like symptoms with a different cause. The decisive
+  facts are normal SQL per build, high CPU throttling, and the resource commit. It is a slow
+  burn that alerts after about 24 minutes.
+* **N** is model drift through training/serving skew. A release changes the load features' unit
+  under unchanged column names; the raw data is fine, so input checks pass and nothing errors.
+  Only the output checks notice. Solvable from the release (change record, changelog, source)
+  and a feature monitor (mean `load_lag_24h`). Contrast with H, where the *vendor's* raw data
+  was in kW and an input check failed.
+* **O** is partial missing data hidden by aggregation. One zone stops arriving, but dataset
+  freshness (the newest reading of any zone) and ingestion stay healthy; only that zone's
+  completeness check degrades. Solvable from "zones reporting demand".
+
+**A drift that slipped through (recorded as a finding).** N's first design served the
+*temperature* feature in °F to a model trained on °C. The validation drill showed the tree model
+saturating at its hottest training temperatures: forecasts shifted by only +8.8%
+(541.9 → 589.4 MW), under the 10% stability gate. The first skewed forecast was published, and
+every later run compared against that already-skewed plan and passed. The bias was baked in with
+no alert at all. That is a real limitation of plan-relative gates, and an undetectable fault
+cannot be scored, so N uses a skew the gates can see. Slow statistical drift (e.g. demand
+creeping up a few percent) is likewise not a scenario: GridCast's only accuracy signal is a
+6-hour rolling MAPE.
 
 ## Ground-truth record
 

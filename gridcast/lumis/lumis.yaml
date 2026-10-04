@@ -341,12 +341,12 @@ queries:
     key: zones_reporting_demand_20m
     description: Load zones with at least one demand reading in the 20 minutes before incident end (the catalogue has 4)
     parameters: {sql: "SELECT count(DISTINCT zone_id) FROM raw.demand_readings WHERE ts > %(ended_at)s - interval '20 minutes' AND ts <= %(ended_at)s"}
-  - id: temperature-feature-mean
+  - id: load-feature-mean
     provider: sql
     entity_id: 'service:gridcast:feature-service'
-    key: temperature_feature_mean_20m
-    description: Mean of the temperature_c model feature in feature runs built in the 20 minutes before incident end (feature monitoring)
-    parameters: {sql: "SELECT round(avg(f.temperature_c)::numeric, 2) FROM features.forecast_features f JOIN features.feature_runs r USING (feature_run_id) WHERE r.created_at > %(ended_at)s - interval '20 minutes' AND r.created_at <= %(ended_at)s"}
+    key: load_lag_24h_feature_mean_20m
+    description: Mean of the load_lag_24h model feature in feature runs built in the 20 minutes before incident end (feature monitoring; demand is in MW)
+    parameters: {sql: "SELECT round(avg(f.load_lag_24h)::numeric, 2) FROM features.forecast_features f JOIN features.feature_runs r USING (feature_run_id) WHERE r.created_at > %(ended_at)s - interval '20 minutes' AND r.created_at <= %(ended_at)s"}
   - id: feature-cpu-throttling
     provider: prometheus
     entity_id: 'service:gridcast:feature-service'

@@ -2,9 +2,9 @@
 
 POST /v1/feature-runs builds features for every zone and the next `horizon_hours` hours at an
 hour-aligned cut-off and persists them in `features.*`. The lag-feature builder is selected by
-the release flag `lag_resolution` (see `gridcast.features.store`). The release flag
-`temperature_unit` selects the unit the weather temperature feature is written in; the model is
-trained on Celsius, so any other unit is a training/serving skew (scenario N).
+the release flag `lag_resolution` (see `gridcast.features.store`). The release flag `load_unit`
+selects the unit the load features are written in; the model is trained on MW, so `kw` is a
+training/serving skew (scenario N).
 """
 
 import dataclasses
@@ -69,9 +69,9 @@ def create(settings: Settings | None = None) -> FastAPI:
     if resolution not in BUILDERS:
         raise RuntimeError(f"unknown lag_resolution flag {resolution!r}")
     builder = BUILDERS[resolution]
-    temperature_unit = release.flag("temperature_unit", "celsius")
-    if temperature_unit not in {"celsius", "fahrenheit"}:
-        raise RuntimeError(f"unknown temperature_unit flag {temperature_unit!r}")
+    load_scale = {"mw": 1.0, "kw": 1000.0}.get(release.flag("load_unit", "mw"))
+    if load_scale is None:
+        raise RuntimeError(f"unknown load_unit flag {release.flag('load_unit')!r}")
     log.info("feature builder selected", extra={"lag_resolution": resolution})
     initialize_counters(BUILDS, [{"lag_resolution": resolution, "status": s}
                                  for s in ("completed", "failed")])
@@ -103,10 +103,12 @@ def create(settings: Settings | None = None) -> FastAPI:
             try:
                 with engine.connect() as conn:
                     rows, stats = builder(conn, as_of, request.horizon_hours)
-                if temperature_unit == "fahrenheit":
-                    rows = [dataclasses.replace(r, weather={
-                        **r.weather, "temperature_c": r.weather["temperature_c"] * 9 / 5 + 32})
-                        for r in rows]
+                if load_scale != 1.0:
+                    rows = [dataclasses.replace(
+                        r, load_lag_24h=r.load_lag_24h * load_scale,
+                        load_lag_168h=r.load_lag_168h * load_scale,
+                        load_mean_24h=r.load_mean_24h * load_scale,
+                        load_recent_3h=r.load_recent_3h * load_scale) for r in rows]
                 with engine.begin() as conn:
                     conn.execute(insert(forecast_features),
                                  [{"feature_run_id": run_id, **r.record()} for r in rows])

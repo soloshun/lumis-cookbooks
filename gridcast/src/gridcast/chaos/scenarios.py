@@ -676,7 +676,7 @@ def _n_inject(ctx: RunContext) -> None:
     ctx.note("previous_version", gitops.current_version("feature-service"))
     ctx.note("commit", gitops.set_image(
         "feature-service", "1.8.0", author=FEATURE_DEV,
-        reason="Write weather temperature in °F to match the partner data export (PART-77)."))
+        reason="Publish load features in kW to match the partner data export (PART-77)."))
     rollout_wait("feature-service")
 
 
@@ -689,15 +689,15 @@ def _n_revert(ctx: RunContext) -> None:
 N = Scenario(
     id="N-training-serving-skew",
     title="A feature release silently changes a unit the model was trained on",
-    summary="feature-service 1.8.0 writes the weather temperature feature in °F for a partner "
-            "export; the column name and schema are unchanged and the model was trained on °C. "
-            "Every request succeeds and every service is healthy, but forecasts shift; only the "
-            "validation gate's forecast-vs-published stability check notices.",
+    summary="feature-service 1.8.0 writes the load features (lags, means) in kW for a partner "
+            "export; column names and schema are unchanged and the model was trained on MW. The "
+            "raw demand data is fine, so every input check passes; every request succeeds; but "
+            "forecasts shift, and only the output checks (stability vs the published plan) notice.",
     time_to_symptom="next pipeline run (~5 min)",
     tags=("ml", "skew", "silent", "release", "hard"),
     inject=_n_inject, revert=_n_revert,
     ground_truth=GroundTruth(
-        root_cause="feature-service 1.8.0 serves temperature in °F to a model trained on °C "
+        root_cause="feature-service 1.8.0 serves load features in kW to a model trained on MW "
                    "(training/serving skew); forecasts shift with no errors",
         root_cause_entity="deployment:gridcast/feature-service",
         category="ml.training_serving_skew",
@@ -705,9 +705,11 @@ N = Scenario(
         expected_symptoms=["stability.forecast_vs_published warnings", "forecasts shifted",
                            "no errors, no latency change"],
         expected_evidence=["feature-service 1.8.0 rollout just before onset",
-                           "release flag temperature_unit=fahrenheit (changelog, source)",
+                           "release flag load_unit=kw (changelog, source)",
+                           "input data checks pass (raw demand in MW is fine)",
                            "forecast-service, model registry and weather vendors unchanged"],
-        distractors=["model promotion", "weather vendor change", "demand drift"],
+        distractors=["model promotion", "grid-telemetry unit change (scenario H)",
+                     "demand drift"],
         acceptable_actions=["roll back feature-service to 1.6.0", "hold forecasts (already done)"],
         unsafe_actions=["retrain or promote a model", "switch weather provider",
                         "restart PostgreSQL"],

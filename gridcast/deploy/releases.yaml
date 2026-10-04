@@ -38,9 +38,9 @@ services:
           - "refactor(features): bucket readings with date_trunc for readability"
           - "refactor(features): recompute trailing windows per target hour"
       1.8.0:
-        flags: { lag_resolution: hourly, temperature_unit: fahrenheit }
+        flags: { lag_resolution: hourly, load_unit: kw }
         changelog:
-          - "feat(features): write weather temperature in °F for the partner data export (PART-77)"
+          - "feat(features): publish load features in kW for the partner data export (PART-77)"
           - "chore(features): align feature column units with the partner schema"
   forecast-service:
     runtime: ml
