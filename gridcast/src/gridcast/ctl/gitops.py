@@ -64,7 +64,21 @@ def sync_base(*, author: str = DEFAULT_AUTHOR) -> str:
         target = repo() / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(path.read_text())
+    _merge_resources(source / "kustomization.yaml", repo() / "kustomization.yaml")
     return commit_and_apply("chore(platform): sync base manifests from deploy/k8s", author)
+
+
+def _merge_resources(source: Path, target: Path) -> None:
+    """Add resources listed upstream but missing from the GitOps kustomization; the images
+    section (deployed tags) is left untouched."""
+    wanted = re.findall(r"^  - (\S+\.yaml)$", source.read_text(), re.MULTILINE)
+    text = target.read_text()
+    present = set(re.findall(r"^  - (\S+\.yaml)$", text, re.MULTILINE))
+    missing = [item for item in wanted if item not in present]
+    if missing:
+        last = list(re.finditer(r"^  - \S+\.yaml$", text, re.MULTILINE))[-1]
+        insert = "".join(f"\n  - {item}" for item in missing)
+        target.write_text(text[: last.end()] + insert + text[last.end():])
 
 
 def _set_image(text: str, service: str, version: str) -> str:

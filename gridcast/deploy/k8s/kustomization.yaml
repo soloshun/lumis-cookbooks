@@ -8,6 +8,7 @@ resources:
   - namespaces.yaml
   - platform/external-services.yaml
   - observability/otel-collector.yaml
+  - observability/kube-state-metrics.yaml
   - vendors/vendors.yaml
   - estate/config.yaml
   - estate/ingestion.yaml

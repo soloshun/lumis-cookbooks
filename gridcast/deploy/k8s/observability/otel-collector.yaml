@@ -136,6 +136,10 @@ data:
                 - source_labels: [container]
                   regex: ""
                   action: drop
+            - job_name: kube-state-metrics
+              scrape_interval: 15s
+              static_configs:
+                - targets: ["kube-state-metrics.observability.svc.cluster.local:8080"]
 
     processors:
       memory_limiter: { check_interval: 1s, limit_percentage: 80, spike_limit_percentage: 25 }
