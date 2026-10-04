@@ -25,6 +25,7 @@ import traceback
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
+import httpx
 from lumis_sdk.core import Incident
 from lumis_sdk.runtime import PreparedProject
 
@@ -56,8 +57,35 @@ def unbounded(prepared: PreparedProject) -> PreparedProject:
 
 
 def gridcastctl(*args: str) -> str:
-    return subprocess.run(["uv", "run", "gridcastctl", *args], cwd=GRIDCAST, text=True,
-                          capture_output=True, env={"COLUMNS": "200", **_env()}).stdout
+    """Fail loudly: a silent inject/revert failure once left a fault active (main run, G)."""
+    result = subprocess.run(["uv", "run", "gridcastctl", *args], cwd=GRIDCAST, text=True,
+                            capture_output=True, env={"COLUMNS": "200", **_env()})
+    if result.returncode:
+        raise RuntimeError(f"gridcastctl {' '.join(args)} failed ({result.returncode}): "
+                           f"{(result.stderr or result.stdout)[-500:]}")
+    return result.stdout
+
+
+def alerts_with_retry(attempts: int = 5) -> list:
+    """The alert API can stall briefly (host wake, Prometheus GC); retry before giving up."""
+    for attempt in range(attempts):
+        try:
+            return firing_alerts()
+        except httpx.HTTPError:
+            if attempt == attempts - 1:
+                raise
+            time.sleep(10)
+    return []
+
+
+class HostClock:
+    """Detects host sleep: the monotonic clock stops while the Mac sleeps, wall time does not."""
+
+    def __init__(self) -> None:
+        self.wall, self.mono = time.time(), time.monotonic()
+
+    def slept_s(self) -> float:
+        return round(max(0.0, (time.time() - self.wall) - (time.monotonic() - self.mono)), 1)
 
 
 def _env() -> dict:
@@ -77,7 +105,7 @@ def wait_quiet(state: Path, timeout: int = 3600) -> bool:
     deadline = time.time() + timeout
     while time.time() < deadline:
         cooled = last is None or time.time() - last >= COOLDOWN_S
-        if cooled and not firing_alerts():
+        if cooled and not alerts_with_retry():
             return True
         time.sleep(20)
     return False
@@ -90,7 +118,7 @@ def mark_revert(state: Path) -> None:
 def wait_fresh(since: datetime, timeout: int) -> list:
     deadline = time.time() + timeout
     while time.time() < deadline:
-        alerts = firing_alerts()
+        alerts = alerts_with_retry()
         if any(a.active_at >= since for a in alerts):
             return alerts
         time.sleep(15)
@@ -321,6 +349,7 @@ async def run_scenario(name: Path, scenario: str, systems: list[str], repeats: i
     (raw / "inject.txt").write_text(gridcastctl("chaos", "inject", scenario))
     gridcastctl("job", "pipeline")
     injected = datetime.now(UTC)
+    clock = HostClock()
     fired = wait_fresh(injected, alert_timeout)
     if not fired:
         log(f"[{scenario}] no alert within {alert_timeout}s; reverting")
@@ -328,7 +357,7 @@ async def run_scenario(name: Path, scenario: str, systems: list[str], repeats: i
         mark_revert(state)
         return []
     time.sleep(120)  # settle: let related alerts and slower evidence arrive (group_wait)
-    fired = firing_alerts() or fired
+    fired = alerts_with_retry() or fired
     incident = incident_from_alerts(fired, lookback=LOOKBACK)
     assert incident is not None
     (raw / "incident.json").write_text(incident.model_dump_json(indent=1))
@@ -354,13 +383,17 @@ async def run_scenario(name: Path, scenario: str, systems: list[str], repeats: i
     log(f"[{scenario}] reverting")
     (raw / "revert.txt").write_text(gridcastctl("chaos", "revert"))
     mark_revert(state)
+    host_sleep_s = clock.slept_s()
+    if host_sleep_s > 30:
+        log(f"[{scenario}] WARNING host slept {host_sleep_s:.0f}s during this scenario; "
+            "rows flagged (host_sleep_s) and should be re-run")
     results = []
     for row in rows:
         metrics = metrics_for(row, truth)
         metrics.update({"scenario": scenario, "scenario_id": truth["scenario"]["id"],
                         "repeat": row["repeat"], "incident": incident.id, "model":
                         model if row["system"] != "rules" else None,
-                        "detection_s": round(detection_s, 1),
+                        "detection_s": round(detection_s, 1), "host_sleep_s": host_sleep_s,
                         "expected_entity": graph_entity(truth["ground_truth"]["root_cause_entity"]),
                         "expected_category": truth["ground_truth"]["category"]})
         results.append(metrics)
@@ -408,7 +441,11 @@ def run(name: str, scenarios: list[str], systems: list[str], repeats: int, rules
                                             model, 3600 if scenario.upper().startswith("B") else 1500, log))
         except Exception:
             log(f"[{scenario}] harness error:\n{traceback.format_exc()}")
-            gridcastctl("chaos", "revert")
+            try:
+                gridcastctl("chaos", "revert")
+            except RuntimeError as exc:  # nothing active is fine; anything else must be seen
+                log(f"[{scenario}] revert after error: {exc}")
+            mark_revert(folder / "state.json")  # the next scenario still gets its full cooldown
             continue
         with (folder / "results.jsonl").open("a") as handle:
             for row in rows:
