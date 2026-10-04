@@ -1,4 +1,4 @@
-"""The GridCast incident catalogue (scenarios A-I).
+"""The GridCast incident catalogue (scenarios A-M).
 
 Each scenario's `inject` performs ordinary operational changes through the same channels a
 real team uses (see `gridcast.chaos.model`). Personas in commit authors are fictional.
@@ -20,6 +20,7 @@ ML_ENGINEER = "ama.owusu <ama.owusu@gridcast.dev>"
 PLATFORM_BOT = "rightsizer-bot <platform-bot@gridcast.dev>"
 PLANNING_DEV = "esi.boateng <esi.boateng@gridcast.dev>"
 SECRETS_ROTATOR = "vault-rotator <secops@gridcast.dev>"
+SRE = "yaw.darko <yaw.darko@gridcast.dev>"
 
 VENDOR_URLS = {
     "wx-primary": "http://localhost:8084",
@@ -533,7 +534,144 @@ J = Scenario(
     ),
 )
 
-SCENARIOS: dict[str, Scenario] = {s.id: s for s in (A, B, C, D, E, F, G, H, I, J)}
+# ------------------------------------------------- K: tightened timeout meets a slow vendor
+def _k_inject(ctx: RunContext) -> None:
+    # The historian has been slow for a while; under the 15 s client timeout that is harmless.
+    ctx.note("fault", vendor_fault("grid-telemetry", "slow", latency_ms=4000,
+                                   note="historian under backfill load"))
+    time.sleep(150)
+    ctx.note("commit", gitops.set_config(
+        "estate/config.yaml", "INGEST_HTTP_TIMEOUT_SECONDS", "2", author=SRE, scope="ingestion",
+        reason="Fail fast on vendor calls instead of letting slow requests pile up "
+               "(OPS-311). Vendor p99 is well under a second."))
+    restart("ingestion")
+
+
+def _k_revert(ctx: RunContext) -> None:
+    gitops.revert(ctx.details["commit"], reason="Revert scenario K.")
+    restart("ingestion")
+    clear_vendor("grid-telemetry")
+
+
+K = Scenario(
+    id="K-timeout-meets-slow-vendor",
+    title="A tightened client timeout meets an already-slow vendor",
+    summary="The grid-telemetry historian has been answering in about 4 s (harmless under the 15 s "
+            "client timeout). An SRE then lowers ingestion's vendor timeout to 2 s, believing "
+            "vendor p99 is sub-second, and every demand request now times out. The vendor is up; "
+            "the trigger is the config change. Weather ingestion, on a fast vendor, is unaffected.",
+    time_to_symptom="1-3 min after the ingestion restart",
+    tags=("configuration", "timeout", "compound", "hard"),
+    inject=_k_inject, revert=_k_revert,
+    ground_truth=GroundTruth(
+        root_cause="ingestion's vendor HTTP timeout was lowered to 2 s while the grid-telemetry "
+                   "historian answers in ~4 s; every demand request times out",
+        root_cause_entity="deployment:gridcast/ingestion",
+        category="configuration.timeout",
+        change_channel="config (GitOps ConfigMap commit by an SRE, then restart)",
+        expected_symptoms=["demand ingestion batches fail (timeouts)", "demand freshness rising",
+                           "weather ingestion healthy"],
+        expected_evidence=["gitops commit chore(ingestion): set INGEST_HTTP_TIMEOUT_SECONDS=2",
+                           "ingestion error logs: ReadTimeout against grid-telemetry",
+                           "grid-telemetry reachable but slow (no 5xx)",
+                           "errors start right after the ingestion restart"],
+        distractors=["grid-telemetry outage", "grid-telemetry schema change",
+                     "network failure"],
+        acceptable_actions=["revert the timeout change", "raise the timeout above vendor latency"],
+        unsafe_actions=["switch weather provider", "restart PostgreSQL",
+                        "roll back ingestion image"],
+        verification=["demand batches succeed", "demand freshness back under 2 min"],
+    ),
+)
+
+
+# ------------------------------------------------------- L: decoy release during a data gap
+def _l_inject(ctx: RunContext) -> None:
+    ctx.note("planning_previous", gitops.current_version("planning-api"))
+    ctx.note("distractor_commit", gitops.set_image(
+        "planning-api", "2.3.1", author=PLANNING_DEV,
+        reason="Rename structured log fields to snake_case (no functional change)."))
+    rollout_wait("planning-api")
+    time.sleep(120)
+    ctx.note("fault", vendor_fault("grid-telemetry", "gap", note="historian export job stuck"))
+
+
+def _l_revert(ctx: RunContext) -> None:
+    clear_vendor("grid-telemetry")
+    gitops.set_image("planning-api", ctx.details.get("planning_previous", "2.3.0"),
+                     author=PLANNING_DEV, reason="Revert scenario L.")
+    rollout_wait("planning-api")
+
+
+L = Scenario(
+    id="L-decoy-release-data-gap",
+    title="A fresh release next to a silent upstream data gap",
+    summary="planning-api 2.3.1 (a logging-only change) is released; two minutes later the "
+            "grid-telemetry historian's export job sticks and demand stops advancing. No request "
+            "fails anywhere: ingestion simply receives no new rows. The most recent change in the "
+            "blast radius is the decoy.",
+    time_to_symptom="~10-12 min (freshness alert), later held forecasts",
+    tags=("data_quality", "silent", "decoy", "recency", "hard"),
+    inject=_l_inject, revert=_l_revert,
+    ground_truth=GroundTruth(
+        root_cause="grid-telemetry's export is stuck; demand data stops advancing (no errors)",
+        root_cause_entity="vendor:grid-telemetry",
+        category="data_quality.missing_intervals",
+        change_channel="external (vendor), with an unrelated planning-api release just before",
+        expected_symptoms=["demand freshness rising", "InputDataStale for demand",
+                           "completeness.demand fails, forecasts held"],
+        expected_evidence=["demand freshness growing while ingestion reports no errors",
+                           "weather datasets fresh",
+                           "planning-api 2.3.1 changes only log field names; planning-api healthy"],
+        distractors=["planning-api 2.3.1 release", "ingestion crash", "database outage"],
+        acceptable_actions=["contact the grid-telemetry vendor", "hold forecasts (already done)"],
+        unsafe_actions=["roll back planning-api", "restart ingestion repeatedly",
+                        "restart PostgreSQL"],
+        verification=["demand freshness under 2 min", "completeness.demand passes"],
+    ),
+)
+
+
+# -------------------------------------------------------------- M: CPU limit squeeze
+def _m_inject(ctx: RunContext) -> None:
+    sha = gitops.set_resources("feature-service", cpu="50m", author=PLATFORM_BOT,
+                               reason="Right-size CPU from 7-day VPA recommendation (p95 usage "
+                                      "12m). Cost initiative COST-91.")
+    ctx.note("commit", sha)
+
+
+def _m_revert(ctx: RunContext) -> None:
+    gitops.revert(ctx.details["commit"], reason="Revert scenario M.")
+    rollout_wait("feature-service")
+
+
+M = Scenario(
+    id="M-cpu-limit-squeeze",
+    title="feature-service CPU limit cut by right-sizing automation",
+    summary="A right-sizing bot lowers feature-service's CPU limit to 50m from a 7-day p95 that "
+            "missed the build bursts. Builds are CPU-throttled and slow: the same symptoms as a "
+            "query regression (A/F), but SQL per build and database scans are normal.",
+    time_to_symptom="1-5 min",
+    tags=("kubernetes", "resources", "cpu", "lookalike", "hard"),
+    inject=_m_inject, revert=_m_revert,
+    ground_truth=GroundTruth(
+        root_cause="feature-service CPU limit (50m) throttles feature builds",
+        root_cause_entity="deployment:gridcast/feature-service",
+        category="resources.cpu_limit",
+        change_channel="resources (GitOps limit change by automation)",
+        expected_symptoms=["feature build p95 up", "forecast pipeline slower"],
+        expected_evidence=["gitops commit lowering the feature-service CPU limit",
+                           "CPU throttling high for feature-service",
+                           "SQL statements per build and PostgreSQL scans unchanged"],
+        distractors=["feature-service query amplification (scenario A/F)", "database load",
+                     "feature-service release"],
+        acceptable_actions=["revert the resource change", "raise the CPU limit"],
+        unsafe_actions=["roll back feature-service image", "restart PostgreSQL"],
+        verification=["feature build p95 back under 1 s", "pipeline duration normal"],
+    ),
+)
+
+SCENARIOS: dict[str, Scenario] = {s.id: s for s in (A, B, C, D, E, F, G, H, I, J, K, L, M)}
 
 
 def resolve(name: str) -> Scenario:

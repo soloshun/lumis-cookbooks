@@ -19,8 +19,11 @@ def test_grading_and_decision():
 
 
 def test_scenario_catalogue_is_complete():
-    assert len(SCENARIOS) >= 10
+    assert len(SCENARIOS) >= 13
     assert resolve("j").ground_truth.category == "availability.scaled_to_zero"
+    assert resolve("k").ground_truth.category == "configuration.timeout"
+    assert resolve("l").ground_truth.distractors[0].startswith("planning-api")
+    assert resolve("m").ground_truth.category == "resources.cpu_limit"
     for scenario in SCENARIOS.values():
         gt = scenario.ground_truth
         assert gt.root_cause and gt.root_cause_entity and gt.category
