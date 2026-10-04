@@ -289,6 +289,19 @@ def experiment(
 
 
 @app.command()
+def ladder(folder: Path, scenarios: str = typer.Option("", help="Comma-separated; default: all finished"),
+           repeats: int = 2, model: str = "deepseek/deepseek-v4-pro-0813") -> None:
+    """Evidence ladder on a finished experiment's frozen incidents (see ladder.py)."""
+    from gridcast_lumis.ladder import run_ladder
+    from gridcast_lumis.runner import load_model_credentials
+
+    load_model_credentials()
+    target = asyncio.run(run_ladder(folder, [s for s in scenarios.split(",") if s] or None,
+                                    repeats, model))
+    console.print((target / "summary.md").read_text())
+
+
+@app.command()
 def experiment_report(folder: Path) -> None:
     """Regenerate metrics.json / summary.md / charts for an experiment folder."""
     from gridcast_lumis.experiment_report import write_report
