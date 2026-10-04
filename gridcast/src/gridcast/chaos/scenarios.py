@@ -735,7 +735,7 @@ O = Scenario(  # noqa: E741
             "The other zones are fine, so dataset freshness (newest reading of any zone) stays "
             "healthy and ingestion reports no errors; only that zone's completeness check "
             "degrades, first to warnings and then to a held forecast.",
-    time_to_symptom="~15 min (warnings), ~40 min (forecast held)",
+    time_to_symptom="~30 min (repeated completeness warnings), ~40 min (forecast held)",
     tags=("data_quality", "silent", "partial", "aggregation", "hard"),
     inject=_o_inject, revert=_o_revert,
     ground_truth=GroundTruth(

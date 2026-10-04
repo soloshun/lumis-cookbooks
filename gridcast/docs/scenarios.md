@@ -54,10 +54,10 @@ flowchart LR
 | **I** | primary weather vendor outage (503) | vendor | ~1 min (errors); hold ~20 min | `HTTP 503 from weather-primary…` on observations |
 | **J** | planning-api left scaled to 0 after maintenance | replicas (GitOps) | ~1–2 min | operator transport errors, publish fails; Lumis concludes deterministically in ~60 ms of triage |
 | **K** | ingestion timeout lowered to 2 s while the telemetry vendor answers in ~4 s | config (GitOps) + slow vendor | ~4 min after the commit | demand batches time out (`ReadTimeout contacting vendor`), demand batch p95 17.8 s; weather unaffected |
-| **L** | logging-only planning-api release, then the telemetry export silently stops | release (decoy) + vendor | ~15 min | *(validation drill pending)* |
+| **L** | logging-only planning-api release, then the telemetry export silently stops | release (decoy) + vendor | ~14 min after the decoy | `InputDataStale` for demand, zero ingestion errors; the decoy commit and rollout are the only recent changes |
 | **M** | right-sizing bot cuts feature-service CPU limit to 50m | resources (GitOps) | ~24 min (slow burn) | build p95 ~0.1 s → 2.35 s; SQL per build unchanged (4); query-amplification signature contradicted |
-| **N** | feature-service 1.8.0 writes the load features in kW; the model was trained on MW | release (GitOps) | next run | *(validation drill pending)* |
-| **O** | the telemetry historian stops exporting one zone; the others are fine | vendor (partial) | ~15–40 min | *(validation drill pending)* |
+| **N** | feature-service 1.8.0 writes the load features in kW; the model was trained on MW | release (GitOps) | ~13 min | `ForecastShiftedVsPlan` (forecast 17% off the plan); mean `load_lag_24h` 533 → ~400,000; input checks and services healthy |
+| **O** | the telemetry historian stops exporting one zone; the others are fine | vendor (partial) | ~31 min | `DataQualityWarnings` (completeness.demand); 3 of 4 zones reporting; demand freshness 50 s and zero errors |
 
 ### A — Query amplification after a release
 
@@ -206,13 +206,17 @@ flowchart LR
   freshness (the newest reading of any zone) and ingestion stay healthy; only that zone's
   completeness check degrades. Solvable from "zones reporting demand".
 
-**A drift that slipped through (recorded as a finding).** N's first design served the
-*temperature* feature in °F to a model trained on °C. The validation drill showed the tree model
-saturating at its hottest training temperatures: forecasts shifted by only +8.8%
-(541.9 → 589.4 MW), under the 10% stability gate. The first skewed forecast was published, and
-every later run compared against that already-skewed plan and passed. The bias was baked in with
-no alert at all. That is a real limitation of plan-relative gates, and an undetectable fault
-cannot be scored, so N uses a skew the gates can see. Slow statistical drift (e.g. demand
+**Drift that slipped through (recorded as a finding).** N's first design served the
+*temperature* feature in °F to a model trained on °C. The tree model saturates at its hottest
+training temperatures, so forecasts shifted by only +8.8% (541.9 → 589.4 MW), under the 10%
+stability gate. The first skewed forecast was published, and every later run compared against
+that already-skewed plan and passed: the bias was baked in with no alert. The second design
+(load features in kW; mean `load_lag_24h` 533 → 532,821) shifted forecasts by 17.2%, which is a
+stability *warning*. But warnings do not hold a forecast, so it was published too, the next run
+compared against it (0.04%) and passed, and `DataQualityWarnings` (more than 3 warnings) never
+fired. A plan-relative gate absorbs a step change after one run, and a tree model caps how far a
+skewed feature can move the output. GridCast now alerts on a single stability breach
+(`ForecastShiftedVsPlan`). A 24-hour backtest fired only for N, with no false positives. Slow statistical drift (e.g. demand
 creeping up a few percent) is likewise not a scenario: GridCast's only accuracy signal is a
 6-hour rolling MAPE.
 

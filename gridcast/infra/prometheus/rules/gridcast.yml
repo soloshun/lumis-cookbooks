@@ -98,6 +98,13 @@ groups:
         labels: { entity: 'service:gridcast:{{ $labels.k8s_deployment_name }}', severity: ticket }
         annotations:
           summary: "{{ $labels.k8s_deployment_name }} has unavailable replicas"
+      - alert: ForecastShiftedVsPlan
+        # One stability breach is enough: after a shifted forecast is published, later runs
+        # compare against the shifted plan and pass (a plan-relative gate absorbs a step change).
+        expr: sum(increase(gridcast_quality_checks_total{check="stability.forecast_vs_published",status=~"warn|fail"}[30m])) > 0
+        labels: { entity: 'service:gridcast:forecast-pipeline', severity: ticket }
+        annotations:
+          summary: A new forecast deviated from the published plan by more than 10%
       - alert: DataQualityWarnings
         expr: sum by (check) (increase(gridcast_quality_checks_total{status="warn"}[30m])) > 3
         labels: { entity: 'service:gridcast:forecast-pipeline', severity: ticket }

@@ -92,7 +92,8 @@ incident's affected entities from this label alone.
 | `DeploymentReplicasUnavailable` | available < desired for 3 min | D |
 | `InputDataStale` | a dataset not advancing for 10 min | G, I |
 | `IngestionErrors` | > 3 failed batches in 10 min | G, I |
-| `DataQualityWarnings` | a warn-level check repeating | B |
+| `DataQualityWarnings` | a warn-level check repeating | B, O |
+| `ForecastShiftedVsPlan` | one forecast deviated > 10% from the published plan (a single breach: later runs compare against the shifted plan and pass) | N |
 | `ForecastAccuracyDegraded` | rolling MAPE > 8 % for 10 min | B (slowly) |
 | `ServiceErrorRate` | 5xx ratio > 5 % | C |
 
