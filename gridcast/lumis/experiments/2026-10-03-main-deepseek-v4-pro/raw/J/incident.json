@@ -1,0 +1,13 @@
+{
+ "id": "gridcast-20261003T171732Z-4dd025",
+ "affected_entities": [
+  "service:gridcast:forecast-pipeline",
+  "service:gridcast:grid-operator"
+ ],
+ "symptoms": [
+  "ForecastPipelineFailing: Forecast pipeline held or failed at least twice in 15 minutes",
+  "PlanningApiUnreachable: The grid operator cannot reach the planning API"
+ ],
+ "started_at": "2026-10-03T17:05:27Z",
+ "ended_at": "2026-10-03T17:17:32Z"
+}

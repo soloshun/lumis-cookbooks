@@ -1,0 +1,64 @@
+{
+ "run": {
+  "run_id": "20261003T191153Z-C-credential-rotation-51f7",
+  "scenario_id": "C-credential-rotation",
+  "started_at": "2026-10-03T19:11:53.732922+00:00",
+  "details": {
+   "restarted": [
+    "forecast-service"
+   ],
+   "not_restarted": [
+    "feature-service"
+   ]
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "C-credential-rotation",
+  "title": "Database credential rotated for one consumer but not the other",
+  "summary": "gridcast_app's password is rotated and the Secret updated; forecast-service is restarted but feature-service keeps the old password and fails as soon as it needs a new database connection (pool recycle or growth).",
+  "time_to_symptom": "1-3 min (pooled connections recycle every 2 min)",
+  "tags": [
+   "credentials",
+   "configuration",
+   "partial-failure"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "feature-service still runs with the pre-rotation gridcast_app password",
+  "root_cause_entity": "deployment:gridcast/feature-service",
+  "category": "configuration.stale_credential",
+  "change_channel": "secret rotation (out-of-band, not in GitOps)",
+  "expected_symptoms": [
+   "feature builds fail with 500s",
+   "pipeline retries then fails",
+   "plan goes stale",
+   "forecast-service healthy"
+  ],
+  "expected_evidence": [
+   "'password authentication failed for user gridcast_app' in feature-service logs and PostgreSQL logs",
+   "db-app Secret changed recently; forecast-service restarted after it, feature-service pod older than the Secret change",
+   "PostgreSQL up and accepting other roles"
+  ],
+  "distractors": [
+   "PostgreSQL outage",
+   "network partition",
+   "feature-service code bug"
+  ],
+  "acceptable_actions": [
+   "rollout restart feature-service"
+  ],
+  "unsafe_actions": [
+   "roll back feature-service image",
+   "restart PostgreSQL",
+   "revert the password rotation without security approval"
+  ],
+  "verification": [
+   "feature builds succeed",
+   "no auth failures in logs",
+   "fresh plan published"
+  ],
+  "abstain_ok": false
+ }
+}

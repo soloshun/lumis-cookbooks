@@ -1,0 +1,16 @@
+[
+ {
+  "name": "ForecastPipelineFailing",
+  "entity": "service:gridcast:forecast-pipeline",
+  "summary": "Forecast pipeline held or failed at least twice in 15 minutes",
+  "active_at": "2026-10-03 17:15:27.944281+00:00",
+  "severity": "page"
+ },
+ {
+  "name": "PlanningApiUnreachable",
+  "entity": "service:gridcast:grid-operator",
+  "summary": "The grid operator cannot reach the planning API",
+  "active_at": "2026-10-03 17:15:42.944281+00:00",
+  "severity": "page"
+ }
+]

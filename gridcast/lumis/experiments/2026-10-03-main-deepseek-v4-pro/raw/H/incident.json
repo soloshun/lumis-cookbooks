@@ -1,0 +1,11 @@
+{
+ "id": "gridcast-20261003T231929Z-5ee52c",
+ "affected_entities": [
+  "service:gridcast:forecast-pipeline"
+ ],
+ "symptoms": [
+  "ForecastPipelineSlow: Forecast pipeline p95 duration above 5s"
+ ],
+ "started_at": "2026-10-03T23:02:12Z",
+ "ended_at": "2026-10-03T23:19:29Z"
+}

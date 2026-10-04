@@ -1,0 +1,16 @@
+[
+ {
+  "name": "ForecastPipelineSlow",
+  "entity": "service:gridcast:forecast-pipeline",
+  "summary": "Forecast pipeline p95 duration above 5s",
+  "active_at": "2026-10-03 22:19:27.944281+00:00",
+  "severity": "ticket"
+ },
+ {
+  "name": "IngestionErrors",
+  "entity": "service:gridcast:ingestion",
+  "summary": "Ingestion of demand is failing",
+  "active_at": "2026-10-03 22:22:42.944281+00:00",
+  "severity": "ticket"
+ }
+]

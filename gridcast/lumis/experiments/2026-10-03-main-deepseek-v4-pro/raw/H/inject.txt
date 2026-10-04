@@ -1,0 +1,3 @@
+injecting H-vendor-unit-change: Grid telemetry silently switches units (MW -> kW)
+run 20261003T231138Z-H-vendor-unit-change-4c00 (ground truth: .gridcast/chaos/runs/20261003T231138Z-H-vendor-unit-change-4c00.json)
+symptoms expected: next pipeline run (<= 5 min)

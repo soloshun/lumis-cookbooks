@@ -1,0 +1,4 @@
+injecting J-planning-api-scaled-to-zero: planning-api left scaled to zero after a maintenance window
+committed ed2d7af chore(planning-api): scale to 0 replica(s)
+run 20261003T171457Z-J-planning-api-scaled-to-zero-48c3 (ground truth: .gridcast/chaos/runs/20261003T171457Z-J-planning-api-scaled-to-zero-48c3.json)
+symptoms expected: ~1 min (next operator poll)

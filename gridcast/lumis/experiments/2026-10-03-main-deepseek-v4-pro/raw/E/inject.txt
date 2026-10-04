@@ -1,0 +1,6 @@
+injecting E-model-serving-slowdown: Model promotion makes inference far slower
+job model-promote-1003205626: gridcast model promote --alias production --version 2 --actor ama.owusu <ama.owusu@gridcast.dev> --reason Promote scenario-forest model: better calibrated p10-p90 
+coverage on the 60-day holdout (MLOPS-57).
+job model-promote-1003205626 succeeded
+run 20261003T205626Z-E-model-serving-slowdown-977d (ground truth: .gridcast/chaos/runs/20261003T205626Z-E-model-serving-slowdown-977d.json)
+symptoms expected: <= 30 s after promotion (next pipeline run)

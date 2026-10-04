@@ -1,0 +1,16 @@
+[
+ {
+  "name": "ForecastPipelineFailing",
+  "entity": "service:gridcast:forecast-pipeline",
+  "summary": "Forecast pipeline held or failed at least twice in 15 minutes",
+  "active_at": "2026-10-03 20:10:42.944281+00:00",
+  "severity": "page"
+ },
+ {
+  "name": "PodCrashLooping",
+  "entity": "service:gridcast:forecast-service",
+  "summary": "forecast-service restarted more than twice in 10 minutes",
+  "active_at": "2026-10-03 20:11:12.944281+00:00",
+  "severity": "page"
+ }
+]

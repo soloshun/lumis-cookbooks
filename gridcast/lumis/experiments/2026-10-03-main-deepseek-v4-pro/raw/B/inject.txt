@@ -1,0 +1,3 @@
+injecting B-stale-weather-feed: Primary weather vendor serves stale data with fresh timestamps
+run 20261004T003157Z-B-stale-weather-feed-4852 (ground truth: .gridcast/chaos/runs/20261004T003157Z-B-stale-weather-feed-4852.json)
+symptoms expected: variability warning after ~30 min; accuracy degradation over hours

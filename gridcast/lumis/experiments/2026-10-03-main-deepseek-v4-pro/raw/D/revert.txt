@@ -1,0 +1,4 @@
+reverting 20261003T201009Z-D-memory-pressure-3046
+committed 0e96381 revert: "chore(forecast-service): set limits cpu=1 memory=160Mi"
+Waiting for deployment "forecast-service" rollout to finish: 0 of 1 updated replicas are available...
+deployment "forecast-service" successfully rolled out

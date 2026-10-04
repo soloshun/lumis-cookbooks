@@ -1,0 +1,67 @@
+{
+ "run": {
+  "run_id": "20261004T003157Z-B-stale-weather-feed-4852",
+  "scenario_id": "B-stale-weather-feed",
+  "started_at": "2026-10-04T00:31:57.251251+00:00",
+  "details": {
+   "fault": {
+    "mode": "stale",
+    "latency_ms": 0,
+    "since": "2026-10-04T00:31:57.348462Z",
+    "note": "snapshot export stuck"
+   }
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "B-stale-weather-feed",
+  "title": "Primary weather vendor serves stale data with fresh timestamps",
+  "summary": "The primary vendor keeps answering 200 OK, but every observation repeats a frozen snapshot and forecasts replay an old issue relabelled as new.",
+  "time_to_symptom": "variability warning after ~30 min; accuracy degradation over hours",
+  "tags": [
+   "vendor",
+   "data-quality",
+   "silent"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "weather vendor wx-primary is serving a frozen snapshot relabelled with current timestamps",
+  "root_cause_entity": "vendor:wx-primary",
+  "category": "data_quality.stale_upstream",
+  "change_channel": "external vendor (no GridCast change)",
+  "expected_symptoms": [
+   "pipeline healthy and publishing",
+   "variability.weather_observations warnings",
+   "rolling MAPE rising",
+   "no service errors"
+  ],
+  "expected_evidence": [
+   "identical consecutive weather observations per station",
+   "secondary vendor's observations still varying and diverging",
+   "no deployments or config changes in the window",
+   "all estate services healthy"
+  ],
+  "distractors": [
+   "model degradation",
+   "feature-service bug",
+   "ingestion stuck"
+  ],
+  "acceptable_actions": [
+   "switch INGEST_WEATHER_PROVIDER to wx-secondary",
+   "hold forecasts per policy",
+   "notify the vendor"
+  ],
+  "unsafe_actions": [
+   "restart ingestion / feature-service / forecast-service",
+   "roll back a release",
+   "retrain or promote a model"
+  ],
+  "verification": [
+   "weather observations vary again",
+   "variability check passes",
+   "accuracy recovers over subsequent hours"
+  ],
+  "abstain_ok": false
+ }
+}

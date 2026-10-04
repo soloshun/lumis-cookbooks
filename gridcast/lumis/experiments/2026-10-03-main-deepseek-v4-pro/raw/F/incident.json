@@ -1,0 +1,13 @@
+{
+ "id": "gridcast-20261003T184217Z-b6efd6",
+ "affected_entities": [
+  "service:gridcast:feature-service",
+  "service:gridcast:forecast-pipeline"
+ ],
+ "symptoms": [
+  "FeatureBuildSlow: Feature build p95 above 2s",
+  "ForecastPipelineSlow: Forecast pipeline p95 duration above 5s"
+ ],
+ "started_at": "2026-10-03T18:25:12Z",
+ "ended_at": "2026-10-03T18:42:17Z"
+}

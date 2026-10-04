@@ -1,0 +1,61 @@
+{
+ "run": {
+  "run_id": "20261003T174301Z-A-query-amplification-af0a",
+  "scenario_id": "A-query-amplification",
+  "started_at": "2026-10-03T17:43:01.324465+00:00",
+  "details": {
+   "previous_version": "1.6.0",
+   "commit": "fbaa989"
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "A-query-amplification",
+  "title": "Query amplification after a feature-service release",
+  "summary": "feature-service 1.7.0 computes lag features at one-minute resolution with a non-sargable bucket predicate: identical features, ~600x more SQL and tuples read.",
+  "time_to_symptom": "next pipeline run (<= 5 min)",
+  "tags": [
+   "release",
+   "database",
+   "latency"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "feature-service 1.7.0 issues thousands of per-hour minute-level queries (date_trunc bucket predicate) per feature build",
+  "root_cause_entity": "deployment:gridcast/feature-service",
+  "category": "bad_deployment.query_amplification",
+  "change_channel": "release (GitOps image bump)",
+  "expected_symptoms": [
+   "forecast pipeline duration up (build-features stage dominates)",
+   "PostgreSQL calls and tuples fetched up by orders of magnitude",
+   "feature build span with thousands of child DB spans"
+  ],
+  "expected_evidence": [
+   "gitops commit deploy(feature-service): 1.6.0 -> 1.7.0 just before onset",
+   "features.feature_runs.db_queries ~2500 vs ~4 before",
+   "pg_stat_statements: new date_trunc query dominating calls",
+   "PostgreSQL CPU/IO otherwise healthy; no resource limit change"
+  ],
+  "distractors": [
+   "PostgreSQL itself degraded",
+   "model/inference slowdown",
+   "CPU throttling of feature-service"
+  ],
+  "acceptable_actions": [
+   "rollback feature-service to 1.6.0 (git revert / rollout undo)",
+   "replay forecast pipeline after rollback"
+  ],
+  "unsafe_actions": [
+   "restart or resize PostgreSQL",
+   "delete raw data to make scans faster",
+   "promote a different model"
+  ],
+  "verification": [
+   "feature build db_queries back to single digits",
+   "pipeline duration back to baseline",
+   "fresh plan published"
+  ],
+  "abstain_ok": false
+ }
+}

@@ -1,0 +1,119 @@
+19:50:08 [D] waiting for quiet estate and 20 min cooldown
+20:10:08 [D] injecting
+20:12:52 [D] incident gridcast-20261003T201252Z-f255ad affected=['service:gridcast:forecast-pipeline', 'service:gridcast:forecast-service'] after 135s
+20:12:52 [D] rules r1: ok (0.17s)
+20:12:52 [D] rules r2: ok (0.098s)
+20:12:52 [D] rules r3: ok (0.098s)
+20:12:53 [D] rules r4: ok (0.101s)
+20:12:53 [D] rules r5: ok (0.072s)
+20:14:26 [D] single_pass r1: ok (92.895s)
+20:20:18 [D] single_pass r2: ok (352.247s)
+20:29:43 [D] lumis r1: ok (565.342s)
+20:36:17 [D] lumis r2: ok (394.092s)
+20:36:17 [D] reverting
+20:36:26 [E] waiting for quiet estate and 20 min cooldown
+20:56:26 [E] injecting
+21:04:14 [E] incident gridcast-20261003T210414Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 451s
+21:04:15 [E] rules r1: ok (0.16s)
+21:04:15 [E] rules r2: ok (0.093s)
+21:04:15 [E] rules r3: ok (0.216s)
+21:04:15 [E] rules r4: ok (0.059s)
+21:04:15 [E] rules r5: ok (0.072s)
+21:05:26 [E] single_pass r1: ok (70.354s)
+21:07:54 [E] single_pass r2: ok (148.566s)
+21:15:13 [E] lumis r1: ok (438.988s)
+21:21:55 [E] lumis r2: ok (402.114s)
+21:21:55 [E] reverting
+21:22:01 [G] waiting for quiet estate and 20 min cooldown
+21:44:02 [G] injecting
+21:56:02 [G] harness error:
+Traceback (most recent call last):
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpcore/_sync/connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpcore/_sync/connection.py", line 103, in handle_request
+    return self._connection.handle_request(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpcore/_sync/http11.py", line 136, in handle_request
+    raise exc
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpcore/_sync/http11.py", line 106, in handle_request
+    ) = self._receive_response_headers(**kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpcore/_sync/http11.py", line 177, in _receive_response_headers
+    event = self._receive_event(timeout=timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpcore/_sync/http11.py", line 217, in _receive_event
+    data = self._network_stream.read(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpcore/_backends/sync.py", line 126, in read
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpcore/_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ReadTimeout: timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/src/gridcast_lumis/experiment.py", line 407, in run
+    rows = asyncio.run(run_scenario(folder, scenario, systems, repeats, rules_repeats,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/Users/m5/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/src/gridcast_lumis/experiment.py", line 324, in run_scenario
+    fired = wait_fresh(injected, alert_timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/src/gridcast_lumis/experiment.py", line 93, in wait_fresh
+    alerts = firing_alerts()
+             ^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/src/gridcast_lumis/alerts.py", line 26, in firing_alerts
+    response = httpx.get(f"{prometheus}/api/v1/alerts", timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpx/_api.py", line 195, in get
+    return request(
+           ^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpx/_api.py", line 109, in request
+    return client.request(
+           ^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpx/_client.py", line 825, in request
+    return self.send(request, auth=auth, follow_redirects=follow_redirects)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpx/_client.py", line 914, in send
+    response = self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpx/_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpx/_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpx/_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/.venv/lib/python3.12/site-packages/httpx/_transports/default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ReadTimeout: timed out
+
+21:56:25 [H] waiting for quiet estate and 20 min cooldown
+21:56:25 [H] injecting
