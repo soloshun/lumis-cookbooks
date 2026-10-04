@@ -43,6 +43,32 @@ We also ask what it costs, and whether it is safe.
 | Metrics | SEAMS research-plan families: top-k entity recall, causal-path score, unsupported-hypothesis rate, efficiency (time, tokens, cost), abstention, safety. Post hoc: mechanism score |
 | Code | `lumis/src/gridcast_lumis/experiment.py`, `experiment_report.py`, `rescore.py`; SDK `soloshun/lumis-sdk` |
 
+## 2a. The systems compared, and exactly how they differ
+
+Every system answers the same frozen incident (same alerts, same time window, same model and
+reasoning effort where a model is used). They differ only in what they are given and what they
+are allowed to do:
+
+| System | What it is given | Can it fetch more? | Is its answer checked? | Isolates |
+|---|---|---|---|---|
+| **rules** | Operator signatures, plus the facts their queries return | No | Yes, mechanically; it concludes only on a sufficient terminal signature | Deterministic triage alone |
+| **llm_symptoms** ("Claude-web") | The alert symptoms, the affected service IDs and the time window. No graph, no facts | No | No | What a model guesses from the alert alone, like pasting an error into a chat assistant |
+| **llm_graph** | llm_symptoms plus the scoped service graph (topology, owners, criticality) | No | No | The value of topology |
+| **single_pass** | llm_graph plus the query catalog and the ~16–20 facts Lumis collected for the rule signatures, in one structured completion | No | Partly: each hypothesis is checked against the facts already collected, but nobody fetches the evidence its hypotheses name | The value of curated evidence |
+| **single_pass_verified** | The same single-pass answers. Lumis then fetches the evidence each hypothesis names (queries pinned to the incident window) and assesses them, with no new LLM call | Lumis fetches; the model does not | Yes, mechanically | The value of verification, separated from the agent loop |
+| **tool_agent** *(planned, 2 scenarios)* | Raw read tools with no registry, no acceptance rules and no mechanical check | Yes, freely | No | The value of Lumis' boundaries (fabrication, unsafe actions) |
+| **lumis** | Everything: rules first; then the agent with the scoped graph, registered queries, change records, allowlisted code and Git, and multiple turns | Yes, through registered queries and tools | Yes, mechanically; one root cause required to conclude | The full system |
+
+Two consequences for reading the results:
+
+* **single_pass is strong by construction.** It is "Lumis-lite": Lumis' graph, Lumis' evidence
+  and Lumis' checking around one LLM call. Close top-1 scores between single_pass and lumis say
+  that *curated evidence* does much of the work, which is part of Lumis' value. They do not say
+  the agent adds nothing.
+* **llm_symptoms is the "Claude-web" baseline.** The alerts already name the affected services,
+  so even this rung can score on *component*. The *mechanism* score separates guessing a likely
+  component from knowing what broke.
+
 ## 3. Main run (2026-10-03, SDK c757a74 plus documented cookbook workarounds)
 
 Folder: `lumis/experiments/2026-10-03-main-deepseek-v4-pro/`. There were 90 runs with no

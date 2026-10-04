@@ -43,7 +43,9 @@ SCHEMA = {
 
 # Mechanism rubric: does the text state *why*, not just *where*? Applied identically to every
 # system's top-ranked candidate. Deliberately concrete, and not satisfiable by echoing the alert
-# names alone (see docs/research-notes.md for the caveat).
+# names alone (see docs/research-notes.md for the caveat). Revised once on 2026-10-04 after
+# inspecting outputs: E also accepts "alias moved / slower model / model version", G also
+# accepts "rejected"; the revision applies to every system.
 RUBRIC: dict[str, str] = {
     "J": r"scal\w*\s+(down\s+)?to\s+(0|zero)|\b(0|zero)\s+replicas|replicas\W{0,5}(=|:|to)?\s*(0|zero)\b",
     "A": r"n\s*\+\s*1|query amplification|(thousands|2[,.]?[45]\d\d|excessive|many|more)\W.{0,30}(quer|sql|statement)"
@@ -52,8 +54,10 @@ RUBRIC: dict[str, str] = {
          r"|lag_resolution|minute[- ]resolution|1\.7\.0",
     "C": r"password|credential|authenticat|secret|rotat",
     "D": r"\boom|out of memory|memory limit|oomkilled|memory.{0,20}(limit|exceed|below)",
-    "E": r"(model|alias).{0,50}(promot|chang|switch|new version|swap)|promot.{0,40}model|hifi|scenario.?forest",
-    "G": r"schema|contract|renam|demand_kw|api.?version|payload.{0,30}(chang|format|field)|field.{0,30}(chang|renam|missing)",
+    "E": r"(model|alias).{0,50}(promot|chang|switch|new version|swap|mov|load)|promot.{0,40}model|hifi|scenario.?forest"
+         r"|(new|slower|different|heavier) (serving )?model|model version",
+    "G": r"schema|contract|renam|demand_kw|api.?version|payload.{0,30}(chang|format|field)|field.{0,30}(chang|renam|missing)"
+         r"|reject",
     "H": r"\bkw\b|kilowatt|\bunits?\b|\bscal(e|ing)\b|1000|magnitude",
     "I": r"\b503\b|outage|unavailab|\bdown\b|http 5\d\d",
     "B": r"stale|frozen|repeat|identical|snapshot|not (chang|vary)|unchang",
@@ -154,8 +158,9 @@ async def run_rung(folder: Path, scenario: str, rung: str, repeat: int, model: s
 
 
 # ------------------------------------------------------ single_pass_verified (no LLM)
-async def verify_single_pass(folder: Path, scenario: str, repeat: int) -> dict:
-    """Fetch the evidence each single-pass hypothesis names, then assess it as Lumis would."""
+async def verify_single_pass(folder: Path, scenario: str, repeat: int) -> dict | None:
+    """Fetch the evidence each single-pass hypothesis names, then assess it as Lumis would.
+    None when that single-pass run produced no candidates (e.g. it failed)."""
     from lumis_sdk.connectors.factory import evidence_connectors
     from lumis_sdk.core import Hypothesis, IncidentContext
     from lumis_sdk.reasoning import assess
@@ -168,6 +173,8 @@ async def verify_single_pass(folder: Path, scenario: str, repeat: int) -> dict:
     load_sql_dsn()
     raw = folder / "raw" / scenario
     run = raw / f"single_pass-r{repeat}"
+    if not (run / "evidence_context.json").exists() or not (run / "candidates.json").exists():
+        return None
     context = IncidentContext.model_validate_json((run / "evidence_context.json").read_text())
     candidates = json.loads((run / "candidates.json").read_text())
     project = YamlProject.from_file(PROJECT_FILE)
@@ -211,7 +218,16 @@ async def verify_single_pass(folder: Path, scenario: str, repeat: int) -> dict:
 
 
 # ----------------------------------------------------- existing systems, same scoring
+def _live_row(folder: Path, scenario: str, system: str, repeat: int) -> dict:
+    for line in (folder / "results.jsonl").read_text().splitlines():
+        row = json.loads(line)
+        if (row["scenario"], row["system"], row["repeat"]) == (scenario, system, repeat):
+            return {"cost_usd": row.get("cost_usd") or 0.0, "seconds": row.get("seconds")}
+    return {}
+
+
 def existing(folder: Path, scenario: str, system: str, repeat: int) -> dict | None:
+    live = _live_row(folder, scenario, system, repeat)
     raw = folder / "raw" / scenario
     run = raw / f"{system}-r{repeat}"
     hosts, _ = _graph_maps(raw)
@@ -225,7 +241,8 @@ def existing(folder: Path, scenario: str, system: str, repeat: int) -> dict | No
             if path:
                 ranked.append({"entity": hosts.get(path[0], path[0]), "text": c["hypothesis"].get("statement", "")})
         supported = [c for c in cands if (c.get("assessment") or {}).get("state") == "supported"]
-        return {"system": system, "ranked": ranked, "concluded": bool(supported) and supported[0]["rank"] == 1}
+        return {"system": system, "ranked": ranked,
+                "concluded": bool(supported) and supported[0]["rank"] == 1} | live
     if not (run / "report.json").exists():
         return None
     report = json.loads((run / "report.json").read_text())
@@ -238,7 +255,7 @@ def existing(folder: Path, scenario: str, system: str, repeat: int) -> dict | No
     ranked = [{"entity": hosts.get(h["causal_path"][0], h["causal_path"][0]), "text": h["statement"]}
               for _, h in items]
     return {"system": system, "ranked": ranked,
-            "concluded": report["conclusion"] == "supported_diagnosis"}
+            "concluded": report["conclusion"] == "supported_diagnosis"} | live
 
 
 def score(folder: Path, scenario: str, result: dict) -> dict:
@@ -317,7 +334,8 @@ async def run_ladder(folder: Path, scenarios: list[str] | None, repeats: int, mo
             for k in range(1, repeats + 1):
                 if (scenario, "single_pass_verified", k) not in seen:
                     result = await verify_single_pass(folder, scenario, k)
-                    new.append(score(folder, scenario, result | {"repeat": k}))
+                    if result is not None:
+                        new.append(score(folder, scenario, result | {"repeat": k}))
                 for system, n in (("single_pass", repeats), ("lumis", repeats), ("rules", 5)):
                     if k == 1:
                         for j in range(1, n + 1):
@@ -331,6 +349,34 @@ async def run_ladder(folder: Path, scenarios: list[str] | None, repeats: int, mo
             print(f"[{scenario}] ladder: +{len(new)} rows")
     write_summary(target, rows)
     return target
+
+
+def rescore_all(folder: Path) -> list[dict]:
+    """Re-score every saved ladder and live run with the current rubric (no model calls)."""
+    rows = []
+    target = folder / "ladder"
+    for scenario_dir in sorted(p for p in target.iterdir() if p.is_dir()):
+        sc = scenario_dir.name
+        for run in sorted(scenario_dir.iterdir()):
+            system, _, k = run.name.rpartition("-r")
+            if system in ("llm_symptoms", "llm_graph") and (run / "candidates.json").exists():
+                body = json.loads((run / "raw_response.json").read_text())
+                result = {"system": system, "ranked": json.loads((run / "candidates.json").read_text()),
+                          "cost_usd": float((body.get("usage") or {}).get("cost") or 0), "seconds": None}
+            elif system == "single_pass_verified":
+                data = json.loads((run / "assessed.json").read_text())
+                result = {"system": system, "ranked": data["ranked"], "concluded": data["concluded"],
+                          "cost_usd": 0.0, "seconds": 0.0, "facts_added": data["facts_added"]}
+            else:
+                continue
+            rows.append(score(folder, sc, result | {"repeat": int(k)}))
+        for system, n in (("single_pass", 2), ("lumis", 2), ("rules", 5)):
+            for j in range(1, n + 1):
+                if res := existing(folder, sc, system, j):
+                    rows.append(score(folder, sc, res | {"repeat": j}))
+    (target / "results.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
+    write_summary(target, rows)
+    return rows
 
 
 def write_summary(target: Path, rows: list[dict]) -> None:
