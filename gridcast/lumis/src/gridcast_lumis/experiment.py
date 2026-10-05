@@ -17,6 +17,7 @@ under experiments/<name>/raw/<scenario>/<system>-r<k>/; one row per run goes to 
 
 import asyncio
 import json
+import os
 import platform
 import shutil
 import subprocess
@@ -438,7 +439,12 @@ async def run_scenario(name: Path, scenario: str, systems: list[str], repeats: i
     # change what any system sees; per-run seconds are measured under this concurrency.
     for system, k in [item for item in plan if item[0] == "rules"]:
         rows.append(await one(system, k))
-    rows += await asyncio.gather(*(one(system, k) for system, k in plan if system != "rules"))
+    models = [(system, k) for system, k in plan if system != "rules"]
+    if os.environ.get("GRIDCAST_SEQUENTIAL_SYSTEMS") == "1":  # one model run at a time
+        for system, k in models:
+            rows.append(await one(system, k))
+    else:
+        rows += await asyncio.gather(*(one(system, k) for system, k in models))
     truth_runs = sorted((GRIDCAST / ".gridcast" / "chaos" / "runs").glob("*.json"))
     truth = json.loads(truth_runs[-1].read_text())          # read only after all runs
     (raw / "ground_truth.json").write_text(json.dumps(truth, indent=1))

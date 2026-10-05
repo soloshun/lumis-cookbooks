@@ -140,7 +140,9 @@ async def tool_agent_model(model_id: str, timeout: float = 300):
 
     async with (
         httpx2.AsyncClient(timeout=timeout, trust_env=False, follow_redirects=False) as http,
-        AsyncOpenAI(api_key=os.environ["OPENROUTER_API_KEY"], max_retries=0, http_client=http,
+        # Transport retries with backoff: the agent's request bursts tripped the provider's
+        # upstream rate limit (HTTP 429) in its first live run.
+        AsyncOpenAI(api_key=os.environ["OPENROUTER_API_KEY"], max_retries=4, http_client=http,
                     base_url="https://openrouter.ai/api/v1") as client,
     ):
         settings = OpenRouterModelSettings(
