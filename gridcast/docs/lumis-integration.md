@@ -1,10 +1,11 @@
 # Lumis × GridCast integration
 
-> **Status (2026-10-04):** working against `lumis-sdk` `dev` (f42b8e8: PRs #105 and #106 add native
-> SQL, typed change records and the agent fixes found here; `0.1.0rc1` metadata). The cookbook no
-> longer carries SDK workarounds. The main experiment ran on c757a74 with temporary workarounds since
-> merged into the SDK; the issues and fixes are recorded in the SDK's
-> [integration lessons](https://github.com/soloshun/lumis-sdk/blob/dev/docs/design-notes/gridcast-integration-lessons.md). See [research-notes.md](research-notes.md).
+> **Status (2026-10-05):** uses the published `lumis-sdk` **0.1.0** from PyPI
+> (`pip install "lumis-sdk[http,agent,sql]==0.1.0"`), which includes every fix this integration
+> found. The main experiment ran on SDK c757a74 with temporary workarounds since merged into the
+> SDK; the follow-up and tool-agent runs used the `dev` commits that became 0.1.0. The issues and
+> fixes are recorded in the SDK's
+> [integration lessons](https://github.com/soloshun/lumis-sdk/blob/main/docs/design-notes/gridcast-integration-lessons.md). See [research-notes.md](research-notes.md).
 > Code lives in [`gridcast/lumis/`](../lumis/).
 
 ## 1. Who does what

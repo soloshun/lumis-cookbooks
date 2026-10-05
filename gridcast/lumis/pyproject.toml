@@ -9,9 +9,9 @@ description = "Run Lumis against the GridCast estate: incidents from alerts, tri
 requires-python = ">=3.12,<3.14"
 license = "MIT"
 dependencies = [
-  # The refactored SDK from the sibling checkout (lumis/lumis-sdk, branch dev). To pin a
-  # published commit instead: "lumis-sdk[http,agent] @ git+https://github.com/soloshun/lumis-sdk@<sha>"
-  "lumis-sdk[http,agent]",
+  # The published SDK release used for the evaluation's final state. To develop against an SDK
+  # checkout instead: `uv add --editable ../../../lumis-sdk` (do not commit that).
+  "lumis-sdk[http,agent,sql]==0.1.0",
   "httpx>=0.28,<1",
   "pyyaml>=6.0,<7",
   "typer>=0.15,<1",
@@ -22,9 +22,6 @@ dependencies = [
 
 [project.scripts]
 gridcast-lumis = "gridcast_lumis.cli:main"
-
-[tool.uv.sources]
-lumis-sdk = { path = "../../../lumis-sdk", editable = true }
 
 [dependency-groups]
 dev = ["pytest>=8.3", "ruff>=0.9", "mypy>=1.14", "types-pyyaml>=6.0.12"]

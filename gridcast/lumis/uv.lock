@@ -406,7 +406,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },
-    { name = "lumis-sdk", extra = ["agent", "http"] },
+    { name = "lumis-sdk", extra = ["agent", "http", "sql"] },
     { name = "matplotlib" },
     { name = "psycopg", extra = ["binary"] },
     { name = "pyyaml" },
@@ -425,7 +425,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "httpx", specifier = ">=0.28,<1" },
-    { name = "lumis-sdk", extras = ["http", "agent"], editable = "../../../lumis-sdk" },
+    { name = "lumis-sdk", extras = ["http", "agent", "sql"], specifier = "==0.1.0" },
     { name = "matplotlib", specifier = ">=3.9,<4" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2,<4" },
     { name = "pyyaml", specifier = ">=6.0,<7" },
@@ -678,13 +678,17 @@ wheels = [
 
 [[package]]
 name = "lumis-sdk"
-version = "0.1.0rc1"
-source = { editable = "../../../lumis-sdk" }
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "networkx" },
     { name = "pydantic" },
     { name = "pyyaml" },
     { name = "typer" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/55/60/2c80d9b8358c9c1cbd49c177cd7070ea1c67257857f2c79c475bf8542702/lumis_sdk-0.1.0.tar.gz", hash = "sha256:6b08f6f5410bff01424f71c01e91df1bba2efacd8dc537ac1ca3f00c5432237b", size = 183363, upload-time = "2026-10-05T05:05:16.217Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/40/d6/52349db36c91ed0c98d1bb81b90ab7eeedd543ad55f2e2328aad0ce3e9cc/lumis_sdk-0.1.0-py3-none-any.whl", hash = "sha256:957cdd411b97a45f788c5d4c0c7989668c7e6913a9565f4e29e6ab831aaebf83", size = 102199, upload-time = "2026-10-05T05:05:14.918Z" },
 ]
 
 [package.optional-dependencies]
@@ -696,32 +700,8 @@ agent = [
 http = [
     { name = "httpx" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "httpx", marker = "extra == 'agent'", specifier = ">=0.28,<1" },
-    { name = "httpx", marker = "extra == 'http'", specifier = ">=0.28,<1" },
-    { name = "httpx2", marker = "extra == 'agent'", specifier = ">=2.13,<3" },
-    { name = "networkx", specifier = ">=3.4,<4" },
-    { name = "psycopg", extras = ["binary"], marker = "extra == 'sql'", specifier = ">=3.2,<4" },
-    { name = "pydantic", specifier = ">=2.10,<3" },
-    { name = "pydantic-ai-slim", extras = ["openrouter", "openai", "anthropic", "google"], marker = "extra == 'agent'", specifier = ">=2.54,<3" },
-    { name = "pyyaml", specifier = ">=6.0,<7" },
-    { name = "typer", specifier = ">=0.15,<1" },
-]
-provides-extras = ["http", "sql", "agent"]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "bandit", specifier = ">=1.8,<2" },
-    { name = "httpx", specifier = ">=0.28,<1" },
-    { name = "httpx2", specifier = ">=2.13,<3" },
-    { name = "mypy", specifier = ">=1.14,<3" },
-    { name = "pydantic-ai-slim", extras = ["openrouter", "openai", "anthropic", "google"], specifier = ">=2.54,<3" },
-    { name = "pytest", specifier = ">=9.0.3,<10" },
-    { name = "ruff", specifier = ">=0.9,<1" },
-    { name = "types-networkx", specifier = ">=3.4,<4" },
-    { name = "types-pyyaml", specifier = ">=6.0.12,<7" },
+sql = [
+    { name = "psycopg", extra = ["binary"] },
 ]
 
 [[package]]
