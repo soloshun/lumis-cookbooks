@@ -2,8 +2,9 @@
 
 > **Status (2026-10-04):** working against `lumis-sdk` `dev` (f42b8e8: PRs #105 and #106 add native
 > SQL, typed change records and the agent fixes found here; `0.1.0rc1` metadata). The cookbook no
-> longer carries SDK workarounds. The main experiment ran on c757a74 with the workarounds described
-> in [lumis-sdk-findings.md](lumis-sdk-findings.md); see [research-notes.md](research-notes.md).
+> longer carries SDK workarounds. The main experiment ran on c757a74 with temporary workarounds since
+> merged into the SDK; the issues and fixes are recorded in the SDK's
+> [integration lessons](https://github.com/soloshun/lumis-sdk/blob/dev/docs/design-notes/gridcast-integration-lessons.md). See [research-notes.md](research-notes.md).
 > Code lives in [`gridcast/lumis/`](../lumis/).
 
 ## 1. Who does what
@@ -191,7 +192,8 @@ leak or a spike caused it; failing builds do not say why they fail (C needs logs
 effort high). The fixes for the issues found in the first live runs (OpenRouter routing with
 DeepSeek, zero retries, all-or-nothing output acceptance) are in the SDK now. Experiments inject a
 thin subclass (`src/gridcast_lumis/investigator.py`) that only lifts pydantic-ai's caps and turns
-on cost accounting. See [lumis-sdk-findings.md](lumis-sdk-findings.md).
+on cost accounting. The issues and their SDK fixes are recorded in the SDK's
+[integration lessons](https://github.com/soloshun/lumis-sdk/blob/dev/docs/design-notes/gridcast-integration-lessons.md).
 
 ```mermaid
 sequenceDiagram

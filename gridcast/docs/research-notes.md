@@ -70,7 +70,12 @@ Two consequences for reading the results:
   so even this rung can score on *component*. The *mechanism* score separates guessing a likely
   component from knowing what broke.
 
-## 3. Main run (2026-10-03, SDK c757a74 plus documented cookbook workarounds)
+## 3. Main run (2026-10-03, SDK c757a74 plus temporary cookbook workarounds)
+
+The workarounds (agent routing and retries, output repair, a SQL shim) existed only because
+c757a74 lacked those features; each was replaced by an SDK fix before the follow-up (§6). The
+issues, root causes and fixing commits are in the SDK's
+[integration lessons](https://github.com/soloshun/lumis-sdk/blob/dev/docs/design-notes/gridcast-integration-lessons.md).
 
 Folder: `lumis/experiments/2026-10-03-main-deepseek-v4-pro/`. There were 90 runs with no
 system errors. The run was restarted twice: once to switch API keys during a cooldown, and once
