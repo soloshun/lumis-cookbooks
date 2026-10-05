@@ -45,7 +45,9 @@ SCHEMA = {
 # system's top-ranked candidate. Deliberately concrete, and not satisfiable by echoing the alert
 # names alone (see docs/research-notes.md for the caveat). Revised once on 2026-10-04 after
 # inspecting outputs: E also accepts "alias moved / slower model / model version", G also
-# accepts "rejected"; the revision applies to every system.
+# accepts "rejected"; the revision applies to every system. Second revision (2026-10-05, after a
+# spot check of K-O): O also accepts "not delivering ... zone", and component names match
+# regardless of hyphens/spaces ("grid telemetry" = grid-telemetry).
 RUBRIC: dict[str, str] = {
     "J": r"scal\w*\s+(down\s+)?to\s+(0|zero)|\b(0|zero)\s+replicas|replicas\W{0,5}(=|:|to)?\s*(0|zero)\b",
     "A": r"n\s*\+\s*1|query amplification|(thousands|2[,.]?[45]\d\d|excessive|many|more)\W.{0,30}(quer|sql|statement)"
@@ -69,8 +71,8 @@ RUBRIC: dict[str, str] = {
     "M": r"\bcpu\b|throttl|millicore|\b50m\b",
     "N": r"\bkw\b|kilowatt|\bunits?\b|\bscal(e|ing)\b|skew|training.?serving|1000",
     "O": r"(zone|tamale|substation|partition|subset).{0,80}"
-         r"(missing|gap|stopp|stuck|not report|absent|incomplete|no (data|readings))"
-         r"|(missing|gap|stopp|stuck|absent|incomplete).{0,80}(zone|tamale|substation|partition)",
+         r"(missing|gap|stopp|stuck|not report|not deliver|absent|incomplete|no (data|readings))"
+         r"|(missing|gap|stopp|stuck|absent|incomplete|not deliver|no longer deliver).{0,80}(zone|tamale|substation|partition)",
 }
 
 
@@ -100,8 +102,9 @@ def entity_of(text: str, hosts: dict[str, str], names: list[tuple[str, str]]) ->
         return hosts[text]
     if text.startswith("service:"):
         return text
-    lowered = text.lower()
-    return next((ident for name, ident in names if name.lower() in lowered), None)
+    lowered = text.lower().replace("-", " ").replace("_", " ")
+    return next((ident for name, ident in names
+                 if name.lower().replace("-", " ").replace("_", " ") in lowered), None)
 
 
 # ------------------------------------------------------------------------- model rungs
