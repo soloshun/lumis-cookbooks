@@ -1,0 +1,9 @@
+scenario,system,repeat,route,conclusion,outcome,expected_entity,top1,top3,path_score,matched_signatures,hypotheses,supported,evidence_queries,model_requests,input_tokens,output_tokens,cost_usd,thinking_chars,seconds,error,agent_error
+A,tool_agent,1,tool_agent,candidates,,service:gridcast:feature-service,True,True,correct,[],3,0,,32,,,0.260326,10369,176.317,,
+A,tool_agent,2,tool_agent,candidates,,service:gridcast:feature-service,False,True,partial,[],4,0,,14,,,0.178761,20633,179.005,,
+A,lumis,1,agent,supported_diagnosis,correct_diagnosis,service:gridcast:feature-service,True,True,correct,['feature-query-amplification'],2,2,24,8,241061,6537,0.149057,8811,90.143,,
+A,lumis,2,agent,supported_diagnosis,correct_diagnosis,service:gridcast:feature-service,True,True,correct,['feature-query-amplification'],2,2,34,11,423321,21744,0.285594,53049,281.091,,
+N,tool_agent,1,tool_agent,candidates,,service:gridcast:feature-service,True,True,correct,[],4,0,,33,,,0.151847,29857,669.446,,
+N,tool_agent,2,tool_agent,candidates,,service:gridcast:feature-service,True,True,correct,[],4,0,,17,,,0.339642,20854,112.935,,
+N,lumis,1,agent,supported_diagnosis,correct_diagnosis,service:gridcast:feature-service,True,True,correct,[],4,1,28,10,408438,21540,0.295656,54999,229.386,,
+N,lumis,2,agent,supported_diagnosis,correct_diagnosis,service:gridcast:feature-service,True,True,correct,[],4,2,32,12,588122,29382,0.292731,73254,630.175,,

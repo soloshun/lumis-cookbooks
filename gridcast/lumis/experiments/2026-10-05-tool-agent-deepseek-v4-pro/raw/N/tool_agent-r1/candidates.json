@@ -1,0 +1,27 @@
+{
+ "candidates": [
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "service:gridcast:feature-service :: At 03:48:36Z GitOps commit 08c03c6a deployed feature-service image 1.6.0 -> 1.8.0. Release 1.8.0 bakes in flag load_unit=kw, so feature_service.py multiplies load_lag_24h, load_lag_168h, load_mean_24h and load_recent_3h by 1000 before writing forecast_features. The production model (gridcast-load v1) was trained on MW-scale load features, so the next forecast run shifted; quality.stability.forecast_vs_published observed 0.1644 (threshold 0.10) at 03:53:34Z and the ForecastShiftedVsPlan alert fired. :: feature-service 1.8.0 publishes load features in kW while the model expects MW \u2014 a training/serving unit skew caused the >10% forecast shift."
+  },
+  {
+   "entity": "service:gridcast:forecast-service",
+   "text": "service:gridcast:forecast-service :: The model serving path accepted incoming kW-scale features without validating feature units or ranges against the model contract. ml.model_aliases shows production still points at model version 1, whose training feature_names/metrics are MW-based, while ml.forecasts for the 1.8.0 feature run grew ~36% for the first forecast hour. The missing feature-contract guard in forecast-service made the unit skew silently executable. :: forecast-service/model registry has no input schema or unit validation, allowing a MW-trained model to serve on kW-scaled features."
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "service:gridcast:forecast-pipeline :: The pipeline's stability check is plan-relative and a warn-level breach does not block publish, so the first skewed forecast can be published; later runs then compare against the already-shifted plan and can pass. This is not the source of the deviation, but it determines how the defect surfaced and why only one warn fired. :: forecast-pipeline validation is too permissive and plan-relative; it does not hold the first >10% deviation from the published plan."
+  },
+  {
+   "entity": "service:gridcast:planning-api",
+   "text": "service:gridcast:planning-api :: If the published dispatch plan used as the stability baseline were stale or from an older load level, a normal new forecast could appear to deviate >10%. This is unlikely here because the plan age metric was normal (~65 s), all input quality checks passed, and the forecast values themselves were materially higher only after the feature-service release. :: A stale published plan could explain the alert, but the evidence points to a real feature/release shift rather than a stale baseline."
+  }
+ ],
+ "suggestions": [
+  "Immediately revert feature-service to 1.6.0 (or deploy a 1.9 with load_unit=mw) and validate the next forecast-vs-plan passes.",
+  "Pause/hold forecast publishing until a feature/model unit contract guard is added and a backtest confirms forecasts are stable.",
+  "Add input range/unit validation in forecast-service (and/or the pipeline) that rejects load features outside the model's trained MW-scale distribution.",
+  "Only ship kW load features through a separate partner-export side channel, never through the ML feature path, unless the model is retrained on kW.",
+  "Review the release process for GridCast feature flags: flags that alter model inputs should require ML/monitoring sign-off and a comparison against the published plan."
+ ]
+}

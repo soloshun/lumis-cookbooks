@@ -314,7 +314,7 @@ def metrics_for(row: dict, truth: dict, hosts: dict[str, str] | None = None) -> 
                "thinking_chars": row.get("thinking_chars", 0)}
     if "report" in row:
         report = row["report"]
-        s = score(report, truth)
+        s = score(report, truth, hosts)
         # Candidate ranking: mechanically supported hypotheses, then matched (evidence-supported)
         # signatures, then unresolved, then contradicted hypotheses.
         matched = [f for f in report.findings if f.status == "match"]

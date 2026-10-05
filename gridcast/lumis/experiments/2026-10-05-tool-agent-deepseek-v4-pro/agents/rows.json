@@ -1,0 +1,226 @@
+[
+ {
+  "tool_mix": {
+   "telemetry query": 27,
+   "changes and Git": 5,
+   "code and config read": 13,
+   "cluster state": 4,
+   "catalog and hypothesis registration": 0
+  },
+  "failed_tool_calls": 13,
+  "rejected_outputs": 0,
+  "scenario": "A",
+  "system": "tool_agent",
+  "repeat": 1,
+  "tool_calls": 49,
+  "model_requests": 32,
+  "input_tokens": 1159296,
+  "output_tokens": 6708,
+  "cost_usd": 0.260326,
+  "seconds": 176.317,
+  "diagnosis": true,
+  "concluded": false,
+  "error": null,
+  "suggestions": [
+   "Roll feature-service back to 1.6.0 (hourly builder) and pin it until the minute builder is proven safe; stop the 1.6\u21941.7 toggle until then.",
+   "Rewrite build_minute to fetch all needed hour-means in one grouped scan (e.g. join against a generated hour series, or ts >= :start AND ts < :start+'1 hour'), preserving an index on raw.demand_readings(zone_id, ts).",
+   "Make the predicate sargable (replace date_trunc('hour', ts) = :start with a half-open ts range) and verify the query plan uses the (zone_id, ts) index.",
+   "Add a pre-release guard: assert feature-build query count and p95 (db_queries_total / feature_build_seconds) are within the <1.6.0 baseline before promoting, and alert on db_queries_per_build regression.",
+   "Investigate the deploy-authority split (rightsizer-bot vs platform-team vs kofi.mensah) so a regression like FEAT-412 cannot be re-deployed without explicit approval."
+  ]
+ },
+ {
+  "tool_mix": {
+   "telemetry query": 20,
+   "changes and Git": 3,
+   "code and config read": 6,
+   "cluster state": 3,
+   "catalog and hypothesis registration": 0
+  },
+  "failed_tool_calls": 6,
+  "rejected_outputs": 0,
+  "scenario": "A",
+  "system": "tool_agent",
+  "repeat": 2,
+  "tool_calls": 32,
+  "model_requests": 14,
+  "input_tokens": 298069,
+  "output_tokens": 8298,
+  "cost_usd": 0.178761,
+  "seconds": 179.005,
+  "diagnosis": true,
+  "concluded": false,
+  "error": null,
+  "suggestions": [
+   "Roll back feature-service to 1.6.0 (or 1.8.0 hourly path) and hold it until FEAT-412 is fixed \u2014 this is the proven fast configuration (4 queries, ~60ms/build).",
+   "Fix the v1.7.0 feature builder to compute minute-resolution lag features with a single set-based SQL query (e.g. date_trunc + window aggregates / LATERAL) instead of 2499 point queries, and add a regression test asserting db_queries stays bounded.",
+   "Add a latency/query-count guard (SLO on feature build p95 and an alert on gridcast_feature_db_queries_total rate) so minute-resolution regressions page before they push pipeline p95 over 5s.",
+   "In forecast-pipeline build_features, add a timeout and fail-fast/retry/degraded strategy so a slow feature-service cannot silently dominate the pipeline duration.",
+   "Enforce a deploy freeze/rollback policy around known-bad image tags: prevent re-deploying a tag that was just reverted during an active incident without a canary on the feature-build p95."
+  ]
+ },
+ {
+  "tool_mix": {
+   "telemetry query": 3,
+   "changes and Git": 6,
+   "code and config read": 4,
+   "cluster state": 0,
+   "catalog and hypothesis registration": 2
+  },
+  "failed_tool_calls": 1,
+  "rejected_outputs": 1,
+  "scenario": "A",
+  "system": "lumis",
+  "repeat": 1,
+  "tool_calls": 15,
+  "model_requests": 8,
+  "input_tokens": 241061,
+  "output_tokens": 6537,
+  "cost_usd": 0.149057,
+  "seconds": 90.143,
+  "diagnosis": true,
+  "concluded": true,
+  "error": null,
+  "suggestions": [
+   "Roll feature-service back to 1.6.0 (lag_resolution: hourly) to restore the in-database hourly aggregation, or gate the 1.7.0 'minute' builder behind a sargable predicate on raw.demand_readings(zone_id, ts). Requires human review; no remediation was executed."
+  ]
+ },
+ {
+  "tool_mix": {
+   "telemetry query": 13,
+   "changes and Git": 9,
+   "code and config read": 5,
+   "cluster state": 0,
+   "catalog and hypothesis registration": 2
+  },
+  "failed_tool_calls": 1,
+  "rejected_outputs": 2,
+  "scenario": "A",
+  "system": "lumis",
+  "repeat": 2,
+  "tool_calls": 29,
+  "model_requests": 11,
+  "input_tokens": 423321,
+  "output_tokens": 21744,
+  "cost_usd": 0.285594,
+  "seconds": 281.091,
+  "diagnosis": true,
+  "concluded": true,
+  "error": null,
+  "suggestions": [
+   "Tentative remediation for human review: roll feature-service back to 1.6.0 (lag_resolution: hourly) to restore the ~3-query in-database aggregation, or patch the minute builder to aggregate to hourly buckets in-database / use a sargable (zone_id, ts) range predicate instead of date_trunc(ts). Release 1.7.0 (git commit 38880144d1c575c7548a55d3cc7823dc6913599f) set lag_resolution: minute; note that 1.8.0 also reverts lag_resolution to hourly but additionally sets load_unit: kw, introducing a training/serving unit skew, so it is not a drop-in rollback."
+  ]
+ },
+ {
+  "tool_mix": {
+   "telemetry query": 37,
+   "changes and Git": 8,
+   "code and config read": 6,
+   "cluster state": 5,
+   "catalog and hypothesis registration": 0
+  },
+  "failed_tool_calls": 8,
+  "rejected_outputs": 0,
+  "scenario": "N",
+  "system": "tool_agent",
+  "repeat": 1,
+  "tool_calls": 56,
+  "model_requests": 33,
+  "input_tokens": 1368678,
+  "output_tokens": 12345,
+  "cost_usd": 0.151847,
+  "seconds": 669.446,
+  "diagnosis": true,
+  "concluded": false,
+  "error": null,
+  "suggestions": [
+   "Immediately revert feature-service to 1.6.0 (or deploy a 1.9 with load_unit=mw) and validate the next forecast-vs-plan passes.",
+   "Pause/hold forecast publishing until a feature/model unit contract guard is added and a backtest confirms forecasts are stable.",
+   "Add input range/unit validation in forecast-service (and/or the pipeline) that rejects load features outside the model's trained MW-scale distribution.",
+   "Only ship kW load features through a separate partner-export side channel, never through the ML feature path, unless the model is retrained on kW.",
+   "Review the release process for GridCast feature flags: flags that alter model inputs should require ML/monitoring sign-off and a comparison against the published plan."
+  ]
+ },
+ {
+  "tool_mix": {
+   "telemetry query": 30,
+   "changes and Git": 9,
+   "code and config read": 0,
+   "cluster state": 10,
+   "catalog and hypothesis registration": 0
+  },
+  "failed_tool_calls": 3,
+  "rejected_outputs": 0,
+  "scenario": "N",
+  "system": "tool_agent",
+  "repeat": 2,
+  "tool_calls": 49,
+  "model_requests": 17,
+  "input_tokens": 642112,
+  "output_tokens": 9345,
+  "cost_usd": 0.339642,
+  "seconds": 112.935,
+  "diagnosis": true,
+  "concluded": false,
+  "error": null,
+  "suggestions": [
+   "Immediately revert GitOps commit 08c03c6 (feature-service 1.8.0 -> 1.6.0) to restore MW load features.",
+   "Do not redeploy 1.8.0 until PART-77 is coordinated with the model team: retrain `gridcast-load` in kW or convert features to MW at the feature-service/forecast-service boundary.",
+   "Treat `stability.forecast_vs_published` warn-level breaches as non-publishable/hold, or make >10% a fail-level check, to prevent a single shifted forecast from updating the plan.",
+   "Add a feature-unit monitor/alert (e.g. mean `load_lag_24h` should remain ~500 MW; alert on a >10x step) and a feature/model unit-contract test.",
+   "Review the rapid feature-service 1.6/1.7/1.8 rollout churn and add a deployment freeze/change-approval for model-input contracts."
+  ]
+ },
+ {
+  "tool_mix": {
+   "telemetry query": 7,
+   "changes and Git": 7,
+   "code and config read": 9,
+   "cluster state": 0,
+   "catalog and hypothesis registration": 5
+  },
+  "failed_tool_calls": 3,
+  "rejected_outputs": 1,
+  "scenario": "N",
+  "system": "lumis",
+  "repeat": 1,
+  "tool_calls": 28,
+  "model_requests": 10,
+  "input_tokens": 408438,
+  "output_tokens": 21540,
+  "cost_usd": 0.295656,
+  "seconds": 229.386,
+  "diagnosis": true,
+  "concluded": true,
+  "error": null,
+  "suggestions": [
+   "The unit skew is unambiguous in the allowlisted code: deploy/releases.yaml lists feature-service 1.8.0 flags {lag_resolution: hourly, load_unit: kw} with changelog 'publish load features in kW for the partner data export (PART-77)' and 'align feature column units with the partner schema'; services/feature_service.py applies load_scale={mw:1.0, kw:1000.0} to all load features, and its docstring explicitly calls `kw` 'a training/serving skew (scenario N)' because 'the model is trained on MW'. The kW conversion was meant for a partner data export but leaked into the features the serving model consumes. Confirmed at runtime by feature mean 131425.71 (\u2248131.4 MW expressed in kW) and stability warning 1.012 (>0.10 warn threshold). Suggested remediation (read-only, not executed): roll feature-service back to 1.6.0 or isolate the export-unit conversion from the model-serving feature path."
+  ]
+ },
+ {
+  "tool_mix": {
+   "telemetry query": 12,
+   "changes and Git": 8,
+   "code and config read": 16,
+   "cluster state": 0,
+   "catalog and hypothesis registration": 4
+  },
+  "failed_tool_calls": 3,
+  "rejected_outputs": 2,
+  "scenario": "N",
+  "system": "lumis",
+  "repeat": 2,
+  "tool_calls": 40,
+  "model_requests": 12,
+  "input_tokens": 588122,
+  "output_tokens": 29382,
+  "cost_usd": 0.292731,
+  "seconds": 630.175,
+  "diagnosis": true,
+  "concluded": true,
+  "error": null,
+  "suggestions": [
+   "Roll feature-service back to a release whose load_unit is mw (1.6.0) \u2014 or publish a 1.8.x that keeps the model feature columns in MW and emits kW only in a separate partner-export view/column \u2014 so the production model is no longer served kW features. Rebuild the affected feature run and re-run the forecast after the rollback, then confirm stability.forecast_vs_published passes. This is a tentative remediation proposal for human review, not an action I can take."
+  ]
+ }
+]

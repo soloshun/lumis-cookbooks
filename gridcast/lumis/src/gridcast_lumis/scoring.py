@@ -47,11 +47,14 @@ def latest_ground_truth(gridcast_dir: Path) -> dict | None:
     return json.loads(runs[-1].read_text()) if runs else None
 
 
-def score(report: IncidentReport, truth: dict | None) -> dict:
+def score(report: IncidentReport, truth: dict | None, hosts: dict[str, str] | None = None) -> dict:
+    """`hosts` maps a resource node to the logical service it hosts (graph `hosts` edges), so a
+    conclusion rooted at `k8s:gridcast:deployment:x` counts as `service:gridcast:x`."""
+    hosts = hosts or {}
     matched = [f.rule_id for f in report.findings if f.status == "match"]
     unknown = [f.rule_id for f in report.findings if f.status == "unknown"]
     supported = [a for a in report.assessments if a.state == "supported"]
-    predicted = [a.hypothesis.causal_path[0] for a in supported]
+    predicted = [hosts.get(a.hypothesis.causal_path[0], a.hypothesis.causal_path[0]) for a in supported]
     leads = [SIGNATURES[r][0] for r in matched if r in SIGNATURES]
     concluded = report.conclusion == "supported_diagnosis"
     result = {

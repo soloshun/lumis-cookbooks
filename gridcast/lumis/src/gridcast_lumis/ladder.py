@@ -101,7 +101,8 @@ def entity_of(text: str, hosts: dict[str, str], names: list[tuple[str, str]]) ->
     if text in hosts:
         return hosts[text]
     if text.startswith("service:"):
-        return text
+        # Free-text answers decorate the ID ("service:gridcast:x (image 1.7.0)"): keep the ID.
+        return re.match(r"service:[\w.-]+:[\w.-]+", text).group(0)
     lowered = text.lower().replace("-", " ").replace("_", " ")
     return next((ident for name, ident in names
                  if name.lower().replace("-", " ").replace("_", " ") in lowered), None)
@@ -238,7 +239,10 @@ def existing(folder: Path, scenario: str, system: str, repeat: int) -> dict | No
         if not (run / "candidates.json").exists():
             return None
         data = json.loads((run / "candidates.json").read_text())
-        return {"system": system, "ranked": data["candidates"], "concluded": False} | live
+        _, names = _graph_maps(raw)
+        ranked = [{"entity": entity_of(c["entity"], hosts, names) if c["entity"] else None, "text": c["text"]}
+                  for c in data["candidates"]]
+        return {"system": system, "ranked": ranked, "concluded": False} | live
     if system == "single_pass":
         if not (run / "candidates.json").exists():
             return None
@@ -370,7 +374,10 @@ def rescore_all(folder: Path) -> list[dict]:
             system, _, k = run.name.rpartition("-r")
             if system in ("llm_symptoms", "llm_graph") and (run / "candidates.json").exists():
                 body = json.loads((run / "raw_response.json").read_text())
-                result = {"system": system, "ranked": json.loads((run / "candidates.json").read_text()),
+                hosts, names = _graph_maps(folder / "raw" / sc)
+                ranked = [c | {"entity": entity_of(c["entity"], hosts, names) if c.get("entity") else None}
+                          for c in json.loads((run / "candidates.json").read_text())]
+                result = {"system": system, "ranked": ranked,
                           "cost_usd": float((body.get("usage") or {}).get("cost") or 0), "seconds": None}
             elif system == "single_pass_verified":
                 data = json.loads((run / "assessed.json").read_text())

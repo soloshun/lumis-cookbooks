@@ -26,7 +26,7 @@
  "llm_graph": {
   "runs": 30,
   "top1_entity": 0.433,
-  "top3_entity": 0.8,
+  "top3_entity": 0.833,
   "top1_mechanism": 0.233,
   "top1_diagnosis": 0.167,
   "any_diagnosis": 0.233,

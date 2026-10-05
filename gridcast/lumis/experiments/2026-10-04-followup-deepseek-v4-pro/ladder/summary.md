@@ -9,7 +9,7 @@ only when a terminal signature is sufficient (J); everything else escalates.
 |---|---|---|---|---|---|---|
 | runs | 75 | 30 | 30 | 30 | 30 | 30 |
 | top-1 component | 0.667 | 0.333 | 0.433 | 0.633 | 0.6 | 0.933 |
-| top-3 component | 0.667 | 0.333 | 0.8 | 0.767 | 0.733 | 0.967 |
+| top-3 component | 0.667 | 0.333 | 0.833 | 0.767 | 0.733 | 0.967 |
 | top-1 mechanism (rubric) | 0.533 | 0.233 | 0.233 | 0.567 | 0.5 | 0.967 |
 | top-1 component AND mechanism | 0.533 | 0.033 | 0.167 | 0.5 | 0.5 | 0.9 |
 | right diagnosis anywhere in output | 0.6 | 0.1 | 0.233 | 0.567 | 0.533 | 0.967 |

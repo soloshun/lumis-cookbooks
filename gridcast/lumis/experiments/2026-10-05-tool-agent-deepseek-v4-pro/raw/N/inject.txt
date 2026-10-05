@@ -1,0 +1,7 @@
+injecting N-training-serving-skew: A feature release silently changes a unit the model was trained on
+committed 08c03c6 deploy(feature-service): 1.6.0 -> 1.8.0
+Waiting for deployment "feature-service" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "feature-service" rollout to finish: 1 old replicas are pending termination...
+deployment "feature-service" successfully rolled out
+run 20261005T034836Z-N-training-serving-skew-8a51 (ground truth: .gridcast/chaos/runs/20261005T034836Z-N-training-serving-skew-8a51.json)
+symptoms expected: next pipeline run (~5 min)

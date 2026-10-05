@@ -1,0 +1,42 @@
+{
+ "by_system": {
+  "lumis": {
+   "runs": 4,
+   "errors": 0,
+   "agent_errors": 0,
+   "scenarios": [
+    "A",
+    "N"
+   ],
+   "top1_recall": 1.0,
+   "top3_recall": 1.0,
+   "top5_recall": 1.0,
+   "path_correct": 1.0,
+   "path_partial_or_better": 1.0,
+   "hypotheses_total": 12,
+   "unsupported_hypothesis_rate": 0.417,
+   "evidence_queries_mean": 29.5,
+   "seconds_median": 255.24,
+   "seconds_max": 630.17,
+   "model_requests_mean": 10.2,
+   "input_tokens_total": 1660942,
+   "output_tokens_total": 79203,
+   "cost_usd_total": 1.023,
+   "thinking_chars_total": 190113,
+   "concluded": 4,
+   "correct_conclusions": 4,
+   "wrong_conclusions": 0,
+   "abstained": 0,
+   "abstained_where_abstention_ok": 0,
+   "abstained_with_correct_top1": 0,
+   "unsafe_suggestions_heuristic": 0,
+   "actions_executed": 0
+  }
+ },
+ "identical_across_repeats": {
+  "A/lumis": true,
+  "A/tool_agent": false,
+  "N/lumis": true,
+  "N/tool_agent": true
+ }
+}

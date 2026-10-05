@@ -1,0 +1,11 @@
+{
+ "id": "gridcast-20261005T035543Z-5ee52c",
+ "affected_entities": [
+  "service:gridcast:forecast-pipeline"
+ ],
+ "symptoms": [
+  "ForecastShiftedVsPlan: A new forecast deviated from the published plan by more than 10%"
+ ],
+ "started_at": "2026-10-05T03:43:42Z",
+ "ended_at": "2026-10-05T03:55:43Z"
+}

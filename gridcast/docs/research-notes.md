@@ -56,7 +56,7 @@ are allowed to do:
 | **llm_graph** | llm_symptoms plus the scoped service graph (topology, owners, criticality) | No | No | The value of topology |
 | **single_pass** | llm_graph plus the query catalog and the ~16–20 facts Lumis collected for the rule signatures, in one structured completion | No | Partly: each hypothesis is checked against the facts already collected, but nobody fetches the evidence its hypotheses name | The value of curated evidence |
 | **single_pass_verified** | The same single-pass answers. Lumis then fetches the evidence each hypothesis names (queries pinned to the incident window) and assesses them, with no new LLM call | Lumis fetches; the model does not | Yes, mechanically | The value of verification, separated from the agent loop |
-| **tool_agent** *(planned, 2 scenarios)* | Raw read tools with no registry, no acceptance rules and no mechanical check | Yes, freely | No | The value of Lumis' boundaries (fabrication, unsafe actions) |
+| **tool_agent** *(A and N only, §7b)* | Raw read-only tools: PromQL, LogQL and SQL it writes itself, `kubectl get`, Git log/show, and file reads under `src/`, `deploy/`, `infra/`. No query registry, no acceptance rules, no mechanical check | Yes, freely | No | What Lumis' boundaries add over "give a capable model the same telemetry and tools" |
 | **lumis** | Everything: rules first; then the agent with the scoped graph, registered queries, change records, allowlisted code and Git, and multiple turns | Yes, through registered queries and tools | Yes, mechanically; one root cause required to conclude | The full system |
 
 Two consequences for reading the results:
@@ -208,7 +208,7 @@ What the ladder shows:
 * **Without Lumis' evidence the model guesses.** Given only the alert (llm_symptoms), the model
   names the symptomatic service and a generic
   cause ("slow external dependency", "resource exhaustion"): 1 correct diagnosis in 30. The graph
-  helps it find the right component (top-3 0.80) but not what broke (0.17).
+  helps it find the right component (top-3 0.83) but not what broke (0.17).
 * **Curated evidence does most of single-pass's work.** single_pass is "Lumis-lite" (§2a);
   close top-1 scores to Lumis on easy scenarios come from Lumis' own graph and evidence.
 * **Verification alone does not close the gap.** Fetching and checking single-pass's own
@@ -239,6 +239,75 @@ then O wording and hyphen/space-insensitive component names). Each revision appl
 system and is recorded in the code. Rubric matching is a proxy; a human check of the K–O labels
 is recommended before publication.
 
+## 7b. Lumis vs an unguided tool agent (2026-10-05)
+
+Folder: `lumis/experiments/2026-10-05-tool-agent-deepseek-v4-pro/` (report: `agents/summary.md`,
+charts: `agents/charts/effort.png`, `agents/charts/tool-mix.png`). Two scenarios, one medium (A,
+query amplification) and one hard (N, silent kW/MW unit skew), with 2 repeats each and the same
+model, reasoning effort and frozen incidents. The model runs were sequential.
+
+| A + N, 4 runs each | Tool agent (raw tools, no checks) | Lumis |
+|---|---|---|
+| correct diagnosis (top-1 component AND mechanism) | 4/4 | 4/4 |
+| concluded (a mechanically supported root cause) | 0 (it cannot) | 4/4, all correct |
+| tool calls (failed) | 186 (30) | 112 (8) |
+| model requests | 96 | 41 |
+| input tokens | 3.47 M | 1.66 M |
+| final answers sent back for unsupported claims | n/a (nothing checks them) | 6 |
+| cost | $0.93 | $1.02 |
+| wall-clock seconds (sum) | 1,138 | 1,231 |
+
+What it shows:
+
+* **On these two scenarios the tool agent was as accurate as Lumis.** Given the same telemetry,
+  Git and source access, a strong reasoning model found both causes unaided, including the
+  silent unit skew in N, which single-pass got wrong in both runs (§7). This is the
+  honest result. Lumis' edge here is not accuracy.
+* **It needed about 1.7× the tool calls, 2.3× the model requests and 2.1× the input tokens.**
+  61% of its calls were telemetry queries it wrote itself, against 31% for Lumis. 30 of its
+  calls failed: SQL against guessed column names (`created_at`, `forecast_mw`, `check`) and
+  file reads at guessed paths or directories. Lumis' registered queries and its catalog make
+  most of that guessing unnecessary. Lumis spent more of its calls on changes, Git and code
+  (57% vs 27%).
+* **Dollar cost was about the same** ($0.93 vs $1.02) despite twice the input tokens: 90% of
+  the tool agent's input tokens were cache reads (Lumis: 83%), billed at the provider's
+  cached-input rate. Cost per run is therefore not where Lumis wins on this model and provider.
+* **What Lumis adds is a checked conclusion.** Every Lumis run ended in a mechanically
+  supported diagnosis with evidence receipts. The tool agent's answers are free text that someone
+  must verify by hand. Lumis also sent its own final answer back 6 times. In 5 of the 6, a
+  suggestion cited evidence by an identifier that was not a receipt Lumis had issued (a GitOps
+  commit hash or rollout ID written by the model). 2 revised a hypothesis
+  in place instead of registering a new one, and 1 named an entity outside the incident graph
+  (the cases overlap). Every run corrected itself and concluded. Nothing catches these kinds of
+  error in the tool agent's output.
+* **Safety.** Nothing was executed by either system; both are read-only. The wording
+  differed: the tool agent's suggestions were imperatives ("Immediately revert...", pause
+  forecast publishing), while Lumis' were options, two of them explicitly marked for human
+  review. The tool agent's 12 path-guard denials were guessed paths and directory reads (e.g.
+  `src`, `deploy/`, `gridcast/src/...`). None reached for `.env`, secrets or the chaos state.
+* **Limits.** Two scenarios, 2 repeats, one model. The tool agent's read access is at least as broad
+  as Lumis' (raw PromQL, LogQL and SQL, plus `kubectl get`), so this isolates Lumis' boundaries
+  and verification, not its data access. In a smoke test on a healthy estate before the run, the
+  tool agent never converged and exhausted 60 requests: it has no stopping point when there is
+  nothing to find. Lumis was not given the same test.
+
+Run history: the first attempt (`lumis/experiments/.aborted-2026-10-05-tool-agent-429/`, kept
+for transparency) lost both A tool-agent runs to HTTP 429 from the provider's upstream rate
+limit while the four model runs were concurrent. It was stopped and A was reverted. The rerun
+gave the tool agent transport retries with backoff and ran the model systems one at a time
+(`GRIDCAST_SEQUENTIAL_SYSTEMS=1`). All 8 runs then succeeded.
+
+Scoring fixes found while analysing this run (each applies to every system):
+
+* Free-text answers that decorate a service ID (`service:gridcast:feature-service (image
+  1.7.0)`) were compared literally and scored as the wrong component. They are now reduced to
+  the ID. Rescoring the §7 ladder changed one number: LLM + graph top-3 component, 0.80 → 0.83.
+* The run-time `outcome` label compared a conclusion's first causal-path element literally, so
+  a conclusion rooted at `k8s:gridcast:deployment:feature-service` was labelled
+  `wrong_diagnosis`. That limitation was already corrected after the fact by `rescore.py` and the
+  ladder. The run-time scorer now maps hosted resources itself, and this run's labels were
+  recomputed from the raw reports.
+
 ## 7a. Models not evaluated
 
 Only DeepSeek v4 was used for every reported model run (`deepseek/deepseek-v4-pro-0813` with
@@ -256,6 +325,7 @@ allows.
 * Synthetic estate and faults. Faults are realistic in channel and symptom but chosen by us;
   the scenario set is not a sample of real incidents.
 * One model family (DeepSeek v4, §7a), few repeats, and no human baseline.
+* The tool-agent comparison (§7b) covers two scenarios only.
 * Post-hoc scoring corrections and LLM-assigned mechanism labels (reported next to the originals).
 * The estate defects above affected the main run; the follow-up fixes them, but there may be
   others we have not found.

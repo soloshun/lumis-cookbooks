@@ -1,0 +1,27 @@
+{
+ "candidates": [
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "service:gridcast:feature-service :: GitOps commit 08c03c6 deployed feature-service 1.8.0 with release flag `load_unit: kw`. It multiplied load features by 1000 (mean `load_lag_24h` jumped from 524.1 to 524,130.4 between the 03:48 and 03:53 feature runs), while the production model `gridcast-load` v1 was trained on MW. The pipeline fed those kW-scaled features to the model, raising the new forecast mean P50 from 577.3 to 665.5 MW (+15.3%). The `stability.forecast_vs_published` check observed 0.1644 (>0.10) at 03:53:34 and fired `ForecastShiftedVsPlan`. :: feature-service 1.8.0 changed load-feature units from MW to kW without retraining the model or converting at the API boundary."
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "service:gridcast:forecast-pipeline :: At 03:53:34 the stability check for run `10df15da...` returned `warn` with observed 0.1644, but `quality.forecast_validations.decision` was still `publish`. A >10% deviation was therefore published instead of held, allowing the first shifted forecast through and making the plan drift in later runs. :: The pipeline's validation gate treats a >10% stability breach as a publishable warning rather than a hard hold/failure."
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "service:gridcast:feature-service :: Earlier in the window, feature-service 1.7.0 (`FEAT-412`) switched lag features to native one-minute resolution and generated 2,499 DB queries per build (6.3 s) versus 4 queries (52 ms) in 1.6.0, with rapid 1.6/1.7/1.8 GitOps churn from 03:06 to 03:48. This could have destabilized the feature/plan baseline, but the observed 1.7.0 forecasts still matched the published plan and the 1.8.0 unit change explains the magnitude exactly. :: Feature-service release churn / FEAT-412 query amplification is a plausible look-alike, but the evidence points to the 1.8.0 unit change."
+  },
+  {
+   "entity": "service:gridcast:planning-api",
+   "text": "service:gridcast:planning-api :: The comparison target for `stability.forecast_vs_published` is the current published plan. If a planning-api release had shifted or stale-cached the plan baseline, a healthy forecast could appear >10% away. However, dispatch plans held total energy at 55,424 MWh until the skewed 1.8.0 forecast, and planning-api has been on the 2.3.0 revert since 22:00 on 04 Oct. :: A shifted/stale published-plan baseline is a less likely alternative and is not supported by dispatch_plans or deploy history."
+  }
+ ],
+ "suggestions": [
+  "Immediately revert GitOps commit 08c03c6 (feature-service 1.8.0 -> 1.6.0) to restore MW load features.",
+  "Do not redeploy 1.8.0 until PART-77 is coordinated with the model team: retrain `gridcast-load` in kW or convert features to MW at the feature-service/forecast-service boundary.",
+  "Treat `stability.forecast_vs_published` warn-level breaches as non-publishable/hold, or make >10% a fail-level check, to prevent a single shifted forecast from updating the plan.",
+  "Add a feature-unit monitor/alert (e.g. mean `load_lag_24h` should remain ~500 MW; alert on a >10x step) and a feature/model unit-contract test.",
+  "Review the rapid feature-service 1.6/1.7/1.8 rollout churn and add a deployment freeze/change-approval for model-input contracts."
+ ]
+}
