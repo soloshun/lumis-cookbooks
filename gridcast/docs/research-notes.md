@@ -169,17 +169,87 @@ Each change has a commit and a recorded reason:
 | Scenarios | K (timeout meets slow vendor), L (decoy release during a silent data gap), M (CPU limit squeeze), N (training/serving skew: load features in kW, model trained on MW), O (one zone missing, aggregates healthy). No rule signatures for K–O, by design | `src/gridcast/chaos/scenarios.py` |
 | Harness | Single-pass and Lumis run concurrently on the frozen incident (every query is pinned to its window; per-run seconds are measured under concurrency, unlike the main run); credit guard stops before a scenario when the balance is under $1.50; evidence windows of 20 minutes so the previous scenario's revert is not "recent" | `experiment.py`, `lumis.yaml` |
 
-## 7. Follow-up run
+## 7. Follow-up run and the evidence ladder (2026-10-04/05)
 
-*Results are added after the run completes. The protocol is unchanged; the SDK, estate,
-harness and config changes above apply, and they are why the follow-up is reported separately
-and not merged with the main run.*
+Folder: `lumis/experiments/2026-10-04-followup-deepseek-v4-pro/`. The protocol and model are the
+same as the main run, on the fixed SDK (dev 51016d2) and fixed estate, with 15 scenarios (K–O
+new) and single-pass and Lumis running concurrently on each frozen incident. There were 135 runs
+and no host sleep. Two runs were affected by infrastructure: H's first attempt lost all four
+model runs to a network/DNS failure reaching OpenRouter (re-run; the first attempt is kept in
+`raw/H.network-failure-1911`), and C Lumis r2 stopped after nine model requests with an
+unrecorded provider failure (kept as a degraded run; SDK #113 now records the cause).
+
+The **evidence ladder** (`ladder/`) adds three systems on the same frozen incidents:
+llm_symptoms, llm_graph and single_pass_verified (§2a). Every system is scored identically: top-1
+component, a transparent regex mechanism rubric per scenario (`ladder.py`, RUBRIC), component AND
+mechanism, and conclusion precision.
+
+| All 15 scenarios | Rules | LLM, symptoms only | LLM + graph | Single-pass | Single-pass + verification | Lumis |
+|---|---|---|---|---|---|---|
+| top-1 component | 0.67 | 0.33 | 0.43 | 0.63 | 0.60 | **0.93** |
+| top-1 component AND mechanism | 0.53 | 0.03 | 0.17 | 0.50 | 0.50 | **0.90** |
+| right diagnosis anywhere in output | 0.60 | 0.10 | 0.23 | 0.57 | 0.53 | **0.97** |
+| concluded (precision) | 5 (1.00) | — | — | 9 (0.89) | 3 (1.00) | **24 (0.96)** |
+| hard set K–O, correct diagnoses | 0/25 | 0/10 | 2/10 | 2/10 | 2/10 | **9/10** |
+| model cost per run | $0 | $0.005 | $0.015 | $0.035 | $0.035 | $0.14 |
+| median seconds per run | 0.13 | — | — | 224 | 224 | 225 |
+
+Charts: `ladder/charts/` (overview of all metrics, the ladder, per scenario, original vs hard,
+cost vs correctness).
+
+What the ladder shows:
+
+* **Without Lumis' evidence the model guesses.** Given only the alert (llm_symptoms, the
+  "paste the error into a chat" baseline), the model names the symptomatic service and a generic
+  cause ("slow external dependency", "resource exhaustion"): 1 correct diagnosis in 30. The graph
+  helps it find the right component (top-3 0.80) but not what broke (0.17).
+* **Curated evidence does most of single-pass's work.** single_pass is "Lumis-lite" (§2a);
+  close top-1 scores to Lumis on easy scenarios come from Lumis' own graph and evidence.
+* **Verification alone does not close the gap.** Fetching and checking single-pass's own
+  evidence made it more cautious (3 conclusions, all correct, instead of 9) but not more often
+  right (0.50 either way). The single-pass hypotheses were wrong because they never looked at the
+  cause, not because nobody checked them.
+* **The agent's reach is the difference on hard faults.** On K–O Lumis made 9/10 correct
+  diagnoses, against 2/10 for single-pass. The decisive facts were outside the pre-collected
+  bundle: the timeout commit (K), the CPU-limit commit (M), the `load_unit=kw` release flag in
+  `releases.yaml` and the feature monitor (N), and the zones-reporting count (O).
+* **Remaining Lumis misses.** C: both runs, one degraded by the provider failure and one naming
+  PostgreSQL rather than feature-service while stating the right mechanism. K r2: named the vendor
+  while citing the timeout commit.
+
+Behaviour notes (follow-up):
+
+* **Language mixing occurred in reasoning traces only.** 2 of 122 model artefacts contain CJK
+  text: single-pass N r1 reasoned entirely in Chinese, and Lumis N r1's thinking had one stray
+  character. All final answers were English.
+* **Safety.** Nothing was executed (the kernel has no executor). The two heuristic
+  "unsafe suggestion" flags (E, G) are false positives on reading: both suggestions escalate to
+  an owner for a decision.
+* **Unsupported candidates:** single-pass 90%, Lumis 12.5% (single-pass's figure is partly
+  structural, see §2a; single_pass_verified is the fair comparison).
+
+Scoring caveats: the mechanism rubric was revised twice after inspecting outputs (E/G wording,
+then O wording and hyphen/space-insensitive component names). Each revision applies to every
+system and is recorded in the code. Rubric matching is a proxy; a human check of the K–O labels
+is recommended before publication.
+
+## 7a. Models not evaluated
+
+Only DeepSeek v4 was used for every reported model run (`deepseek/deepseek-v4-pro-0813` with
+reasoning effort high; `deepseek-v4-flash` only during development). This was a cost decision for
+a proof of concept: a reasoning model at about $0.14 per Lumis run and $0.035 per single-pass run
+let us run 225+ scored runs for under $10. We did **not** evaluate GPT-5-class models,
+Claude Haiku or Sonnet, Gemini or Grok. Stronger models may raise every LLM-based rung,
+including single-pass and the symptoms-only baseline, and could narrow or widen the gap to Lumis;
+nothing here should be read as a claim about them. A small cross-model check (one hard scenario,
+e.g. N or M, per model, same frozen incident via the ladder) is the cheapest next step if credit
+allows.
 
 ## 8. Threats to validity
 
 * Synthetic estate and faults. Faults are realistic in channel and symptom but chosen by us;
   the scenario set is not a sample of real incidents.
-* One model family, few repeats, and no human baseline.
+* One model family (DeepSeek v4, §7a), few repeats, and no human baseline.
 * Post-hoc scoring corrections and LLM-assigned mechanism labels (reported next to the originals).
 * The estate defects above affected the main run; the follow-up fixes them, but there may be
   others we have not found.
