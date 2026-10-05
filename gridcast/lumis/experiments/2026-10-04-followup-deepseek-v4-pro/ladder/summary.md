@@ -5,7 +5,7 @@ Mechanism uses the regex rubric in `src/gridcast_lumis/ladder.py` (RUBRIC).
 For Rules only, a correct top-1 is the matched signature: a lead for a human. Rules conclude
 only when a terminal signature is sufficient (J); everything else escalates.
 
-| metric | Rules only | LLM, symptoms only | LLM + graph | LLM + Lumis evidence (one shot) | one shot + Lumis verification | Lumis |
+| metric | Rules only | LLM, alert only (no evidence) | LLM + graph | LLM + Lumis evidence (one shot) | one shot + Lumis verification | Lumis |
 |---|---|---|---|---|---|---|
 | runs | 75 | 30 | 30 | 30 | 30 | 30 |
 | top-1 component | 0.667 | 0.333 | 0.433 | 0.633 | 0.6 | 0.933 |
@@ -20,7 +20,7 @@ only when a terminal signature is sufficient (J); everything else escalates.
 
 ## Top-1 diagnosis (component AND mechanism) per scenario
 
-| scenario | Rules only | LLM, symptoms only | LLM + graph | LLM + Lumis evidence (one shot) | one shot + Lumis verification | Lumis |
+| scenario | Rules only | LLM, alert only (no evidence) | LLM + graph | LLM + Lumis evidence (one shot) | one shot + Lumis verification | Lumis |
 |---|---|---|---|---|---|---|
 | A | 5/5 | 0/2 | 0/2 | 1/2 | 1/2 | 2/2 |
 | B | 5/5 | 0/2 | 0/2 | 2/2 | 2/2 | 2/2 |
@@ -44,4 +44,5 @@ only when a terminal signature is sufficient (J); everything else escalates.
 ![ladder.png](charts/ladder.png)
 ![by_scenario.png](charts/by_scenario.png)
 ![original_vs_hard.png](charts/original_vs_hard.png)
+![hard_set.png](charts/hard_set.png)
 ![cost_vs_correctness.png](charts/cost_vs_correctness.png)

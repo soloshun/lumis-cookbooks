@@ -6,7 +6,7 @@ read-only evidence fetch of `single_pass_verified`.
 
 | System | The LLM gets | Isolates |
 |---|---|---|
-| llm_symptoms | alert symptoms + affected services ("paste the alert into a chat") | the model alone |
+| llm_symptoms | alert symptoms + affected services, no evidence | the model alone (guessing) |
 | llm_graph | + the scoped service graph | topology |
 | single_pass | + the facts Lumis collected (ran live) | curated evidence |
 | single_pass_verified | single_pass answers; Lumis fetches and checks their evidence (no LLM) | verification |
@@ -234,6 +234,11 @@ def existing(folder: Path, scenario: str, system: str, repeat: int) -> dict | No
     raw = folder / "raw" / scenario
     run = raw / f"{system}-r{repeat}"
     hosts, _ = _graph_maps(raw)
+    if system == "tool_agent":
+        if not (run / "candidates.json").exists():
+            return None
+        data = json.loads((run / "candidates.json").read_text())
+        return {"system": system, "ranked": data["candidates"], "concluded": False} | live
     if system == "single_pass":
         if not (run / "candidates.json").exists():
             return None
@@ -278,7 +283,7 @@ def score(folder: Path, scenario: str, result: dict) -> dict:
             "facts_added": result.get("facts_added")}
 
 
-SYSTEMS = ("rules", "llm_symptoms", "llm_graph", "single_pass", "single_pass_verified", "lumis")
+SYSTEMS = ("rules", "llm_symptoms", "llm_graph", "single_pass", "single_pass_verified", "tool_agent", "lumis")
 
 
 def aggregate(rows: list[dict]) -> dict:
@@ -374,7 +379,7 @@ def rescore_all(folder: Path) -> list[dict]:
             else:
                 continue
             rows.append(score(folder, sc, result | {"repeat": int(k)}))
-        for system, n in (("single_pass", 2), ("lumis", 2), ("rules", 5)):
+        for system, n in (("single_pass", 2), ("lumis", 2), ("rules", 5), ("tool_agent", 2)):
             for j in range(1, n + 1):
                 if res := existing(folder, sc, system, j):
                     rows.append(score(folder, sc, res | {"repeat": j}))
@@ -386,9 +391,10 @@ def rescore_all(folder: Path) -> list[dict]:
 def write_summary(target: Path, rows: list[dict]) -> None:
     metrics = aggregate(rows)
     (target / "metrics.json").write_text(json.dumps(metrics, indent=1))
-    label = {"rules": "Rules only", "llm_symptoms": "LLM, symptoms only", "llm_graph": "LLM + graph",
+    label = {"rules": "Rules only", "llm_symptoms": "LLM, alert only (no evidence)", "llm_graph": "LLM + graph",
              "single_pass": "LLM + Lumis evidence (one shot)",
-             "single_pass_verified": "one shot + Lumis verification", "lumis": "Lumis"}
+             "single_pass_verified": "one shot + Lumis verification", "tool_agent": "Tool agent (no checks)",
+             "lumis": "Lumis"}
     systems = [s for s in SYSTEMS if s in metrics]
     keys = [("runs", "runs"), ("top1_entity", "top-1 component"), ("top3_entity", "top-3 component"),
             ("top1_mechanism", "top-1 mechanism (rubric)"), ("top1_diagnosis", "top-1 component AND mechanism"),
@@ -417,11 +423,13 @@ def write_summary(target: Path, rows: list[dict]) -> None:
 
 
 # ------------------------------------------------------------------------------ charts
-LONG = {"rules": "Rules only", "llm_symptoms": "LLM, symptoms only\n(\"Claude-web\")",
+LONG = {"rules": "Rules only", "llm_symptoms": "LLM, alert only\n(no evidence)",
         "llm_graph": "LLM + graph", "single_pass": "Single-pass\n(LLM + Lumis evidence)",
-        "single_pass_verified": "Single-pass +\nLumis verification", "lumis": "Lumis (full)"}
+        "single_pass_verified": "Single-pass +\nLumis verification",
+        "tool_agent": "Tool agent\n(raw tools, no checks)", "lumis": "Lumis (full)"}
 COLOURS = {"rules": "#64748b", "llm_symptoms": "#f97316", "llm_graph": "#facc15",
-           "single_pass": "#38bdf8", "single_pass_verified": "#818cf8", "lumis": "#16a34a"}
+           "single_pass": "#38bdf8", "single_pass_verified": "#818cf8", "tool_agent": "#e879f9",
+           "lumis": "#16a34a"}
 
 
 def write_charts(target: Path, rows: list[dict]) -> list[str]:
@@ -515,6 +523,38 @@ def write_charts(target: Path, rows: list[dict]) -> list[str]:
     fig.savefig(charts / "original_vs_hard.png", dpi=150)
     plt.close(fig)
     written.append("original_vs_hard.png")
+
+    # 4b. The hard set on its own: K-O, every system, overall and per scenario.
+    if hard:
+        fig, (left, right) = plt.subplots(1, 2, figsize=(14, 4.6), gridspec_kw={"width_ratios": [1.3, 1]})
+        vs = [np.mean([r["top1_diagnosis"] for r in rows if r["system"] == s and r["scenario"] in hard] or [0])
+              for s in systems]
+        bars = left.bar(range(len(systems)), vs, color=[COLOURS[s] for s in systems], edgecolor="black",
+                        linewidth=0.5)
+        for bar, v in zip(bars, vs, strict=True):
+            left.text(bar.get_x() + bar.get_width() / 2, v + 0.02, f"{v:.2f}", ha="center", fontsize=9)
+        left.set_xticks(range(len(systems)), [LONG[s] for s in systems], fontsize=7)
+        left.set_ylim(0, 1.1)
+        left.set_ylabel("top-1 component AND mechanism")
+        left.set_title(f"Hard set ({', '.join(hard)}): correct diagnosis rate")
+        grid = np.array([[np.mean([r["top1_diagnosis"] for r in rows if r["scenario"] == sc and r["system"] == s])
+                          if any(r["scenario"] == sc and r["system"] == s for r in rows) else np.nan
+                          for s in systems] for sc in hard], dtype=float)
+        right.imshow(grid, cmap="RdYlGn", vmin=0, vmax=1, aspect="auto")
+        right.set_xticks(range(len(systems)), [LONG[s].replace("\n", " ") for s in systems], fontsize=7,
+                         rotation=30, ha="right")
+        right.set_yticks(range(len(hard)), [{"K": "K timeout + slow vendor", "L": "L decoy release, data gap",
+                                              "M": "M CPU limit squeeze", "N": "N training/serving skew",
+                                              "O": "O one zone missing"}.get(h, h) for h in hard], fontsize=8)
+        for i in range(len(hard)):
+            for j in range(len(systems)):
+                if not np.isnan(grid[i, j]):
+                    right.text(j, i, f"{grid[i, j]:.1f}", ha="center", va="center", fontsize=8)
+        right.set_title("Per hard scenario (share of repeats)")
+        fig.tight_layout()
+        fig.savefig(charts / "hard_set.png", dpi=150)
+        plt.close(fig)
+        written.append("hard_set.png")
 
     # 5. Cost against correctness.
     fig, ax = plt.subplots(figsize=(8, 4.6))

@@ -193,6 +193,35 @@ async def run_system(system: str, prepared: PreparedProject, incident: Incident,
             row["report"] = report
             if report.stop_reason not in {"agent_completed", "sufficient_terminal_signature"}:
                 row["agent_error"] = report.stop_reason
+        elif system == "tool_agent":
+            # Baseline (iii): raw read-only tools, no registry, no acceptance, no assessment.
+            from gridcast_lumis.ladder import _graph_maps, entity_of
+            from gridcast_lumis.tool_agent import investigate
+
+            assert prepared.config.models is not None
+            output, messages, error = await investigate(prepared.config.models.model, incident)
+            from pydantic_ai.messages import ModelMessagesTypeAdapter
+
+            transcript = json.loads(ModelMessagesTypeAdapter.dump_json(messages))
+            (out / "transcript.json").write_text(json.dumps(transcript, indent=1))
+            (out / "reasoning.md").write_text(thinking_markdown(transcript))
+            hosts, names = _graph_maps(out.parent)
+            candidates = [{"entity": entity_of(h.root_cause, hosts, names)
+                           or entity_of(h.mechanism + " " + h.statement, hosts, names),
+                           "text": f"{h.root_cause} :: {h.mechanism} :: {h.statement}"}
+                          for h in (output.hypotheses if output else [])]
+            (out / "candidates.json").write_text(json.dumps(
+                {"candidates": candidates, "suggestions": output.suggestions if output else []}, indent=1))
+            row["cost_usd"] = round(transcript_cost(transcript), 6)
+            row["thinking_chars"] = sum(len(part.get("content", "")) for m in transcript
+                                        for part in m.get("parts", []) if part.get("part_kind") == "thinking")
+            row["tool_agent"] = {"candidates": candidates,
+                                 "suggestions": output.suggestions if output else [],
+                                 "tool_calls": sum(1 for m in transcript for part in m.get("parts", [])
+                                                   if part.get("part_kind") == "tool-call"),
+                                 "requests": sum(1 for m in transcript if m.get("kind") == "response")}
+            if error:
+                row["agent_error"] = error
         elif system == "single_pass":
             # Baseline (ii): the same evidence bundle as triage, then ONE structured completion
             # through the SDK's own OpenRouter adapter (same schema, same redaction). The raw
@@ -309,6 +338,14 @@ def metrics_for(row: dict, truth: dict, hosts: dict[str, str] | None = None) -> 
             "suggestions": [x.description for x in report.suggestions],
             "unresolved_questions": list(report.unresolved_questions),
         })
+    elif "tool_agent" in row:
+        ta = row["tool_agent"]
+        paths = [[c["entity"]] for c in ta["candidates"] if c["entity"]]
+        m.update({"route": "tool_agent", "conclusion": "candidates", "outcome": None,
+                  "matched_signatures": [], "hypotheses": len(ta["candidates"]),
+                  "supported": 0, "unsupported": len(ta["candidates"]),
+                  "model_requests": ta["requests"], "tool_attempts": ta["tool_calls"],
+                  "suggestions": ta["suggestions"]})
     elif "single_pass" in row:
         cands = row["single_pass"]["candidates"]
         # Model's own ranking; non-entity tokens (e.g. ">" separators) are ignored for scoring

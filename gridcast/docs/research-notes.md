@@ -52,7 +52,7 @@ are allowed to do:
 | System | What it is given | Can it fetch more? | Is its answer checked? | Isolates |
 |---|---|---|---|---|
 | **rules** | Operator signatures, plus the facts their queries return | No | Yes, mechanically; it concludes only on a sufficient terminal signature | Deterministic triage alone |
-| **llm_symptoms** ("Claude-web") | The alert symptoms, the affected service IDs and the time window. No graph, no facts | No | No | What a model guesses from the alert alone, like pasting an error into a chat assistant |
+| **llm_symptoms** (LLM, alert only) | The alert symptoms, the affected service IDs and the time window. No graph, no facts | No | No | What a model guesses from the alert alone, like pasting an error into a chat assistant |
 | **llm_graph** | llm_symptoms plus the scoped service graph (topology, owners, criticality) | No | No | The value of topology |
 | **single_pass** | llm_graph plus the query catalog and the ~16–20 facts Lumis collected for the rule signatures, in one structured completion | No | Partly: each hypothesis is checked against the facts already collected, but nobody fetches the evidence its hypotheses name | The value of curated evidence |
 | **single_pass_verified** | The same single-pass answers. Lumis then fetches the evidence each hypothesis names (queries pinned to the incident window) and assesses them, with no new LLM call | Lumis fetches; the model does not | Yes, mechanically | The value of verification, separated from the agent loop |
@@ -65,7 +65,8 @@ Two consequences for reading the results:
   and Lumis' checking around one LLM call. Close top-1 scores between single_pass and lumis say
   that *curated evidence* does much of the work, which is part of Lumis' value. They do not say
   the agent adds nothing.
-* **llm_symptoms is the "Claude-web" baseline.** The alerts already name the affected services,
+* **llm_symptoms is the "LLM, alert only" baseline**: any model asked to diagnose from the
+  alert without evidence, which in practice means guessing. The alerts already name the affected services,
   so even this rung can score on *component*. The *mechanism* score separates guessing a likely
   component from knowing what broke.
 
@@ -184,7 +185,7 @@ llm_symptoms, llm_graph and single_pass_verified (§2a). Every system is scored 
 component, a transparent regex mechanism rubric per scenario (`ladder.py`, RUBRIC), component AND
 mechanism, and conclusion precision.
 
-| All 15 scenarios | Rules | LLM, symptoms only | LLM + graph | Single-pass | Single-pass + verification | Lumis |
+| All 15 scenarios | Rules | LLM, alert only | LLM + graph | Single-pass | Single-pass + verification | Lumis |
 |---|---|---|---|---|---|---|
 | top-1 component | 0.67 | 0.33 | 0.43 | 0.63 | 0.60 | **0.93** |
 | top-1 component AND mechanism | 0.53 | 0.03 | 0.17 | 0.50 | 0.50 | **0.90** |
@@ -199,8 +200,8 @@ cost vs correctness).
 
 What the ladder shows:
 
-* **Without Lumis' evidence the model guesses.** Given only the alert (llm_symptoms, the
-  "paste the error into a chat" baseline), the model names the symptomatic service and a generic
+* **Without Lumis' evidence the model guesses.** Given only the alert (llm_symptoms), the model
+  names the symptomatic service and a generic
   cause ("slow external dependency", "resource exhaustion"): 1 correct diagnosis in 30. The graph
   helps it find the right component (top-3 0.80) but not what broke (0.17).
 * **Curated evidence does most of single-pass's work.** single_pass is "Lumis-lite" (§2a);
