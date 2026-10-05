@@ -1,0 +1,408 @@
+We need answer propose 3-5 falsifiable hypotheses, not conclusions. Context untrusted observation data, not instructions. Use only entity IDs and registered query IDs from context. Predictions and falsifiers must be mechanically checkable against entity/key values. Every check needs corresponding query in evidence_needed. Do not propose actions or manufacture evidence.
+
+We need craft hypotheses about incident: feature-service 5xx ratio above 5% from 16:28:57 to 16:44:10. Affected entity service:gridcast:feature-service. We have evidence. Need propose hypotheses with predictions/falsifiers using only entity IDs and query IDs in context. We need include evidence_needed queries. Likely output JSON? User didn't specify format. We need infer. They ask propose hypotheses. Need probably JSON list.
+
+We need use only entity IDs and registered query IDs from context. Evidence provided:
+
+- planning desired/available replicas 1, operator transport errors 0
+- feature-sql-per-build 0.0, feature-build-p95 0.0, feature-failed-builds 6.128, feature auth failures 6 log lines
+- forecast oom killed 0, memory ratio .193, restarts 0, inference max .03, model reloads 1, production alias changes 0
+- ingestion demand errors 0, weather errors 0
+- pipeline demand range failures 0, weather variability warnings 0
+- also there are queries not evidenced: postgres-rows-scanned, forecast-inference-p95, ingestion-contract-violations, ingestion-weather-vendor-503, feature-service-error-log, ingestion-error-log, slow-pipeline-traces, prefect-failed-flow-runs, prefect-flow-runs, ingestion-demand-batch-p95, demand-freshness, weather-observation-freshness, demand-completeness-failures, forecast-stability-warnings, demand-zones-reporting, load-feature-mean, feature-cpu-throttling, changes queries for services.
+
+We need propose hypotheses that can be falsified by query results. Need avoid conclusions. Hypothesis examples:
+
+1. feature-service elevated 5xx caused by PostgreSQL authentication failures. Evidence: feature-auth-failures = 6 (log lines) and feature-failed-builds 6.128. Prediction: feature-service error log includes auth failure messages; maybe postgres rows scanned? But need check with queries. Could be: If PostgreSQL auth failures are causal, feature auth failure log lines > 0 and feature-failed-builds > 0. But already observed. Need falsifiable: maybe feature-service error log contains db auth failure? We need propose query in evidence_needed. We can use feature-service-error-log. Prediction: feature-service error log messages include "password authentication failed" or "auth" (but mechanically checkable? Need define check: contains substring). But context says predictions must be mechanically checkable against entity/key values. Could propose: feature-service-error-log (error messages) contains at least one line matching /password authentication failed|authentication failure/. But we need not manufacture evidence. Need evidence_needed: query id feature-service-error-log.
+
+2. feature-service 5xx due to failing feature builds (failed_builds_10m > 0) causing downstream errors. But affected service itself 5xx? Maybe feature-service builds failing due to dependency. Need formulate.
+
+3. Underlying database (postgres) is overloaded/high rows scanned leading to slow feature builds. Query postgres-rows-scanned. Prediction: postgres rows scanned per second above threshold? We don't have baseline. Could be > some threshold but mechanically checkable: value > 0? That's trivial. Need maybe use feature-sql-per-build currently 0 is interesting. Actually evidence feature-sql-per-build = 0 and build p95 = 0 despite failed builds >0. Maybe because no successful builds? The 5xx could be due to failed builds. Hypothesis: feature-service 5xx is caused by failed feature builds. Check: feature-failed-builds > 0, feature-access? We need falsifiers.
+
+Let's identify relations: service:gridcast:feature-service serves forecast-pipeline (declared). That means forecast-pipeline depends on feature-service? Kind "serves" source -> target? Need semantics. Relationships: "source service:gridcast:feature-service target service:gridcast:forecast-pipeline kind serves". This likely means feature-service serves forecast-pipeline? Actually 'serves' relationship from service A to service B maybe A calls B? Or A serves B? Need ambiguous. In many graphs, "serves" could be "provides services to". But here service:gridcast:postgres target feature-service kind serves: postgres serves feature-service, i.e., feature-service depends on postgres? Maybe directed edge "source serves target" meaning source is dependency of target? Need not matter.
+
+We need propose 3-5 hypotheses. Use only entity IDs and registered query IDs. Need include evidence_needed. Let's think of plausible root causes based on evidence:
+
+Evidence:
+- feature-failed-builds 6.128 in 10m.
+- feature-auth-failures 6 log lines.
+- feature-sql-per-build 0 and build_p95 0. Could indicate no successful feature builds occurred in last 10 minutes? Maybe because builds fail early due to auth, so no SQL statements / duration. This supports DB auth issue.
+- Other services healthy, ingestion healthy, forecast-service healthy, planning-api healthy. So incident isolated to feature-service.
+
+Hypothesis 1: PostgreSQL authentication failures for feature-service are causing feature build failures and 5xx errors. Prediction: feature-service error logs contain DB auth failure messages and feature builds failed. Falsifier: if feature-service-error-log contains no authentication-related messages, or feature-failed-builds = 0. But we already have feature-failed-builds >0. Need check error log.
+
+Hypothesis 2: A recent deployment/change to feature-service introduced a bad configuration/code causing 5xx. Query feature-service-changes-20m. Prediction: feature-service-changes-20m > 0 (or includes rollouts/commits). Falsifier: no changes in window. Evidence_needed: feature-service-changes-20m.
+
+Hypothesis 3: Upstream database (postgres) issue: high rows scanned causing slow/failed feature builds. Query postgres-rows-scanned. Prediction: postgres-rows-scanned > normal threshold? We need define threshold. Could use > 0. But check value. However evidence shows feature-sql-per-build 0, which might indicate no SQL reached DB, so DB issue less likely. But hypothesis can be falsified by feature-sql-per-build > 0 and postgres rows scanned low. Need maybe.
+
+Hypothesis 4: Feature-service resource exhaustion (CPU throttling) caused 5xx. Query feature-cpu-throttling. Prediction: feature-cpu-throttling high (> 0.5? Need threshold). We can define ">= 0.5" maybe. Falsifier: < 0.5. But query returns ratio 0..1. Need prediction threshold. We can set "greater than 0.5" as mechanically checkable.
+
+Hypothesis 5: Upstream forecast-pipeline overloading feature-service with requests? Query slow-pipeline-traces? Or feature-service 5xx due to downstream? But evidence doesn't show request volume. Query not available for request rate. Could use planning-api or operator? Not.
+
+We need generate 3-5 hypotheses. Ensure every check has corresponding query in evidence_needed. The response may need a structured format maybe:
+
+[
+  {
+    "hypothesis": "PostgreSQL authentication failures caused feature-service builds to fail, producing 5xx responses.",
+    "predictions": [
+      {"query_id": "feature-service-error-log", "entity_id": "service:gridcast:feature-service", "key": "error_log", "predicate": "contains_substring", "value": "password authentication failed"}
+    ],
+    "falsifiers": [
+      {"query_id": "feature-service-error-log", "entity_id": "service:gridcast:feature-service", "key": "error_log", "predicate": "not_contains_substring", "value": "password authentication failed"},
+      {"query_id": "feature-failed-builds", "entity_id": "service:gridcast:feature-service", "key": "failed_builds_10m", "predicate": "lte", "value": 0}
+    ],
+    "evidence_needed": [
+      {"query_id": "feature-service-error-log", "entity_id": "service:gridcast:feature-service", "key": "error_log"},
+      {"query_id": "feature-failed-builds", "entity_id": "service:gridcast:feature-service", "key": "failed_builds_10m"}
+    ]
+  }
+]
+
+But need "falisifiers must be mechanically checkable against entity/key values." We can define. However we can't use "value" like "password authentication failed" if not an exact numeric? The context says predictions and falsifiers must be mechanically checkable against entity/key values. It doesn't prohibit string predicate if query returns log lines. But "entity/key values" likely values can be strings. Need be careful.
+
+Need "Use only entity IDs and registered query IDs from context." So use IDs exactly.
+
+Need "Do not propose actions or manufacture evidence." Thus hypotheses not conclusion; we shouldn't assert evidence not present. We can say "If... then prediction..." Need include only hypotheses, predictions, falsifiers, evidence_needed.
+
+Could output as JSON array.
+
+Need include 3-5. Let's draft robust falsifiable hypotheses.
+
+Let's consider all possible queries to leverage:
+
+Registered queries list:
+- planning-desired-replicas
+- planning-available-replicas
+- operator-plan-fetch-transport-errors
+- pipeline-failed-runs
+- feature-sql-per-build
+- feature-build-p95
+- feature-failed-builds
+- postgres-rows-scanned
+- forecast-oom-killed
+- forecast-memory-ratio
+- forecast-restarts
+- forecast-inference-p95
+- forecast-model-reloads
+- forecast-inference-max
+- ingestion-demand-errors
+- ingestion-weather-errors
+- demand-range-failures
+- weather-variability-warnings
+- feature-auth-failures
+- ingestion-contract-violations
+- ingestion-weather-vendor-503
+- feature-service-error-log
+- ingestion-error-log
+- slow-pipeline-traces
+- prefect-failed-flow-runs
+- prefect-flow-runs
+- ingestion-demand-batch-p95
+- demand-freshness
+- weather-observation-freshness
+- demand-completeness-failures
+- forecast-stability-warnings
+- demand-zones-reporting
+- load-feature-mean
+- feature-cpu-throttling
+- model-production-alias-changes
+- feature-service-changes-20m
+- forecast-service-changes-20m
+- planning-api-changes-20m
+- ingestion-changes-20m
+- forecast-pipeline-changes-20m
+
+Evidence currently includes some values. But incidents window ended 16:44:10. Observed_at mostly 16:44:10. Feature-auth-failures 6 at 16:43:53. Need avoid using evidence already observed as predictions? It's okay if hypothesis uses observed evidence and more queries to test.
+
+Hypothesis A: Database authentication failure for feature-service causes 5xx. Evidence: feature-auth-failures=6, feature-failed-builds=6.128. Prediction: feature-service-error-log contains DB authentication failure messages. Falsifier: error log has no auth failure message. But if error log query returns messages, how to mechanically check? Need define predicate maybe "contains /password authentication failed/". Also need evidence_needed query feature-service-error-log.
+
+Hypothesis B: Feature-service builds are failing due to missing or bad feature inputs (load_lag_24h) from telemetry / demand, causing 5xx. Query load-feature-mean. Prediction: load-feature-mean is null or 0? Actually load feature mean in feature runs built in 20m before incident end. If builds fail early, maybe no feature values? Could be 0 or NaN. Need check. But not likely.
+
+Hypothesis C: A recent change to feature-service introduced regression. Query feature-service-changes-20m. Prediction: feature-service-changes-20m > 0. Falsifier: feature-service-changes-20m = 0. This is clean.
+
+Hypothesis D: Postgres DB performance degradation (high rows scanned) caused feature-service slow/failing, leading to 5xx. Query postgres-rows-scanned. Prediction: postgres-rows-scanned > 1000? Need threshold. We can avoid hard threshold? Falsifier must be mechanically checkable. Could set "value > 0" but too weak. Could compare to observed? No baseline. Better use "postgres-rows-scanned > 1000 rows/s" but arbitrary. We need propose threshold as a falsifiable prediction: "postgres-rows-scanned > 1000" and falsifier "<=1000". But is that allowed? It's a value we choose. Could be questionable. But many hypotheses need thresholds. Could instead use query values that are binary/boolean or logs. For example, feature-cpu-throttling ratio > 0.5.
+
+Hypothesis E: CPU throttling of feature-service pods caused 5xx. Query feature-cpu-throttling. Prediction: feature-cpu-throttling > 0.5. Falsifier: <=0.5. evidence_needed: feature-cpu-throttling.
+
+Hypothesis F: Upstream forecast-pipeline demand for features increased / slow pipeline causing feature-service overload. Query slow-pipeline-traces? Prediction: slow-pipeline-traces has at least one trace > 3000ms? But query returns durations of pipeline traces slower than 3s. However feature-service 5xx maybe not directly. We can use slow-pipeline-traces as evidence of upstream pipeline slowness. But not enough.
+
+Hypothesis G: External dependency postgres authentication (password rotation) causing feature-service auth failures. This is similar to A.
+
+Hypothesis H: Feature-service error due to failed DB auth when connecting to postgres, but maybe the actual DB is fine; the secret/credential in feature-service is invalid. Falsifiable by checking other services DB auth? We don't have query for other service auth log. But we have postgres rows scanned maybe. Not.
+
+Need maybe include "forecast-pipeline-changes-20m" if hypothesis about pipeline changes causing downstream feature-service? But affected is feature-service; pipeline calls feature-service. A change in forecast-pipeline could cause feature-service 5xx? Actually feature-service 5xx means feature-service itself returning 5xx to callers. If pipeline sends malformed requests, feature-service could 500. Check forecast-pipeline-changes-20m or feature-service-error-log. Hypothesis: forecast-pipeline deploying a change that sends invalid feature requests causing feature-service 5xx. Prediction: forecast-pipeline-changes-20m > 0 and feature-service-error-log contains "validation" or "invalid" etc. But evidence_needed forecast-pipeline-changes-20m, feature-service-error-log. Could be plausible.
+
+Need be careful with relation semantics: service:gridcast:feature-service -> forecast-pipeline serves. If feature-service serves forecast-pipeline, then forecast-pipeline is dependent client of feature-service? Likely yes. So forecast-pipeline calls feature-service. A bad request from forecast-pipeline could cause 5xx in feature-service. But feature-service should handle bad input with 4xx, not 5xx. Still possible if unhandled exception.
+
+Hypothesis I: feature-service 5xx caused by failing feature builds; specifically feature builds failing due to PostgreSQL auth. This combines.
+
+We need 3-5. I'd propose 5 hypotheses covering distinct root cause categories:
+
+1. Credential/auth failure to PostgreSQL (observed evidence: feature-auth-failures, failed builds).
+2. Recent change/rollout to feature-service (check changes).
+3. Resource saturation: CPU throttling (check feature-cpu-throttling).
+4. Database performance degradation (postgres high rows scanned) despite auth log? Maybe check postgres rows scanned.
+5. Upstream request pattern change from forecast-pipeline or deployment change (check forecast-pipeline-changes-20m and/or slow-pipeline-traces).
+
+Need ensure each hypothesis is falsifiable: include predictions and falsifiers with query IDs. We must not include observations as conclusions. We'll phrase as "If hypothesis holds, then query X should show Y; if not, Y is false."
+
+Let's decide final format. Maybe JSON array with fields:
+- hypothesis (string)
+- predictions: list of objects {query_id, entity_id, key, op, value}
+- falsifiers: list of objects {query_id, entity_id, key, op, value}
+- evidence_needed: list of {query_id, entity_id, key}
+
+Need include entity_id for each query. Use only IDs from context. Keys from query definitions.
+
+Let's define ops: "gt", "gte", "lt", "lte", "eq", "neq", "contains", "not_contains", "exists", "not_exists". For log lines, contains.
+
+Need ensure "evidence_needed" corresponds to each check. If a query not yet observed, include in evidence_needed.
+
+For predictions we can use queries with values:
+- feature-service-error-log contains "password authentication failed"
+- feature-service-changes-20m > 0
+- feature-cpu-throttling > 0.5
+- postgres-rows-scanned > 1000
+- forecast-pipeline-changes-20m > 0 or slow-pipeline-traces count > 0? Need maybe.
+
+Need define threshold for postgres-rows-scanned. Is 1000 rows/s high? We don't know. Maybe use "greater than 0" but that's not useful. We can avoid postgres performance hypothesis if threshold arbitrary. But we can still propose with a clearly stated threshold as a falsifiable prediction: "postgres-rows-scanned > 1000 rows/s". If falsifier <=1000. That is mechanically checkable. Is threshold allowed? It is a falsifiable prediction, yes. But we must not manufacture evidence; setting threshold isn't manufacturing evidence, it's a hypothesis. But maybe questionable. Could use query "postgres-rows-scanned" and state "abnormally elevated compared to baseline" but baseline not in context. We need mechanically checkable. Better avoid arbitrary threshold unless we have context. We don't have baseline in context. The user might prefer we only propose checks against known values from evidence. But we can include threshold if clearly defined.
+
+Alternative hypothesis using existing binary evidence:
+- feature-failed-builds > 0 already observed. But as hypothesis, prediction can be same observed value; falsifier if query returns 0. We can include it, though already evidenced. That's acceptable.
+
+Need maybe include "feature-auth-failures > 0" and "feature-failed-builds > 0" as prediction? Already observed. But evidence_needed includes them? They are already in evidence. The prompt says "Every check needs a corresponding query in evidence_needed." It doesn't say only unobserved. Could include already observed queries as evidence_needed? Maybe yes but redundant. Better evidence_needed should include queries required to evaluate but not yet observed? Hmm "Every check needs a corresponding query in evidence_needed." So if prediction uses feature-failed-builds, put it in evidence_needed. It's okay.
+
+Let's construct 5 hypotheses:
+
+H1: "feature-service's elevated 5xx rate is caused by failed feature builds resulting from PostgreSQL authentication failures."
+Predictions:
+- feature-failed-builds > 0 (key failed_builds_10m, op gt, value 0)
+- feature-auth-failures > 0 (key db_auth_failure_log_lines, op gt, value 0)
+- feature-service-error-log contains "password authentication failed" (op contains, value "password authentication failed")
+Falsifiers:
+- feature-failed-builds eq 0
+- feature-auth-failures eq 0
+- feature-service-error-log not_contains "password authentication failed"
+evidence_needed: feature-failed-builds, feature-auth-failures, feature-service-error-log.
+
+But if all three are required? Maybe. Falsifiers could be any one fails. Use logical OR? We can present multiple falsifiers.
+
+H2: "A recent deployment or configuration change to feature-service introduced a regression causing 5xx."
+Predictions:
+- feature-service-changes-20m > 0
+- maybe feature-service-error-log contains a stack trace/error from new code? But not necessary.
+Falsifier: feature-service-changes-20m eq 0.
+evidence_needed: feature-service-changes-20m.
+
+But need "mechanically checkable against entity/key values": changes_20m likely count of changes. op gt, value 0.
+
+H3: "feature-service is CPU throttled, causing slow/failed request handling and 5xx responses."
+Predictions:
+- feature-cpu-throttling > 0.5 (ratio)
+- maybe feature-build-p95 > 5? But current evidence feature-build-p95 0, which doesn't support. We can set prediction feature-cpu-throttling > 0.5. Falsifier <=0.5.
+evidence_needed: feature-cpu-throttling.
+
+H4: "The feature-service database (PostgreSQL) is experiencing a query performance problem (elevated rows scanned), causing feature builds/queries to time out or fail."
+Predictions:
+- postgres-rows-scanned > 1000 (rows/s)
+- feature-sql-per-build > 0? Actually if DB issue, maybe number of SQL statements per build not zero but slow. But current evidence feature-sql-per-build=0. Maybe not.
+Falsifier: postgres-rows-scanned <= 1000.
+evidence_needed: postgres-rows-scanned.
+
+But this may conflict with observed feature-auth failures; could be distinct alternative.
+
+H5: "An upstream change in forecast-pipeline is sending feature requests that cause unhandled errors in feature-service, resulting in 5xx."
+Predictions:
+- forecast-pipeline-changes-20m > 0
+- feature-service-error-log contains "panic" or "nil pointer" or "invalid request"? Need pick one. Could use "contains 'error'" too generic. Maybe "contains 'unexpected'".
+Falsifier: forecast-pipeline-changes-20m eq 0, feature-service-error-log not_contains "unexpected".
+evidence_needed: forecast-pipeline-changes-20m, feature-service-error-log.
+
+But H1 already uses feature-service-error-log. That's okay.
+
+Alternatively H5 about forecast-pipeline Prefect flow failures causing feature-service 5xx? Use prefect-failed-flow-runs > 0. But relation: pipeline is downstream of feature-service? Maybe feature-service serves pipeline. If pipeline fails, does it call feature-service? Hmm.
+
+Maybe better hypotheses:
+- H5: "The 5xx rate is caused by a failure in a downstream dependency of feature-service (postgres) rather than feature-service itself." Predictions: feature-service-error-log contains "connection refused" or "password authentication failed"; postgres-rows-scanned maybe > 0? Hmm.
+
+Need avoid overlapping H1.
+
+Let's identify from evidence: feature-auth-failures=6 strongly points to DB auth. We can have one hypothesis about that. Another about recent change. Another about CPU throttling. Another about DB load. Another about upstream pipeline request issues.
+
+But maybe 5 hypotheses too many; 3-5 okay. Let's include 4 to be safe.
+
+Need answer as JSON. The user did not request any specific structure but likely expects. We'll include a short intro? The instruction says "Propose 3 to 5 falsifiable hypotheses...". Could just output JSON. We need not explain.
+
+Let's ensure every check query exists in evidence_needed. In predictions/falsifiers we reference query ids. We should include evidence_needed list with query_id/entity/key for all queies used, including if already observed? The prompt: "Every check needs a corresponding query in evidence_needed." So evidence_needed should include each query used in predictions and falsifiers. We'll include all.
+
+Need also maybe include "entity_id" fields exactly.
+
+Let's craft with correct query IDs:
+- feature-failed-builds -> key "failed_builds_10m"
+- feature-auth-failures -> key "db_auth_failure_log_lines"
+- feature-service-error-log -> key "error_log"
+- feature-service-changes-20m -> key "changes_20m" (entity service:gridcast:feature-service)
+- feature-cpu-throttling -> key "cpu_throttled_ratio_5m"
+- postgres-rows-scanned -> key "rows_scanned_per_s"
+- forecast-pipeline-changes-20m -> key "changes_20m" (entity service:gridcast:forecast-pipeline)
+- maybe slow-pipeline-traces -> key "slow_trace_duration_ms"
+- prefect-failed-flow-runs -> key "failed_flow_runs"
+- load-feature-mean -> key "load_lag_24h_feature_mean_20m"
+
+For H1, we already have evidence for feature-failed-builds and feature-auth-failures. But as predictions they're "already satisfied" by provided evidence. That may be okay; but perhaps a hypothesis should include predictions not yet observed. We can phrase with falsifiers that can be checked with existing evidence. The feature-service-error-log is not in evidence, so good.
+
+Need maybe ensure not "conclusions": We should use phrasing "Hypothesis: ..." not definitive. The predictions are conditional. Good.
+
+Let's define "op": "gt", "eq", "contains", "not_contains". For "contains", value string.
+
+Potential issue: The prompt says "Use only entity IDs and registered query IDs from context." Our JSON uses "service:gridcast:feature-service" etc. okay.
+
+Need mention "Falsifiers must be mechanically checkable against entity/key values." We'll represent each falsifier with query_id, entity_id, key, op, value. Good.
+
+Now, think about whether "feature-service-error-log" query returns messages; we can define predicate contains substring "password authentication failed". But maybe log lines include actual messages; we don't know exact. Could be "password authentication failed for user". "contains 'authentication failed'" might be okay. The key is "error_log" and description "feature-service error log records (messages)". We'll use "contains 'authentication'". But H1 already has feature-auth-failures query, which is Loki count of log lines reporting password authentication failures. So feature-service-error-log may be redundant. But we can include it to see actual messages.
+
+Need maybe set prediction for feature-service-error-log contains "authentication". Falsifier not_contains "authentication". That is mechanically checkable if messages are strings. Good.
+
+H2: feature-service-changes-20m > 0. Falsifier eq 0. This is simple.
+
+H3: feature-cpu-throttling > 0.5. Falsifier <=0.5. Good.
+
+H4: postgres-rows-scanned > 1000. This is arbitrary. Might be okay but can be criticized. Could instead propose hypothesis using "feature-sql-per-build" and "feature-build-p95" to test DB performance. For example:
+H4: "feature-service's database queries are not completing (zero successful SQL statements) because of DB unavailability, not DB slowness." Prediction: feature-sql-per-build eq 0 (already observed) and feature-build-p95 eq 0. Falsifier: feature-sql-per-build > 0. But that's already observed. Hmm.
+
+Maybe better:
+H4: "The 5xx rate is caused by insufficient PostgreSQL capacity (high rows scanned), independent of auth failures."
+Predictions:
+- postgres-rows-scanned > 10000? Need choose. Hmm.
+
+Could omit arbitrary threshold by using target entity/key but no threshold? No, falsifiable requires threshold.
+
+Maybe use binary "postgres-rows-scanned > 0" as prediction? That is tautological likely always true. Not useful. Better avoid. Use already binary query "feature-cpu-throttling" and "changes" etc.
+
+We can propose 4 hypotheses without arbitrary threshold:
+1 DB auth failure (uses auth failures count and error log).
+2 Recent change to feature-service.
+3 CPU throttling.
+4 Upstream forecast-pipeline change causing malformed requests (uses forecast-pipeline-changes-20m and feature-service-error-log).
+
+But this omits postgres performance; fine.
+
+Need maybe include fifth about feature-service error log indicating specific "stack overflow" or "timeout". We can use slow-pipeline-traces? Hmm.
+
+Let's settle with 4.
+
+But maybe need include "evidence_needed" for each. Let's craft JSON.
+
+Need be precise with key names:
+- feature-failed-builds query key: failed_builds_10m
+- feature-auth-failures key: db_auth_failure_log_lines
+- feature-service-error-log key: error_log
+- feature-service-changes-20m key: changes_20m
+- feature-cpu-throttling key: cpu_throttled_ratio_5m
+- forecast-pipeline-changes-20m key: changes_20m (different entity)
+
+In H1:
+predictions:
+1 {query_id: "feature-failed-builds", entity_id:"service:gridcast:feature-service", key:"failed_builds_10m", op:"gt", value:0}
+2 {query_id:"feature-auth-failures", entity_id:"service:gridcast:feature-service", key:"db_auth_failure_log_lines", op:"gt", value:0}
+3 {query_id:"feature-service-error-log", entity_id:"service:gridcast:feature-service", key:"error_log", op:"contains", value:"authentication"}
+
+falsifiers:
+1 {query_id:"feature-failed-builds", ..., op:"eq", value:0}
+2 {query_id:"feature-auth-failures", ..., op:"eq", value:0}
+3 {query_id:"feature-service-error-log", ..., op:"not_contains", value:"authentication"}
+
+evidence_needed:
+- all three query/key/entity.
+
+H2:
+predictions:
+1 feature-service-changes-20m > 0.
+falsifier eq 0.
+evidence_needed.
+
+H3:
+predictions feature-cpu-throttling > 0.5.
+falsifier <=0.5.
+Need define op "lte" maybe.
+
+H4:
+predictions:
+1 forecast-pipeline-changes-20m > 0.
+2 feature-service-error-log contains "panic" or "invalid"? Which one? We need select one. Could use "contains 'unexpected'". But if actual log has "unexpected error" that's plausible. But not guaranteed. To avoid string uncertainty, maybe use feature-service-error-log "exists" (i.e., error log non-empty). That is weaker but checkable. Prediction: feature-service-error-log has at least one record (op "exists" or "count > 0"? The query returns log records; if there are records, then exists. Could use query feature-service-error-log with op "exists" and value true. Falsifier "not_exists". But we need mechanically check. The value of error_log likely list; "exists" means list non-empty. Could be okay. Use "op":"exists" value true. But the prompt mentions entity/key values; maybe "exists" is not value check. Could use "count > 0" but key error_log returns messages not count. Better use "feature-service-error-log" as list; we can say op "not_empty". Hmm.
+
+Maybe avoid using string content in H4; use only changes query. Hypothesis: "A change in forecast-pipeline caused malformed requests to feature-service". Prediction: forecast-pipeline-changes-20m > 0. Falsifier: eq 0. That's enough. No need error log. But if forecast-pipeline changes exist, not necessarily cause. The falsifier only checks changes. That's still a falsifiable hypothesis but weak. We can add another prediction: feature-service-error-log is not empty. But actual error log could be empty if 5xx handled not logged? It likely logs. Hmm.
+
+Maybe H4 alternative: "An upstream forecast-pipeline deployment changed request patterns and is overloading feature-service." Prediction: forecast-pipeline-changes-20m > 0 and slow-pipeline-traces has at least one value > 3000? But slow-pipeline-traces returns durations of traces slower than 3s. Query already filters >3000. If value is list of durations; prediction could be "not empty". That is checkable. Use key slow_trace_duration_ms; op "not_empty". Falsifier "empty". But need include evidence_needed. However slow-pipeline-traces is for forecast-pipeline, not feature-service. Could indicate upstream slowness. But not necessarily call feature-service.
+
+Maybe simpler: H4: "A recent change to forecast-pipeline is the trigger for feature-service 5xx." Predictions: forecast-pipeline-changes-20m > 0; maybe feature-service-error-log records contain stack traces from request handling. Falsifier: forecast-pipeline-changes-20m = 0. That's okay.
+
+Need maybe include "planning-api-changes-20m" as another potential upstream. But feature-service serves forecast-pipeline only according to graph. So forecast-pipeline is relevant.
+
+Should we include H5 about "feature-service error due to invalid model features (load_lag_24h)"? Use load-feature-mean query. Prediction: load-feature-mean is null/0? Not clear. Avoid.
+
+Let's ensure no actions or manufacturing. Good.
+
+Let's decide final response structure:
+A JSON array of hypothesis objects. Include "id" maybe "H1", "hypothesis", "predictions", "falsifiers", "evidence_needed". Could include "entities" but not necessary.
+
+Need maybe include "op" values: "gt", "eq", "lte", "contains", "not_contains", "not_empty". For JSON, value can be number/string/boolean. For "not_empty", value true maybe.
+
+Let's write with consistent ops:
+- "gt" for greater than, "eq" for equal, "lte" for less than or equal, "contains" for string contains, "not_contains" for string not contains.
+- "not_empty" maybe not needed. I'll avoid by using contains where possible.
+
+H4 use forecast-pipeline-changes-20m only; no string.
+
+Then 4 hypotheses.
+
+Need include evidence_needed for every query used:
+H1 evidence_needed:
+- feature-failed-builds
+- feature-auth-failures
+- feature-service-error-log
+H2:
+- feature-service-changes-20m
+H3:
+- feature-cpu-throttling
+H4:
+- forecast-pipeline-changes-20m
+
+But H1 uses feature-auth-failures and feature-failed-builds already in evidence. Evidence_needed may include them even though observed. That's fine.
+
+Need maybe if already observed, "evidence_needed" could be empty for those? The prompt says every check needs a corresponding query in evidence_needed. Include.
+
+Let's craft exact JSON.
+
+Double-check query IDs match exactly:
+"feature-failed-builds" yes.
+"feature-auth-failures" yes.
+"feature-service-error-log" yes.
+"feature-service-changes-20m" yes.
+"feature-cpu-throttling" yes.
+"forecast-pipeline-changes-20m" yes.
+
+Entity IDs:
+service:gridcast:feature-service
+service:gridcast:forecast-pipeline
+
+Keys:
+failed_builds_10m
+db_auth_failure_log_lines
+error_log
+changes_20m
+cpu_throttled_ratio_5m
+
+Need note "feature-service-error-log" entity_id service:gridcast:feature-service key error_log. Yes.
+
+Potential issue: feature-auth-failures query provider loki returns value 6; prediction is gt 0. Good.
+
+Let's produce final JSON.
+
+But before final, consider whether we need propose exactly "falsifiable hypotheses, not conclusions." Our phrasing "Hypothesis:" and conditional "If true, then" is good. We should avoid definitive "caused by" maybe okay in hypothesis header. We'll phrase "Hypothesis: ..." in each.
+
+Need ensure "Use only entity IDs and registered query IDs from context." We do.
+
+No need to include "observations" or "conclusion". Good.
+
+Let's produce.

@@ -1,0 +1,14 @@
+{
+ "fetched_queries": [
+  "ingestion-changes-20m"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "A recent GitOps commit or rollout touching ingestion introduced a silent demand-processing stall.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: planning-api
+  namespace: gridcast
+  labels: { app.kubernetes.io/name: planning-api, app.kubernetes.io/component: planning, app.kubernetes.io/part-of: gridcast }
+  annotations:
+    gridcast.dev/description: "Publishes dispatch plans to operators"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }
+  selector: { matchLabels: { app.kubernetes.io/name: planning-api } }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: planning-api, app.kubernetes.io/component: planning, app.kubernetes.io/part-of: gridcast }
+    spec:
+      terminationGracePeriodSeconds: 20
+      securityContext: { runAsNonRoot: true, runAsUser: 10001, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: planning-api
+          imagePullPolicy: Always  # dev registry: tags may be rebuilt
+          image: gridcast/planning-api
+          args: ["serve", "planning-api"]
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: gridcast-runtime }
+          env:
+            - name: GRIDCAST_DB_USER
+              valueFrom: { secretKeyRef: { name: db-planning, key: username } }
+            - name: GRIDCAST_DB_PASSWORD
+              valueFrom: { secretKeyRef: { name: db-planning, key: password } }
+            - name: K8S_POD_NAME
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+            - name: K8S_NAMESPACE
+              valueFrom: { fieldRef: { fieldPath: metadata.namespace } }
+            - name: K8S_NODE_NAME
+              valueFrom: { fieldRef: { fieldPath: spec.nodeName } }
+            - { name: K8S_DEPLOYMENT_NAME, value: planning-api }
+          readinessProbe: { httpGet: { path: /readyz, port: http }, periodSeconds: 10, failureThreshold: 3 }
+          livenessProbe: { httpGet: { path: /healthz, port: http }, periodSeconds: 20, timeoutSeconds: 5, failureThreshold: 3 }
+          startupProbe: { httpGet: { path: /healthz, port: http }, periodSeconds: 5, failureThreshold: 60 }
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: "500m", memory: 256Mi }
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } }
+          volumeMounts: [{ name: tmp, mountPath: /tmp }]
+      volumes: [{ name: tmp, emptyDir: {} }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: planning-api, namespace: gridcast, labels: { app.kubernetes.io/name: planning-api, app.kubernetes.io/part-of: gridcast } }
+spec:
+  type: NodePort
+  selector: { app.kubernetes.io/name: planning-api }
+  ports: [{ name: http, port: 80, targetPort: http, nodePort: 30080 }]

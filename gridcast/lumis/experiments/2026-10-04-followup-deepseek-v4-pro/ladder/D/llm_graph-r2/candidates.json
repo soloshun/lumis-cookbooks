@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Bad rollout or configuration in forecast-service itself :: A recent change to the forecast-service image or runtime configuration introduced a fatal startup error (e.g., missing config, bad flag, invalid dependency, or unhandled exception), causing the process to exit immediately and the pod to restart repeatedly. :: The crash loop is caused by a defect in the forecast-service application deployment itself."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "PostgreSQL dependency failure :: The forecast-service's database connection to PostgreSQL is failing or timing out (e.g., unreachable host, authentication failure, connection pool exhaustion, or failed migration), causing the pod to crash during startup or health checks. :: The fault originates in the database dependency backing forecast-service."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Kubernetes deployment/probe misconfiguration :: Kubernetes resource limits or liveness/readiness probe thresholds for forecast-service are misconfigured, causing the pod to be OOMKilled or killed prematurely under normal startup or load conditions. :: The fault originates in forecast-service's Kubernetes deployment and probe configuration."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Traffic from forecast-pipeline :: forecast-pipeline is sending a burst of malformed or resource-intensive requests to forecast-service, exhausting memory or file descriptors and causing the forecast-service process to crash. :: The crash loop is caused by upstream traffic from forecast-pipeline."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Bad data written by ingestion :: ingestion wrote malformed or unexpected data into PostgreSQL that forecast-service reads and fails to process, causing an unhandled exception and pod restart loop. :: The fault originates in the data produced by ingestion."
+ }
+]

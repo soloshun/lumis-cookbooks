@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gridcast-lumis"
+version = "0.1.0"
+description = "Run Lumis against the GridCast estate: incidents from alerts, triage, agent, scoring and benchmarks."
+requires-python = ">=3.12,<3.14"
+license = "MIT"
+dependencies = [
+  # The published SDK release used for the evaluation's final state. To develop against an SDK
+  # checkout instead: `uv add --editable ../../../lumis-sdk` (do not commit that).
+  "lumis-sdk[http,agent,sql]==0.1.0",
+  "httpx>=0.28,<1",
+  "pyyaml>=6.0,<7",
+  "typer>=0.15,<1",
+  "rich>=13.9",
+  "matplotlib>=3.9,<4",
+  "psycopg[binary]>=3.2,<4",
+]
+
+[project.scripts]
+gridcast-lumis = "gridcast_lumis.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8.3", "ruff>=0.9", "mypy>=1.14", "types-pyyaml>=6.0.12"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gridcast_lumis"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 130
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]

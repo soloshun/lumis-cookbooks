@@ -1,0 +1,32 @@
+{
+ "fetched_queries": [
+  "demand-zones-reporting",
+  "ingestion-error-log",
+  "forecast-pipeline-changes-20m",
+  "demand-freshness"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "One or more load zones in the external telemetry source stopped reporting demand readings during the incident window, reducing demand completeness below the pipeline's validation threshold.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "Demand ingestion batch failures occurred during the incident window, leaving the demand dataset incomplete and triggering the repeated completeness.demand warnings.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "Demand data freshness lagged more than 10 minutes behind real time during the incident, so the completeness window included intervals that had not yet been ingested, producing the warnings.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "A GitOps commit or rollout touched forecast-pipeline shortly before the incident and altered the completeness.demand validation logic or threshold, causing warnings even though the underlying demand data were complete.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

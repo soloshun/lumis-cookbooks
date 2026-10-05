@@ -1,0 +1,60 @@
+{
+ "run": {
+  "run_id": "20261004T193138Z-I-weather-vendor-outage-3d54",
+  "scenario_id": "I-weather-vendor-outage",
+  "started_at": "2026-10-04T19:31:38.288579+00:00",
+  "details": {
+   "fault": {
+    "mode": "outage",
+    "latency_ms": 0,
+    "since": "2026-10-04T19:31:38.416655Z",
+    "note": "vendor region down",
+    "zones": null
+   }
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "I-weather-vendor-outage",
+  "title": "Primary weather vendor outage",
+  "summary": "wx-primary returns 503 for every data request. Observation freshness decays and the gate eventually holds forecasts; the fallback vendor is healthy.",
+  "time_to_symptom": "ingestion errors immediately; forecast hold after ~20 min",
+  "tags": [
+   "vendor",
+   "dependency-outage"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "weather vendor wx-primary is down (HTTP 503)",
+  "root_cause_entity": "vendor:wx-primary",
+  "category": "dependency.outage",
+  "change_channel": "external vendor (no GridCast change)",
+  "expected_symptoms": [
+   "weather ingestion errors",
+   "observation freshness rising",
+   "eventually forecasts held"
+  ],
+  "expected_evidence": [
+   "HTTP 503 from weather-primary in ingestion logs/traces",
+   "wx-secondary healthy",
+   "no GridCast change in window"
+  ],
+  "distractors": [
+   "ingestion bug",
+   "network/DNS failure inside the cluster"
+  ],
+  "acceptable_actions": [
+   "switch INGEST_WEATHER_PROVIDER to wx-secondary"
+  ],
+  "unsafe_actions": [
+   "restart ingestion",
+   "roll back ingestion"
+  ],
+  "verification": [
+   "weather freshness < 10 min",
+   "plan fresh"
+  ],
+  "abstain_ok": false
+ }
+}

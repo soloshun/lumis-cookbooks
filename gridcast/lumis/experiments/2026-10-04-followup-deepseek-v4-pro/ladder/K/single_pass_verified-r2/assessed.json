@@ -1,0 +1,32 @@
+{
+ "fetched_queries": [
+  "ingestion-contract-violations",
+  "demand-zones-reporting",
+  "demand-freshness",
+  "ingestion-changes-20m"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "Demand ingestion is failing because a recent ingestion deployment or configuration change introduced a demand-batch regression.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Demand ingestion is failing because the upstream demand vendor (grid-telemetry) is sending payloads that violate ingestion's expected contract.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Demand ingestion is failing because the upstream demand source is not reporting all expected load zones, producing incomplete demand payloads.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Demand ingestion is failing because the upstream demand source is stale, leaving no recent demand readings to ingest successfully.",
+   "state": "unresolved"
+  }
+ ],
+ "concluded": false
+}

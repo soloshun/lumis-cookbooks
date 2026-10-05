@@ -1,0 +1,11 @@
+{
+ "id": "gridcast-20261004T164410Z-e17d4c",
+ "affected_entities": [
+  "service:gridcast:feature-service"
+ ],
+ "symptoms": [
+  "ServiceErrorRate: feature-service 5xx ratio above 5%"
+ ],
+ "started_at": "2026-10-04T16:28:57Z",
+ "ended_at": "2026-10-04T16:44:10Z"
+}

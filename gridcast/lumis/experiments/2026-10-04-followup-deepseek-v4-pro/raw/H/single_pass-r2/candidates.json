@@ -1,0 +1,612 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "The forecast-pipeline failure symptom is associated with demand-data validation-gate failures, specifically range and/or completeness checks.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "demand_range_failures_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "demand-range-failures",
+    "demand-completeness-failures"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "demand_range_failures_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "The forecast-pipeline failure symptom is associated with demand-data validation-gate failures, specifically range and/or completeness checks.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "demand_range_failures_15m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "completeness_demand_failures_20m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "demand-range-failures",
+     "demand-completeness-failures"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "demand_range_failures_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "completeness_demand_failures_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [
+    "prometheus:demand-range-failures"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "Demand reporting from fewer than all four load zones starved the pipeline of complete demand inputs, contributing to validation-gate failures.",
+   "causal_path": [
+    "service:gridcast:grid-telemetry",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    }
+   ],
+   "evidence_needed": [
+    "demand-zones-reporting"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "Demand reporting from fewer than all four load zones starved the pipeline of complete demand inputs, contributing to validation-gate failures.",
+    "causal_path": [
+     "service:gridcast:grid-telemetry",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "lt",
+      "value": 4
+     }
+    ],
+    "evidence_needed": [
+     "demand-zones-reporting"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "eq",
+      "value": 4
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "Ingestion received malformed vendor payloads or HTTP 503 responses from the primary weather vendor, and the resulting bad or missing data propagated to the forecast pipeline.",
+   "causal_path": [
+    "service:gridcast:ingestion",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-contract-violations",
+    "ingestion-weather-vendor-503"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "Ingestion received malformed vendor payloads or HTTP 503 responses from the primary weather vendor, and the resulting bad or missing data propagated to the forecast pipeline.",
+    "causal_path": [
+     "service:gridcast:ingestion",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-contract-violations",
+     "ingestion-weather-vendor-503"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "A recent GitOps commit or rollout touching forecast-pipeline or a directly connected service introduced a regression that caused the pipeline failures.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline",
+    "service:gridcast:feature-service",
+    "service:gridcast:forecast-service",
+    "service:gridcast:planning-api"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "forecast-pipeline-changes-20m",
+    "feature-service-changes-20m",
+    "forecast-service-changes-20m",
+    "planning-api-changes-20m"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "A recent GitOps commit or rollout touching forecast-pipeline or a directly connected service introduced a regression that caused the pipeline failures.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline",
+     "service:gridcast:feature-service",
+     "service:gridcast:forecast-service",
+     "service:gridcast:planning-api"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "forecast-pipeline-changes-20m",
+     "feature-service-changes-20m",
+     "forecast-service-changes-20m",
+     "planning-api-changes-20m"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 5,
+  "hypothesis": {
+   "id": "H5",
+   "statement": "Forecast-service inference latency or model reloading delayed pipeline execution beyond its failure threshold.",
+   "causal_path": [
+    "service:gridcast:forecast-service",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "gt",
+     "value": 1.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "model_loads_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "forecast-inference-p95",
+    "forecast-model-reloads"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "le",
+     "value": 1.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "model_loads_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H5",
+    "statement": "Forecast-service inference latency or model reloading delayed pipeline execution beyond its failure threshold.",
+    "causal_path": [
+     "service:gridcast:forecast-service",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "inference_p95_seconds",
+      "operator": "gt",
+      "value": 1.0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "model_loads_20m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "forecast-inference-p95",
+     "forecast-model-reloads"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "inference_p95_seconds",
+      "operator": "le",
+      "value": 1.0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "model_loads_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "contradicted",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [
+    "prometheus:forecast-model-reloads"
+   ],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "gt",
+     "value": 1.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "le",
+     "value": 1.0
+    }
+   ]
+  }
+ }
+]

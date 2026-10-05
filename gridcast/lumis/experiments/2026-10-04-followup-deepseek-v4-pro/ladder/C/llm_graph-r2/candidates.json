@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Internal application fault in feature-service :: The feature-service process is throwing unhandled exceptions, exhausting request-handling resources, or hitting a bad code path, causing a substantial fraction of requests to return 5xx. :: The fault originates inside service:gridcast:feature-service itself."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Postgres database degradation :: Postgres is experiencing slow queries, connection saturation, lock contention, or a brief availability drop, causing feature-service database calls to fail or time out and surface as 5xx responses. :: The fault originates in service:gridcast:postgres and cascades into feature-service."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Upstream traffic overload from forecast-pipeline :: forecast-pipeline issued a sudden burst of expensive, malformed, or otherwise harmful requests to feature-service, exhausting its capacity and forcing 5xx errors. :: The fault originates in service:gridcast:forecast-pipeline, the consumer of feature-service."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Bad feature-service rollout or capacity loss :: A rolling deployment or replica change during the incident left feature-service with insufficient ready pods or misconfigured pods, so available replicas could not handle traffic and returned 5xx. :: The fault originates in k8s:gridcast:deployment:feature-service due to a deployment or scaling problem."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Kubernetes Service routing/selector misconfiguration :: The feature-service Kubernetes Service began routing traffic to unready or mismatched pods, causing requests to fail with 5xx. :: The fault originates in k8s:gridcast:service:feature-service due to incorrect routing."
+ }
+]

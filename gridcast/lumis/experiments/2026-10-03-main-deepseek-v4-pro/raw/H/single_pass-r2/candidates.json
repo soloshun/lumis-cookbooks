@@ -1,0 +1,188 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:forecast-pipeline validation gate",
+    "Demand range-check failures drive retry/reprocessing inside forecast pipeline"
+   ],
+   "evidence_needed": [
+    "demand-range-failures"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "demand_range_failures_15m",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "id": "H1",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "demand_range_failures_15m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "Forecast-pipeline p95 is elevated because demand range-check failures cause forecast-pipeline runs to retry or revalidate work."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:ingestion primary weather vendor fallback",
+    "Primary weather vendor 503s cause ingestion fallback delays that propagate to forecast-pipeline"
+   ],
+   "evidence_needed": [
+    "ingestion-weather-vendor-503"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "id": "H2",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "Forecast-pipeline p95 is elevated because HTTP 503 responses from the primary weather vendor cause ingestion fallback/retry delays that delay pipeline input."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:postgres",
+    "High rows scanned in Postgres contributes to slow forecast-pipeline queries"
+   ],
+   "evidence_needed": [
+    "postgres-rows-scanned"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:postgres",
+     "key": "rows_scanned_per_s",
+     "operator": "lt",
+     "value": 1000
+    }
+   ],
+   "id": "H3",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:postgres",
+     "key": "rows_scanned_per_s",
+     "operator": "gt",
+     "value": 1000
+    }
+   ],
+   "statement": "Forecast-pipeline p95 is elevated because high Postgres row scanning makes pipeline data access slow during the incident window."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:forecast-pipeline run execution",
+    "Pipeline run failures cause retries or long-running run attempts that inflate p95"
+   ],
+   "evidence_needed": [
+    "pipeline-failed-runs",
+    "prefect-failed-flow-runs"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "id": "H4",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "Forecast-pipeline p95 is elevated because failed pipeline runs or failed Prefect flow runs trigger retries that dominate the tail latency."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 5,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:forecast-service",
+    "Model serving latency or model reloads contribute to forecast-pipeline tail latency"
+   ],
+   "evidence_needed": [
+    "forecast-inference-p95",
+    "forecast-model-reloads"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "lt",
+     "value": 1.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "model_reloads_30m",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "id": "H5",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "gt",
+     "value": 1.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "model_reloads_30m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "Forecast-pipeline p95 is elevated because forecast-service model inference is slow and/or frequent model reloads add latency to pipeline calls."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ }
+]

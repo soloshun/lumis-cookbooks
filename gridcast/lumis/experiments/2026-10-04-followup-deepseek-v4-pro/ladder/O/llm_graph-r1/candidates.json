@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "service:gridcast:ingestion :: The ingestion service dropped, delayed, or failed to persist a portion of demand records from upstream grid telemetry during the incident window, so the forecast-pipeline repeatedly saw incomplete demand input and raised completeness.demand warnings. :: Incomplete or late demand data at ingestion is the most likely cause."
+ },
+ {
+  "entity": "service:gridcast:grid-telemetry",
+  "text": "service:gridcast:grid-telemetry :: The external grid-telemetry vendor delivered gapped or delayed demand measurements to ingestion, causing downstream demand datasets to fail the forecast-pipeline completeness check. :: Upstream telemetry gaps likely made demand data incomplete."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "service:gridcast:feature-service :: The feature-service computed or materialized incomplete demand features, such as missing partitions or dropped late-arriving demand rows, which forecast-pipeline consumed and flagged as incomplete demand. :: Downstream demand features from feature-service likely caused the warning."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: The postgres database returned incomplete demand data to forecast-pipeline due to missing rows, partition lag, or uncommitted ingestion transactions, causing the demand completeness check to fail repeatedly. :: Incomplete demand rows from postgres likely drove the alerts."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "service:gridcast:forecast-pipeline :: The forecast-pipeline's own demand completeness quality check was misconfigured or had a logic bug that emitted repeated warnings even though input demand data was complete. :: A false-positive from the quality check itself is possible."
+ }
+]

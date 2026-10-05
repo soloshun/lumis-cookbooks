@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "service:gridcast:forecast-pipeline :: A recent change introduced a memory leak in the forecast computation step, causing pipeline containers to be OOM-killed and retried, which registers as held or failed within the 15-minute window. :: Forecast pipeline is crash-looping due to memory exhaustion."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "upstream observation data feed :: The upstream weather observation feed is returning late or malformed records, causing the pipeline to wait for completeness and then fail validation on missing or invalid timestamps. :: Forecast pipeline is starved or failing on invalid upstream observation data."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "model artifact registry :: A corrupt or partially uploaded model artifact is being served to the pipeline, causing deserialization or checksum failures when the pipeline loads the model. :: Forecast pipeline cannot load the current model artifact and fails during initialization."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "forecast output store :: The output store's connection pool is exhausted or write latency has spiked, causing backpressure that holds the pipeline and eventually fails write stages. :: Forecast pipeline is blocked or failing on output writes to saturated storage."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "forecast pipeline scheduler :: A scheduler misconfiguration triggers overlapping pipeline runs that contend for the same output partitions, causing lock contention and hung or failed executions. :: Overlapping scheduled runs cause lock contention and pipeline holds."
+ }
+]

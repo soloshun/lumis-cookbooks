@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Internal worker/thread pool saturation in service:gridcast:forecast-pipeline :: A burst of forecast requests or a scheduled backfill consumed all worker threads, causing queuing delays that pushed p95 latency above 5s. :: The ForecastPipelineSlow symptom originates from concurrency saturation inside the forecast-pipeline service."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Degraded downstream dependency of service:gridcast:forecast-pipeline :: A downstream model inference or data service experienced elevated latency or timeouts, causing forecast-pipeline calls to block and inflate p95. :: The p95 regression is caused by slow downstream service responses."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Database/feature store backing service:gridcast:forecast-pipeline :: A slow query plan, missing index, or lock contention increased data retrieval time for each forecast execution. :: The latency increase is driven by database/feature-store query slowdown."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Cache layer used by service:gridcast:forecast-pipeline :: A cache node failure or mass eviction lowered hit rates, forcing forecast-pipeline onto expensive recomputation paths. :: Cache hit-rate collapse caused the forecast pipeline p95 to rise above 5s."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Recent deployment/configuration change to service:gridcast:forecast-pipeline :: A newly deployed code path or config change increased per-forecast work or disabled a fast path, slowing execution until rollback. :: A bad deployment or configuration change to forecast-pipeline caused the p95 latency spike."
+ }
+]

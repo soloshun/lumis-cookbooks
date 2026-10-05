@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Forecast-pipeline application regression :: A recent code or configuration change in the forecast-pipeline made each forecast run a slower, more computationally expensive path. :: The service is doing more work per request, raising the p95 duration above 5s."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Downstream dependency latency :: A downstream data source or service called by the forecast-pipeline began responding more slowly, blocking forecast workers on I/O. :: The forecast pipeline is waiting longer on dependency calls, which inflates end-to-end forecast duration."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Compute capacity saturation :: Insufficient replicas or CPU throttling on the platform hosting the forecast-pipeline caused queuing and CPU starvation. :: Forecast-pipeline capacity was below the demand at the time, increasing p95 latency due to resource contention."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Cache failure or eviction :: A cache used by the forecast-pipeline failed or experienced mass evictions, forcing expensive recomputation of intermediate data. :: Loss of cached data caused each forecast to perform more work, pushing p95 latency above 5s."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Network degradation to dependencies :: Transient network latency or packet loss between the forecast-pipeline and its dependencies caused slow I/O and retries. :: Network issues made dependency calls slower, contributing to the forecast-pipeline p95 duration exceeding 5s."
+ }
+]

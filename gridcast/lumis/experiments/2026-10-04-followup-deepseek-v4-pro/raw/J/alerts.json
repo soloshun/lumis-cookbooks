@@ -1,0 +1,9 @@
+[
+ {
+  "name": "PlanningApiUnreachable",
+  "entity": "service:gridcast:grid-operator",
+  "summary": "The grid operator cannot reach the planning API",
+  "active_at": "2026-10-04 14:42:42.944281+00:00",
+  "severity": "page"
+ }
+]

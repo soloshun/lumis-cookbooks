@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "PlanningApiUnreachable :: A rollout of planning-api caused pods to be unavailable or not ready. :: The planning-api deployment was likely unable to serve traffic during a rollout."
+ },
+ {
+  "entity": "service:gridcast:grid-operator",
+  "text": "Kubernetes service selector mismatch :: The Kubernetes service for planning-api could not route traffic to available pods. :: A selector or port mismatch in the planning-api service caused the grid-operator to fail to connect."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "Resource contention or crash in planning-api :: Planning-api pods crashed, OOMKilled, or became unready due to resource or runtime issues. :: A runtime failure in planning-api prevented it from serving the grid-operator."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Dependency failure :: A downstream dependency such as postgres or forecast-pipeline became unavailable or slow. :: A failure in a dependency caused planning-api to become unresponsive to the grid-operator."
+ },
+ {
+  "entity": "service:gridcast:grid-operator",
+  "text": "Network policy or routing issue :: A network policy change or infrastructure issue blocked traffic between grid-operator and planning-api. :: The grid-operator could not reach planning-api due to network or policy interference."
+ }
+]

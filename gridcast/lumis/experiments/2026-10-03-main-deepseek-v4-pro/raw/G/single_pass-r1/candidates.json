@@ -1,0 +1,519 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "Ingestion demand batch failures are caused by contract-violating demand payloads; malformed batches are rejected at ingestion before the forecast-pipeline range gate, so forecast-pipeline sees no demand range failures but slows down due to missing or incomplete demand.",
+   "causal_path": [
+    "service:gridcast:ingestion",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "demand_range_failures_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 5000
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-contract-violations",
+    "ingestion-demand-errors",
+    "demand-range-failures",
+    "slow-pipeline-traces"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "demand_range_failures_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis check cannot be tested by registered queries"
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "Forecast-pipeline p95 slowdown is caused by failed or retried Prefect flow runs, with failures driven by ingestion demand errors leaving the pipeline without valid demand input.",
+   "causal_path": [
+    "service:gridcast:ingestion",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 5000
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-demand-errors",
+    "prefect-failed-flow-runs",
+    "pipeline-failed-runs",
+    "slow-pipeline-traces"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "Forecast-pipeline p95 slowdown is caused by failed or retried Prefect flow runs, with failures driven by ingestion demand errors leaving the pipeline without valid demand input.",
+    "causal_path": [
+     "service:gridcast:ingestion",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_errors_10m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "slow_trace_duration_ms",
+      "operator": "gt",
+      "value": 5000
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-demand-errors",
+     "prefect-failed-flow-runs",
+     "pipeline-failed-runs",
+     "slow-pipeline-traces"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [
+    "prometheus:ingestion-demand-errors"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 5000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "Primary weather vendor returned HTTP 503, ingestion fell back to the secondary vendor, and secondary payload contract violations contaminated demand ingestion.",
+   "causal_path": [
+    "service:gridcast:ingestion",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "weather_variability_warnings_30m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-weather-vendor-503",
+    "ingestion-weather-errors",
+    "ingestion-contract-violations",
+    "weather-variability-warnings"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "weather_variability_warnings_30m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "Primary weather vendor returned HTTP 503, ingestion fell back to the secondary vendor, and secondary payload contract violations contaminated demand ingestion.",
+    "causal_path": [
+     "service:gridcast:ingestion",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_batch_errors_10m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "weather_variability_warnings_30m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-weather-vendor-503",
+     "ingestion-weather-errors",
+     "ingestion-contract-violations",
+     "weather-variability-warnings"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_batch_errors_10m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "weather_variability_warnings_30m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "contradicted",
+   "supporting_evidence_ids": [
+    "loki:e5dbf2947a095346a18298ded950b5e8:0"
+   ],
+   "contradicting_evidence_ids": [
+    "prometheus:ingestion-weather-errors",
+    "prometheus:weather-variability-warnings"
+   ],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "Forecast-pipeline slowdown is caused by high model inference latency or forecast-service instability from OOM kills, restarts, or frequent model reloads.",
+   "causal_path": [
+    "service:gridcast:forecast-service",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "gt",
+     "value": 5.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "oom_kills_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "restarts_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "model_reloads_30m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 5000
+    }
+   ],
+   "evidence_needed": [
+    "forecast-inference-p95",
+    "forecast-oom-kills",
+    "forecast-restarts",
+    "forecast-model-reloads",
+    "slow-pipeline-traces"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "le",
+     "value": 5.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "oom_kills_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "restarts_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "model_reloads_30m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "Forecast-pipeline slowdown is caused by high model inference latency or forecast-service instability from OOM kills, restarts, or frequent model reloads.",
+    "causal_path": [
+     "service:gridcast:forecast-service",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "inference_p95_seconds",
+      "operator": "gt",
+      "value": 5.0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "oom_kills_15m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "restarts_15m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "model_reloads_30m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "slow_trace_duration_ms",
+      "operator": "gt",
+      "value": 5000
+     }
+    ],
+    "evidence_needed": [
+     "forecast-inference-p95",
+     "forecast-oom-kills",
+     "forecast-restarts",
+     "forecast-model-reloads",
+     "slow-pipeline-traces"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "inference_p95_seconds",
+      "operator": "le",
+      "value": 5.0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "oom_kills_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "restarts_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "model_reloads_30m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "contradicted",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [
+    "prometheus:forecast-inference-p95",
+    "prometheus:forecast-model-reloads",
+    "prometheus:forecast-oom-kills",
+    "prometheus:forecast-restarts"
+   ],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 5000
+    }
+   ]
+  }
+ }
+]

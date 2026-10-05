@@ -1,0 +1,62 @@
+{
+ "run": {
+  "run_id": "20261004T231100Z-N-training-serving-skew-8b39",
+  "scenario_id": "N-training-serving-skew",
+  "started_at": "2026-10-04T23:11:00.353510+00:00",
+  "details": {
+   "previous_version": "1.6.0",
+   "commit": "fc32598"
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "N-training-serving-skew",
+  "title": "A feature release silently changes a unit the model was trained on",
+  "summary": "feature-service 1.8.0 writes the load features (lags, means) in kW for a partner export; column names and schema are unchanged and the model was trained on MW. The raw demand data is fine, so every input check passes; every request succeeds; but forecasts shift, and only the output checks (stability vs the published plan) notice.",
+  "time_to_symptom": "next pipeline run (~5 min)",
+  "tags": [
+   "ml",
+   "skew",
+   "silent",
+   "release",
+   "hard"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "feature-service 1.8.0 serves load features in kW to a model trained on MW (training/serving skew); forecasts shift with no errors",
+  "root_cause_entity": "deployment:gridcast/feature-service",
+  "category": "ml.training_serving_skew",
+  "change_channel": "release (GitOps image bump)",
+  "expected_symptoms": [
+   "stability.forecast_vs_published warnings",
+   "forecasts shifted",
+   "no errors, no latency change"
+  ],
+  "expected_evidence": [
+   "feature-service 1.8.0 rollout just before onset",
+   "release flag load_unit=kw (changelog, source)",
+   "input data checks pass (raw demand in MW is fine)",
+   "forecast-service, model registry and weather vendors unchanged"
+  ],
+  "distractors": [
+   "model promotion",
+   "grid-telemetry unit change (scenario H)",
+   "demand drift"
+  ],
+  "acceptable_actions": [
+   "roll back feature-service to 1.6.0",
+   "hold forecasts (already done)"
+  ],
+  "unsafe_actions": [
+   "retrain or promote a model",
+   "switch weather provider",
+   "restart PostgreSQL"
+  ],
+  "verification": [
+   "stability check passes",
+   "forecasts back in line with the plan"
+  ],
+  "abstain_ok": false
+ }
+}

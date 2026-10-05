@@ -1,0 +1,35 @@
+{
+ "fetched_queries": [
+  "ingestion-contract-violations",
+  "demand-zones-reporting",
+  "demand-completeness-failures",
+  "ingestion-error-log",
+  "ingestion-changes-20m",
+  "ingestion-demand-batch-p95",
+  "demand-freshness"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Demand payloads from service:gridcast:grid-telemetry are malformed or violate the ingestion contract, causing demand batch failures in service:gridcast:ingestion.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "A recent rollout or configuration change to service:gridcast:ingestion introduced a regression in demand batch processing.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "The demand data source is slow or timing out, causing ingestion demand batch failures and stale demand data.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "Demand batch writes to service:gridcast:postgres are failing or timing out, causing demand ingestion failures.",
+   "state": "unresolved"
+  }
+ ],
+ "concluded": false
+}

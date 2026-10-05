@@ -1,0 +1,53 @@
+{
+  "about": "Post-hoc mechanism labels for every model run (single_pass, lumis) and the rule signatures. top1: the candidate the scorer ranks first states the ground-truth mechanism (category) at the right component. any: some accepted candidate in the output states it (any assessment state). Labelled by Claude (Opus 5.5) on 2026-10-04 after the run, reading candidates.json / report.json against ground_truth.json; rationale given per label. Must be verified by a human before publication.",
+  "rules_signatures": {
+    "planning-api-scaled-to-zero": {"J": true},
+    "feature-query-amplification": {"A": true, "F": true},
+    "feature-builds-failing": {"C": false, "_note": "names failing builds, not the stale credential"},
+    "demand-feed-rejected": {"G": true},
+    "demand-values-out-of-range": {"H": true},
+    "weather-feed-failing": {"I": true}
+  },
+  "runs": {
+    "J": {
+      "single_pass": {"1": {"top1": true, "any": true, "why": "planning-api scaled to zero"}, "2": {"top1": true, "any": true, "why": "scaled to zero replicas"}},
+      "lumis": {"1": {"top1": true, "any": true, "why": "deterministic signature"}, "2": {"top1": true, "any": true, "why": "deterministic signature"}}
+    },
+    "A": {
+      "single_pass": {"1": {"top1": true, "any": true, "why": "surge in SQL statements per build by feature-service"}, "2": {"top1": false, "any": false, "why": "top: failed Prefect runs; the N+1 candidate was rejected (invalid)"}},
+      "lumis": {"1": {"top1": true, "any": true, "why": "1.7.0 lag_resolution=minute, ~2,500 non-sargable queries per build"}, "2": {"top1": true, "any": true, "why": "same, with the GitOps commit"}}
+    },
+    "F": {
+      "single_pass": {"1": {"top1": true, "any": true, "why": "N+1 SQL fan-out in feature-service"}, "2": {"top1": false, "any": false, "why": "all candidates rejected as invalid; ranked by the model's own order for scoring"}},
+      "lumis": {"1": {"top1": true, "any": true, "why": "1.7.0 rollout, ~2,500 queries per build"}, "2": {"top1": true, "any": true, "why": "same mechanism; path starts at the Deployment node"}}
+    },
+    "C": {
+      "single_pass": {"1": {"top1": true, "any": true, "why": "PostgreSQL authentication failures for feature-service (entity given as postgres)"}, "2": {"top1": false, "any": true, "why": "top: failed builds; second: PostgreSQL authentication failures"}},
+      "lumis": {"1": {"top1": false, "any": true, "why": "top: register-stage write fails -> 503; third (unresolved): credential mismatch after rotation"}, "2": {"top1": false, "any": false, "why": "connection refused / connection limit, weather gap; misled by the IPv6 'Network is unreachable' prefix of the error"}}
+    },
+    "D": {
+      "single_pass": {"1": {"top1": false, "any": false, "why": "exclusions only; asserts 'not due to OOM kills'"}, "2": {"top1": false, "any": false, "why": "crash-looping, no mechanism"}},
+      "lumis": {"1": {"top1": false, "any": false, "why": "'crash/restart loop (not OOM)' on the false zero"}, "2": {"top1": false, "any": false, "why": "model load failure / probe kill, 'non-OOM', on the false zero"}}
+    },
+    "E": {
+      "single_pass": {"1": {"top1": false, "any": true, "why": "top: weather vendor; a contradicted candidate names the alias change causing inference latency"}, "2": {"top1": false, "any": true, "why": "top: pipeline failures; a contradicted candidate lists slow inference / model reload"}},
+      "lumis": {"1": {"top1": false, "any": false, "why": "top: in-pipeline validation SQL; second: alias moved but 'never reloaded' (latency-neutral)"}, "2": {"top1": false, "any": false, "why": "top: pipeline DB work; alias change judged latency-neutral"}}
+    },
+    "G": {
+      "single_pass": {"1": {"top1": false, "any": false, "why": "top: Prefect retries from demand ingestion errors, no contract cause"}, "2": {"top1": true, "any": true, "why": "upstream demand-vendor payload contract violation"}},
+      "lumis": {"1": {"top1": true, "any": true, "why": "grid-telemetry payload no longer matches DemandIn contract"}, "2": {"top1": true, "any": true, "why": "same"}}
+    },
+    "H": {
+      "single_pass": {"1": {"top1": false, "any": false, "why": "range-check failures causing retries; no unit/scale cause"}, "2": {"top1": false, "any": false, "why": "all candidates rejected; none names a unit change"}},
+      "lumis": {"1": {"top1": true, "any": true, "why": "grid-telemetry emits out-of-range demand values, contract intact"}, "2": {"top1": false, "any": true, "why": "top (scorer) is an exclusion statement; second (unresolved): kW-vs-MW scale change"}}
+    },
+    "I": {
+      "single_pass": {"1": {"top1": true, "any": true, "why": "wx-primary HTTP 503"}, "2": {"top1": true, "any": true, "why": "wx-primary HTTP 503"}},
+      "lumis": {"1": {"top1": true, "any": true, "why": "wx-primary HTTP 503, no automatic failover"}, "2": {"top1": true, "any": true, "why": "same"}}
+    },
+    "B": {
+      "single_pass": {"1": {"top1": false, "any": false, "why": "fault not yet observable at incident freeze"}, "2": {"top1": false, "any": false, "why": "fault not yet observable at incident freeze"}},
+      "lumis": {"1": {"top1": false, "any": false, "why": "postgres scan load; flagged the pipeline symptom as uncorroborated"}, "2": {"top1": false, "any": false, "why": "stale feature-service 1.7.0 rollout from an earlier scenario (recency confusion)"}}
+    }
+  }
+}

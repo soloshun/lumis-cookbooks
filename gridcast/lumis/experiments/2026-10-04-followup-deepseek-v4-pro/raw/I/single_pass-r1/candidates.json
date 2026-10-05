@@ -1,0 +1,361 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "The primary weather vendor (service:gridcast:weather-vendor-wx-primary) returned HTTP 503/5xx responses to ingestion during the incident window, causing weather-observation batch failures.",
+   "causal_path": [
+    "service:gridcast:weather-vendor-wx-primary",
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-weather-vendor-503",
+    "ingestion-weather-errors"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "The primary weather vendor (service:gridcast:weather-vendor-wx-primary) returned HTTP 503/5xx responses to ingestion during the incident window, causing weather-observation batch failures.",
+    "causal_path": [
+     "service:gridcast:weather-vendor-wx-primary",
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_batch_errors_10m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-weather-vendor-503",
+     "ingestion-weather-errors"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_batch_errors_10m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "supported",
+   "supporting_evidence_ids": [
+    "loki:249b4573eca5e692ee086fcad3097bc2:0",
+    "prometheus:ingestion-weather-errors"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": []
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "The failure is specific to the weather-observation path; demand ingestion remained healthy.",
+   "causal_path": [
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-demand-errors",
+    "ingestion-weather-errors"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "The failure is specific to the weather-observation path; demand ingestion remained healthy.",
+    "causal_path": [
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_errors_10m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_batch_errors_10m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-demand-errors",
+     "ingestion-weather-errors"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_errors_10m",
+      "operator": "gt",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "supported",
+   "supporting_evidence_ids": [
+    "prometheus:ingestion-demand-errors",
+    "prometheus:ingestion-weather-errors"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": []
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "The primary weather vendor payloads violated ingestion's expected contract, causing weather-observation batch failures independently of transport 5xx responses.",
+   "causal_path": [
+    "service:gridcast:weather-vendor-wx-primary",
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-contract-violations"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "The primary weather vendor payloads violated ingestion's expected contract, causing weather-observation batch failures independently of transport 5xx responses.",
+    "causal_path": [
+     "service:gridcast:weather-vendor-wx-primary",
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-contract-violations"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "Weather-observation freshness degraded relative to demand freshness because weather ingestion was failing while demand ingestion was not.",
+   "causal_path": [
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "gt",
+     "value": "demand_freshness_seconds"
+    }
+   ],
+   "evidence_needed": [
+    "weather-observation-freshness",
+    "demand-freshness"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "le",
+     "value": "demand_freshness_seconds"
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "schema: 4 validation errors for Hypothesis\npredictions.0\n  Value error, ordered comparison requires a numeric value [type=value_error, input_value={'entity_id': 'service:gr...mand_freshness_seconds'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error\npredictions\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[{'entity_id': 'service:g...and_freshness_seconds'}], input_type=list]\n    For further information v"
+ },
+ {
+  "rank": 5,
+  "hypothesis": {
+   "id": "H5",
+   "statement": "The primary weather vendor served repeated or stale values, triggering downstream weather-variability warnings.",
+   "causal_path": [
+    "service:gridcast:weather-vendor-wx-primary",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "weather_variability_warnings_30m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "weather-variability-warnings"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "weather_variability_warnings_30m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H5",
+    "statement": "The primary weather vendor served repeated or stale values, triggering downstream weather-variability warnings.",
+    "causal_path": [
+     "service:gridcast:weather-vendor-wx-primary",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "weather_variability_warnings_30m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "weather-variability-warnings"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "weather_variability_warnings_30m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "contradicted",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [
+    "prometheus:weather-variability-warnings"
+   ],
+   "missing_checks": []
+  }
+ }
+]

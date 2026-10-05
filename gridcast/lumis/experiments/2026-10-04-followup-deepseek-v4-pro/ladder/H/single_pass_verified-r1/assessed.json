@@ -1,0 +1,33 @@
+{
+ "fetched_queries": [
+  "pipeline-failed-runs",
+  "demand-zones-reporting",
+  "demand-completeness-failures",
+  "ingestion-weather-vendor-503",
+  "forecast-pipeline-changes-20m"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "Forecast pipeline holds/failures are caused by validation-gate demand range failures.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Forecast pipeline holds/failures are caused by incomplete demand coverage from grid-telemetry.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:weather-vendor-wx-primary",
+   "text": "Forecast pipeline holds/failures are caused by an upstream primary weather vendor HTTP 503 outage degrading weather observations.",
+   "state": "contradicted"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "Forecast pipeline holds/failures were introduced by a recent GitOps commit or rollout to forecast-pipeline.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

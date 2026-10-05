@@ -1,0 +1,46 @@
+{
+ "id": "gen-1791049850-OKcMA4IvsT5OvQ1yasgz",
+ "object": "chat.completion",
+ "created": 1791049850,
+ "model": "deepseek/deepseek-v4-pro-0813",
+ "provider": "Together",
+ "system_fingerprint": "default",
+ "service_tier": null,
+ "choices": [
+  {
+   "index": 0,
+   "logprobs": null,
+   "finish_reason": "stop",
+   "native_finish_reason": "stop",
+   "message": {
+    "role": "assistant",
+    "content": "{\"hypotheses\":[{\"id\":\"H1\",\"statement\":\"The forecast-pipeline p95 duration increase is caused by a surge in SQL statements per feature build issued by feature-service, which drives the PostgreSQL rows-scanned surge.\",\"causal_path\":[\"service:gridcast:feature-service\",\"service:gridcast:postgres\",\"service:gridcast:forecast-pipeline\"],\"predictions\":[{\"entity_id\":\"service:gridcast:feature-service\",\"key\":\"sql_statements_per_build\",\"operator\":\"gt\",\"value\":500},{\"entity_id\":\"service:gridcast:postgres\",\"key\":\"rows_scanned_per_s\",\"operator\":\"gt\",\"value\":10000},{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"slow_trace_duration_ms\",\"operator\":\"gt\",\"value\":3000}],\"evidence_needed\":[\n\n\"feature-sql-per-build\",\"postgres-rows-scanned\",\"slow-pipeline-traces\"],\n\n\"falsifiers\":[\n\n{\"entity_id\":\"service:gridcast:feature-service\",\"key\":\"sql_statements_per_build\",\"operator\":\"le\",\"value\":500},\n\n{\"entity_id\":\"service:gridcast:postgres\",\"key\":\"rows_scanned_per_s\",\"operator\":\"le\",\"value\":10000},\n\n{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"slow_trace_duration_ms\",\"operator\":\"le\",\"value\":3000}\n\n]},\n\n{\"id\":\"H2\",\"statement\":\"The forecast-pipeline p95 duration increase is caused by a surge in SQL statements per feature build issued by feature-service, which drives the PostgreSQL rows-scanned surge.\",\"causal_path\":[\"service:gridcast:feature-service\",\"service:gridcast:postgres\",\"service:gridcast:forecast-pipeline\"],\"predictions\":[{\"entity_id\":\"service:gridcast:feature-service\",\"key\":\"sql_statements_per_build\",\"operator\":\"gt\",\"value\":500},{\"entity_id\":\"service:gridcast:postgres\",\"key\":\"rows_scanned_per_s\",\"operator\":\"gt\",\"value\":10000},{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"slow_trace_duration_ms\",\"operator\":\"gt\",\"value\":3000}],\"evidence_needed\":[\n\n\"feature-sql-per-build\",\"postgres-rows-scanned\",\"slow-pipeline-traces\"],\n\n\"falsifiers\":[\n\n{\"entity_id\":\"service:gridcast:feature-service\",\"key\":\"sql_statements_per_build\",\"operator\":\"le\",\"value\":500},\n\n{\"entity_id\":\"service:gridcast:postgres\",\"key\":\"rows_scanned_per_s\",\"operator\":\"le\",\"value\":10000},\n\n{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"slow_trace_duration_ms\",\"operator\":\"le\",\"value\":3000}\n\n]},\n\n{\"id\":\"H3\",\"statement\":\"The forecast-pipeline p95 duration increase is caused by a surge in SQL statements per feature build issued by feature-service, which drives the PostgreSQL rows-scanned surge.\",\"causal_path\":[\"service:gridcast:feature-service\",\"service:gridcast:postgres\",\"service:gridcast:forecast-pipeline\"],\"predictions\":[{\"entity_id\":\"service:gridcast:feature-service\",\"key\":\"sql_statements_per_build\",\"operator\":\"gt\",\"value\":500},{\"entity_id\":\"service:gridcast:postgres\",\"key\":\"rows_scanned_per_s\",\"operator\":\"gt\",\"value\":10000},{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"slow_trace_duration_ms\",\"operator\":\"gt\",\"value\":3000}],\"evidence_needed\":[\n\n\"feature-sql-per-build\",\"postgres-rows-scanned\",\"slow-pipeline-traces\"],\n\n\"falsifiers\":[\n\n{\"entity_id\":\"service:gridcast:feature-service\",\"key\":\"sql_statements_per_build\",\"operator\":\"le\",\"value\":500},\n\n{\"entity_id\":\"service:gridcast:postgres\",\"key\":\"rows_scanned_per_s\",\"operator\":\"le\",\"value\":10000},\n\n{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"slow_trace_duration_ms\",\"operator\":\"le\",\"value\":3000}\n\n]}\n\n]}",
+    "refusal": null,
+    "reasoning": null
+   }
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 11391,
+  "completion_tokens": 917,
+  "total_tokens": 12308,
+  "cost": 0.01866744,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.01866744,
+   "upstream_inference_prompt_cost": 0.01503612,
+   "upstream_inference_completions_cost": 0.00363132
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ }
+}

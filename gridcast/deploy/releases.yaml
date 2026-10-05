@@ -1,0 +1,77 @@
+# GridCast release catalog: every service version that can be deployed into the estate.
+#
+# `flags` change behaviour and are baked into the image as /app/release.json, exactly like a
+# code change would be. `gridcastctl images build` builds every release listed here;
+# `gridcastctl deploy <service> <version>` rolls one out through the GitOps repository.
+#
+# The *default* column is what a fresh estate runs.
+services:
+  weather-vendor:
+    runtime: base
+    default: 1.0.0
+    releases:
+      1.0.0:
+        changelog: ["Meridian/Harmattan vendor simulator: 5-min observations, hourly forecasts"]
+  grid-telemetry:
+    runtime: base
+    default: 1.4.0
+    releases:
+      1.4.0:
+        changelog: ["SCADA historian simulator publishing one-minute zone demand"]
+  ingestion:
+    runtime: base
+    default: 1.4.2
+    releases:
+      1.4.2:
+        changelog: ["fix: bound vendor backfill window to two days", "feat: per-dataset batch audit"]
+  feature-service:
+    runtime: base
+    default: 1.6.0
+    releases:
+      1.6.0:
+        flags: { lag_resolution: hourly }
+        changelog: ["perf: aggregate demand to hourly buckets in-database"]
+      1.7.0:
+        flags: { lag_resolution: minute }
+        changelog:
+          - "feat(features): compute lag features at native one-minute resolution"
+          - "refactor(features): bucket readings with date_trunc for readability"
+          - "refactor(features): recompute trailing windows per target hour"
+      1.8.0:
+        flags: { lag_resolution: hourly, load_unit: kw }
+        changelog:
+          - "feat(features): publish load features in kW for the partner data export (PART-77)"
+          - "chore(features): align feature column units with the partner schema"
+  forecast-service:
+    runtime: ml
+    default: 2.1.0
+    releases:
+      2.1.0:
+        changelog: ["feat: hot-reload the registry's production alias without restarts"]
+  planning-api:
+    runtime: base
+    default: 2.3.0
+    releases:
+      2.3.0:
+        changelog: ["feat: realized accuracy endpoint"]
+      2.3.1:
+        flags: { log_field_style: snake }
+        changelog: ["chore(logging): rename structured log fields; no functional change"]
+  forecast-pipeline:
+    runtime: pipeline
+    default: 1.2.0
+    releases:
+      1.2.0:
+        changelog: ["feat: validation gate holds forecasts that fail quality checks"]
+  grid-operator:
+    runtime: base
+    default: 1.0.0
+    releases:
+      1.0.0:
+        changelog: ["Synthetic control-room consumer of dispatch plans"]
+  jobs:
+    runtime: pipeline
+    default: 1.0.0
+    releases:
+      1.0.0:
+        changelog: ["Migrations, backfills and model training"]

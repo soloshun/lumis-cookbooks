@@ -1,0 +1,572 @@
+# Lumis project for the GridCast estate (schema: lumis.dev/operational-v1alpha1).
+#
+# What Lumis gets:   read-only Kubernetes discovery of namespace `gridcast`, Prometheus instant
+#                    queries, the trace-derived service graph, a declared logical topology, and an
+#                    allowlist of GridCast source / GitOps files for the optional agent.
+# What it never gets: the chaos ground truth (.gridcast/chaos), vendor admin tokens, Secrets,
+#                    write access to anything. The kernel is read-only by construction.
+#
+# Canonical entity IDs: service:gridcast:<name>  (Kubernetes app label == OTel service.name).
+api_version: lumis.dev/operational-v1alpha1
+project:
+  name: gridcast
+  environment: local
+
+sources:
+  kubernetes:
+    enabled: true
+    context: kind-gridcast
+    namespace: gridcast
+  prometheus:
+    enabled: true
+    endpoint: http://localhost:9090
+    discover_service_graph: true
+    service_namespace: gridcast
+    service_graph_query: 'sum by (client, server) (rate(traces_service_graph_request_total[5m]))'
+  # Native read-only query connectors (lumis-sdk c757a74+). Counts/entries cover the whole
+  # incident window; zero matches produce *no* fact (absence is not proof), and results at
+  # max_results are marked degraded, so they can support a signature but never falsify one.
+  loki:
+    enabled: true
+    endpoint: http://localhost:3100
+    max_results: 100
+  tempo:
+    enabled: true
+    endpoint: http://localhost:3200
+    max_results: 20
+  prefect:
+    enabled: true
+    endpoint: http://localhost:4200/api
+    flow_names: [forecast-pipeline, train-model]
+    max_results: 50
+  # Native read-only SQL (lumis-sdk 812753a+). The DSN is set in the environment by the runner as
+  # the gridcast_readonly role; every query runs in a read-only transaction with a timeout.
+  sql:
+    enabled: true
+    dsn_env: GRIDCAST_LUMIS_SQL_DSN
+    statement_timeout_ms: 5000
+  # Typed recent-change records (lumis-sdk 812753a+): GitOps commits attributed to services by
+  # path and by conventional-commit scope (image tags live in one shared kustomization.yaml),
+  # plus Kubernetes rollouts. A change is evidence about a service, not a graph node.
+  changes:
+    enabled: true
+    lookback_seconds: 1200
+    kubernetes_rollouts: true
+    git:
+      - id: gitops
+        root: ../.gridcast/gitops
+        paths:
+          kustomization.yaml: ['service:gridcast:feature-service', 'service:gridcast:forecast-service', 'service:gridcast:planning-api', 'service:gridcast:ingestion', 'service:gridcast:forecast-pipeline', 'service:gridcast:grid-operator']
+          estate/feature-service.yaml: ['service:gridcast:feature-service']
+          estate/forecast-service.yaml: ['service:gridcast:forecast-service']
+          estate/planning-api.yaml: ['service:gridcast:planning-api']
+          estate/ingestion.yaml: ['service:gridcast:ingestion']
+          estate/forecast-pipeline.yaml: ['service:gridcast:forecast-pipeline']
+          estate/grid-operator.yaml: ['service:gridcast:grid-operator']
+          estate/config.yaml: ['service:gridcast:feature-service', 'service:gridcast:forecast-service', 'service:gridcast:planning-api', 'service:gridcast:ingestion', 'service:gridcast:forecast-pipeline', 'service:gridcast:grid-operator']
+        scopes:
+          feature-service: ['service:gridcast:feature-service']
+          forecast-service: ['service:gridcast:forecast-service']
+          planning-api: ['service:gridcast:planning-api']
+          ingestion: ['service:gridcast:ingestion']
+          forecast-pipeline: ['service:gridcast:forecast-pipeline']
+          grid-operator: ['service:gridcast:grid-operator']
+
+identity:
+  aliases:
+    # Tempo names the database node after db.name ("gridcast"); give it a clearer identity.
+    'service:gridcast:gridcast': 'service:gridcast:postgres'
+
+discovery:
+  timeout_seconds: 30
+
+models:
+  provider: openrouter
+  model: deepseek/deepseek-v4-flash
+  api_key_env: OPENROUTER_API_KEY
+  reasoning: high
+
+policies:
+  default_action_mode: read_only
+
+# Declared (business/ownership) topology. Discovery adds Kubernetes resources and observed call
+# edges; this layer adds what discovery cannot know: external vendors, the database, owners and
+# criticality, and dependencies that may carry no traffic at incident time (e.g. a scaled-down
+# service). Edges point server -> client ("serves"), the same orientation as the service graph.
+graph:
+  entities:
+    - {id: 'service:gridcast:grid-operator', kind: service, name: grid-operator,
+       attributes: {service.namespace: gridcast, role: consumer, criticality: critical, owner: grid-operations}}
+    - {id: 'service:gridcast:planning-api', kind: service, name: planning-api,
+       attributes: {service.namespace: gridcast, criticality: critical, owner: planning-team}}
+    - {id: 'service:gridcast:forecast-pipeline', kind: service, name: forecast-pipeline,
+       attributes: {service.namespace: gridcast, criticality: high, owner: forecasting-team}}
+    - {id: 'service:gridcast:feature-service', kind: service, name: feature-service,
+       attributes: {service.namespace: gridcast, criticality: high, owner: forecasting-team}}
+    - {id: 'service:gridcast:forecast-service', kind: service, name: forecast-service,
+       attributes: {service.namespace: gridcast, criticality: high, owner: ml-platform}}
+    - {id: 'service:gridcast:ingestion', kind: service, name: ingestion,
+       attributes: {service.namespace: gridcast, criticality: high, owner: data-platform}}
+    - {id: 'service:gridcast:postgres', kind: service, name: postgres,
+       attributes: {service.namespace: gridcast, role: database, managed: 'true', criticality: critical}}
+    - {id: 'service:gridcast:weather-vendor-wx-primary', kind: service, name: weather-vendor-wx-primary,
+       attributes: {service.namespace: gridcast, role: external-vendor, operable: 'false'}}
+    - {id: 'service:gridcast:weather-vendor-wx-secondary', kind: service, name: weather-vendor-wx-secondary,
+       attributes: {service.namespace: gridcast, role: external-vendor, operable: 'false', fallback_for: weather-vendor-wx-primary}}
+    - {id: 'service:gridcast:grid-telemetry', kind: service, name: grid-telemetry,
+       attributes: {service.namespace: gridcast, role: external-vendor, operable: 'false'}}
+  relationships:
+    - {source: 'service:gridcast:planning-api', target: 'service:gridcast:grid-operator', kind: serves, provenance: [declared]}
+    - {source: 'service:gridcast:planning-api', target: 'service:gridcast:forecast-pipeline', kind: serves, provenance: [declared]}
+    - {source: 'service:gridcast:feature-service', target: 'service:gridcast:forecast-pipeline', kind: serves, provenance: [declared]}
+    - {source: 'service:gridcast:forecast-service', target: 'service:gridcast:forecast-pipeline', kind: serves, provenance: [declared]}
+    - {source: 'service:gridcast:postgres', target: 'service:gridcast:planning-api', kind: serves, provenance: [declared]}
+    - {source: 'service:gridcast:postgres', target: 'service:gridcast:feature-service', kind: serves, provenance: [declared]}
+    - {source: 'service:gridcast:postgres', target: 'service:gridcast:forecast-service', kind: serves, provenance: [declared]}
+    - {source: 'service:gridcast:postgres', target: 'service:gridcast:ingestion', kind: serves, provenance: [declared]}
+    - {source: 'service:gridcast:postgres', target: 'service:gridcast:forecast-pipeline', kind: serves, provenance: [declared]}
+    - {source: 'service:gridcast:weather-vendor-wx-primary', target: 'service:gridcast:ingestion', kind: serves, provenance: [declared]}
+    - {source: 'service:gridcast:weather-vendor-wx-secondary', target: 'service:gridcast:ingestion', kind: serves, provenance: [declared]}
+    - {source: 'service:gridcast:grid-telemetry', target: 'service:gridcast:ingestion', kind: serves, provenance: [declared]}
+
+# Operator-registered observations: 24 Prometheus, 5 Loki, 1 Tempo, 2 Prefect, 3 SQL, 5 change
+# records. Each PromQL returns exactly one sample at the incident end time. `or vector(0)` is used
+# only for series that exist whenever their subject exists (pre-initialised application counters);
+# infrastructure facts use `or (0 * <visibility series>)` so a blind source yields no fact rather
+# than a false zero. Values are rounded for readability (no longer needed for redaction).
+queries:
+  - id: planning-desired-replicas
+    provider: prometheus
+    entity_id: 'service:gridcast:planning-api'
+    key: desired_replicas
+    description: Replicas the planning-api Deployment asks for
+    parameters: {promql: 'round(sum(k8s_deployment_desired{k8s_namespace_name="gridcast",k8s_deployment_name="planning-api"}), 0.001)'}
+  - id: planning-available-replicas
+    provider: prometheus
+    entity_id: 'service:gridcast:planning-api'
+    key: available_replicas
+    description: Replicas of planning-api that are available to serve
+    parameters: {promql: 'round(sum(k8s_deployment_available{k8s_namespace_name="gridcast",k8s_deployment_name="planning-api"}), 0.001)'}
+  - id: operator-plan-fetch-transport-errors
+    provider: prometheus
+    entity_id: 'service:gridcast:grid-operator'
+    key: plan_fetch_transport_errors_5m
+    description: grid-operator plan reads that could not connect in the last 5 minutes
+    parameters: {promql: 'round(sum(increase(gridcast_consumer_requests_total{endpoint="/v1/plans/current",outcome="transport_error"}[5m])) or vector(0), 0.001)'}
+  - id: pipeline-failed-runs
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-pipeline'
+    key: failed_runs_15m
+    description: Forecast pipeline runs that failed in the last 15 minutes
+    parameters: {promql: 'round(sum(increase(gridcast_pipeline_runs_total{status="failed"}[15m])) or vector(0), 0.001)'}
+  - id: feature-sql-per-build
+    provider: prometheus
+    entity_id: 'service:gridcast:feature-service'
+    key: sql_statements_per_build
+    description: Mean SQL statements issued per feature build over 10 minutes
+    parameters: {promql: 'round((sum(increase(gridcast_feature_db_queries_total[10m])) / clamp_min(sum(increase(gridcast_feature_builds_total[10m])), 1)) or vector(0), 0.001)'}
+  - id: feature-build-p95
+    provider: prometheus
+    entity_id: 'service:gridcast:feature-service'
+    key: build_p95_seconds
+    description: 95th percentile feature build duration over 10 minutes
+    parameters: {promql: 'round((histogram_quantile(0.95, sum by (le) (rate(gridcast_feature_build_duration_seconds_bucket[10m]))) > -1) or vector(0), 0.001)'}
+  - id: feature-failed-builds
+    provider: prometheus
+    entity_id: 'service:gridcast:feature-service'
+    key: failed_builds_10m
+    description: Feature builds that failed in the last 10 minutes
+    parameters: {promql: 'round(sum(increase(gridcast_feature_builds_total{status="failed"}[10m])) or vector(0), 0.001)'}
+  - id: postgres-rows-scanned
+    provider: prometheus
+    entity_id: 'service:gridcast:postgres'
+    key: rows_scanned_per_s
+    description: Rows scanned per second in the gridcast database (5 minute rate)
+    parameters: {promql: 'round(sum(rate(pg_stat_database_tup_returned{datname="gridcast"}[5m])))'}
+  # OOM evidence from the container's termination reason (kube-state-metrics, a gauge kept in the
+  # pod status). cAdvisor's container_oom_events_total misses containers that die between scrapes
+  # and, with `or vector(0)`, reported a false zero in the main run (scenario D). Zero is reported
+  # only while kube-state-metrics sees a forecast-service container; otherwise there is no fact.
+  - id: forecast-oom-killed
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-service'
+    key: oom_killed_15m
+    description: Whether any forecast-service container's last termination in the last 15 minutes was OOMKilled (1/0)
+    parameters: {promql: 'max(max_over_time(kube_pod_container_status_last_terminated_reason{namespace="gridcast",container="forecast-service",reason="OOMKilled"}[15m])) or (0 * max(kube_pod_container_info{namespace="gridcast",container="forecast-service"}))'}
+  - id: forecast-memory-ratio
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-service'
+    key: memory_working_set_to_limit_15m
+    description: Peak forecast-service memory working set in the last 15 minutes divided by its current memory limit
+    parameters: {promql: 'round(max(max_over_time(container_memory_working_set_bytes{namespace="gridcast",container="forecast-service"}[15m])) / min(kube_pod_container_resource_limits{namespace="gridcast",container="forecast-service",resource="memory"}), 0.001)'}
+  - id: forecast-restarts
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-service'
+    key: restarts_15m
+    description: forecast-service container restarts in the last 15 minutes
+    parameters: {promql: 'round(sum(delta(k8s_container_restarts{k8s_namespace_name="gridcast",k8s_container_name="forecast-service"}[15m])) or vector(0), 0.001)'}
+  - id: forecast-inference-p95
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-service'
+    key: inference_p95_seconds
+    description: 95th percentile model inference time over 10 minutes
+    parameters: {promql: 'round((histogram_quantile(0.95, sum by (le) (rate(gridcast_inference_duration_seconds_bucket[10m]))) > -1) or vector(0), 0.001)'}
+  # Model-load and inference evidence from gauges. A new model_version is a new counter/histogram
+  # series whose first event rate()/increase() cannot see (main run, scenario E).
+  - id: forecast-model-reloads
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-service'
+    key: model_loads_20m
+    description: Model versions forecast-service loaded in the last 20 minutes (including at start-up)
+    parameters: {promql: 'count(max_over_time(gridcast_model_loaded_at_seconds[20m]) > (time() - 1200)) or (0 * max(gridcast_model_loaded_at_seconds))'}
+  - id: forecast-inference-max
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-service'
+    key: inference_max_10m_seconds
+    description: Slowest single model inference in the last 10 minutes
+    parameters: {promql: 'round(max(max_over_time(gridcast_inference_last_duration_seconds[10m])), 0.001)'}
+  - id: ingestion-demand-errors
+    provider: prometheus
+    entity_id: 'service:gridcast:ingestion'
+    key: demand_batch_errors_10m
+    description: Failed demand ingestion batches in the last 10 minutes
+    parameters: {promql: 'round(sum(increase(gridcast_ingest_batches_total{dataset="demand",status="error"}[10m])) or vector(0), 0.001)'}
+  - id: ingestion-weather-errors
+    provider: prometheus
+    entity_id: 'service:gridcast:ingestion'
+    key: weather_batch_errors_10m
+    description: Failed weather-observation ingestion batches in the last 10 minutes
+    parameters: {promql: 'round(sum(increase(gridcast_ingest_batches_total{dataset="weather_observations",status="error"}[10m])) or vector(0), 0.001)'}
+  - id: demand-range-failures
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-pipeline'
+    key: demand_range_failures_15m
+    description: Demand range-check failures recorded by the validation gate in 15 minutes
+    parameters: {promql: 'round(sum(increase(gridcast_quality_checks_total{check="range.demand",status="fail"}[15m])) or vector(0), 0.001)'}
+  - id: weather-variability-warnings
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-pipeline'
+    key: weather_variability_warnings_30m
+    description: Weather-variability warnings (repeating vendor values) in 30 minutes
+    parameters: {promql: 'round(sum(increase(gridcast_quality_checks_total{check="variability.weather_observations",status="warn"}[30m])) or vector(0), 0.001)'}
+  # ---- Logs, traces and orchestration (native SDK connectors) ---------------------------------
+  # GridCast logs JSON; the collector keeps `msg` as the line and moves fields (error, exception,
+  # dataset, ...) into Loki structured metadata, so error text is matched with `| field=~...`.
+  - id: feature-auth-failures
+    provider: loki
+    entity_id: 'service:gridcast:feature-service'
+    key: db_auth_failure_log_lines
+    description: feature-service log lines reporting PostgreSQL password authentication failures in the incident window
+    parameters: {logql: '{service_name="feature-service"} | error=~".*password authentication failed.*" or exception=~".*password authentication failed.*"', output: count}
+  - id: ingestion-contract-violations
+    provider: loki
+    entity_id: 'service:gridcast:ingestion'
+    key: contract_violation_log_lines
+    description: ingestion log lines reporting a vendor payload contract violation in the incident window
+    parameters: {logql: '{service_name="ingestion"} | error=~".*ContractViolation.*"', output: count}
+  - id: ingestion-weather-vendor-503
+    provider: loki
+    entity_id: 'service:gridcast:ingestion'
+    key: weather_vendor_503_log_lines
+    description: ingestion log lines reporting HTTP 503 from the primary weather vendor in the incident window
+    parameters: {logql: '{service_name="ingestion"} | error=~".*HTTP 503 from weather-primary.*"', output: count}
+  - id: feature-service-error-log
+    provider: loki
+    entity_id: 'service:gridcast:feature-service'
+    key: error_log
+    description: feature-service error log records (messages) in the incident window
+    parameters: {logql: '{service_name="feature-service"} |= "\"level\": \"error\""', output: entries, fields: "error,stage"}
+  - id: ingestion-error-log
+    provider: loki
+    entity_id: 'service:gridcast:ingestion'
+    key: error_log
+    description: ingestion batch failure log records (messages) in the incident window
+    parameters: {logql: '{service_name="ingestion"} |= "ingestion batch failed"', output: entries, fields: "error,dataset"}
+  - id: slow-pipeline-traces
+    provider: tempo
+    entity_id: 'service:gridcast:forecast-pipeline'
+    key: slow_trace_duration_ms
+    description: Durations of forecast-pipeline traces slower than 3 s in the window (sampled matches, not a percentile)
+    parameters: {traceql: '{ resource.service.name = "forecast-pipeline" && resource.service.namespace = "gridcast" && duration > 3s }', output: duration_ms}
+  - id: prefect-failed-flow-runs
+    provider: prefect
+    entity_id: 'service:gridcast:forecast-pipeline'
+    key: failed_flow_runs
+    description: forecast-pipeline Prefect flow runs started in the incident window that ended FAILED or CRASHED
+    parameters: {flow_name: forecast-pipeline, operation: flow_runs, output: failed_count}
+  - id: prefect-flow-runs
+    provider: prefect
+    entity_id: 'service:gridcast:forecast-pipeline'
+    key: flow_run
+    description: forecast-pipeline Prefect flow runs (state, duration) started in the incident window
+    parameters: {flow_name: forecast-pipeline, operation: flow_runs, output: entries}
+  # ---- TEMPORARY: SQL evidence until the SDK ships a SQL provider ------------------------------
+  # provider `snapshot` + parameters.source=sql: the harness (src/gridcast_lumis/external_evidence.py)
+  # runs this read-only query at the incident end and hands Lumis a normalized observation.
+  # Added with scenarios K-M: facts an operator would already chart. No signature uses them, so
+  # the rule tier cannot diagnose K-M (failure classes it has not seen); the agent can.
+  - id: ingestion-demand-batch-p95
+    provider: prometheus
+    entity_id: 'service:gridcast:ingestion'
+    key: demand_batch_p95_seconds_10m
+    description: 95th percentile duration of ingestion's demand batches (one vendor call each) over 10 minutes
+    parameters: {promql: 'round(histogram_quantile(0.95, sum by (le) (rate(gridcast_ingest_batch_duration_seconds_bucket{dataset="demand"}[10m]))), 0.001)'}
+  - id: demand-freshness
+    provider: prometheus
+    entity_id: 'service:gridcast:ingestion'
+    key: demand_freshness_seconds
+    description: Age of the newest ingested demand reading
+    parameters: {promql: 'round(max(gridcast_data_freshness_seconds{dataset="demand"}), 1)'}
+  - id: weather-observation-freshness
+    provider: prometheus
+    entity_id: 'service:gridcast:ingestion'
+    key: weather_observation_freshness_seconds
+    description: Age of the newest ingested weather observation
+    parameters: {promql: 'round(max(gridcast_data_freshness_seconds{dataset="weather_observations"}), 1)'}
+  - id: demand-completeness-failures
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-pipeline'
+    key: completeness_demand_failures_20m
+    description: Pipeline validation-gate completeness.demand checks that warned or failed in the last 20 minutes
+    parameters: {promql: 'round(sum(increase(gridcast_quality_checks_total{check="completeness.demand",status=~"warn|fail"}[20m])) or vector(0), 0.001)'}
+  - id: forecast-stability-warnings
+    provider: prometheus
+    entity_id: 'service:gridcast:forecast-pipeline'
+    key: stability_warnings_20m
+    description: Validation-gate checks that the new forecast deviates from the published plan (warn or fail) in the last 20 minutes
+    parameters: {promql: 'round(sum(increase(gridcast_quality_checks_total{check="stability.forecast_vs_published",status=~"warn|fail"}[20m])) or vector(0), 0.001)'}
+  - id: demand-zones-reporting
+    provider: sql
+    entity_id: 'service:gridcast:grid-telemetry'
+    key: zones_reporting_demand_20m
+    description: Load zones with at least one demand reading in the 20 minutes before incident end (the catalogue has 4)
+    parameters: {sql: "SELECT count(DISTINCT zone_id) FROM raw.demand_readings WHERE ts > %(ended_at)s - interval '20 minutes' AND ts <= %(ended_at)s"}
+  - id: load-feature-mean
+    provider: sql
+    entity_id: 'service:gridcast:feature-service'
+    key: load_lag_24h_feature_mean_20m
+    description: Mean of the load_lag_24h model feature in feature runs built in the 20 minutes before incident end (feature monitoring; demand is in MW)
+    parameters: {sql: "SELECT round(avg(f.load_lag_24h)::numeric, 2) FROM features.forecast_features f JOIN features.feature_runs r USING (feature_run_id) WHERE r.created_at > %(ended_at)s - interval '20 minutes' AND r.created_at <= %(ended_at)s"}
+  - id: feature-cpu-throttling
+    provider: prometheus
+    entity_id: 'service:gridcast:feature-service'
+    key: cpu_throttled_ratio_5m
+    description: Share of feature-service CPU scheduling periods that were throttled over 5 minutes
+    parameters: {promql: 'round(sum(rate(container_cpu_cfs_throttled_periods_total{namespace="gridcast",container="feature-service"}[5m])) / sum(rate(container_cpu_cfs_periods_total{namespace="gridcast",container="feature-service"}[5m])), 0.001)'}
+
+  - id: model-production-alias-changes
+    provider: sql
+    entity_id: 'service:gridcast:forecast-service'
+    key: production_alias_changes_20m
+    description: Model-registry moves of the production alias in the 20 minutes before incident end
+    parameters: {sql: "SELECT count(*) FROM ml.model_events WHERE event = 'alias_set' AND alias = 'production' AND at > %(ended_at)s - interval '20 minutes' AND at <= %(ended_at)s"}
+
+  # Recent changes per service (GitOps commits and rollouts in the 20 minutes before incident end).
+  # Zero is an observation: Git history is authoritative. 20 minutes keeps the previous scenario's
+  # revert (at least one cooldown earlier) out of the window.
+  - id: feature-service-changes-20m
+    provider: changes
+    entity_id: 'service:gridcast:feature-service'
+    key: changes_20m
+    description: GitOps commits and rollouts touching feature-service in the 20 minutes before incident end
+    parameters: {output: count, lookback_seconds: "1200"}
+  - id: forecast-service-changes-20m
+    provider: changes
+    entity_id: 'service:gridcast:forecast-service'
+    key: changes_20m
+    description: GitOps commits and rollouts touching forecast-service in the 20 minutes before incident end
+    parameters: {output: count, lookback_seconds: "1200"}
+  - id: planning-api-changes-20m
+    provider: changes
+    entity_id: 'service:gridcast:planning-api'
+    key: changes_20m
+    description: GitOps commits and rollouts touching planning-api in the 20 minutes before incident end
+    parameters: {output: count, lookback_seconds: "1200"}
+  - id: ingestion-changes-20m
+    provider: changes
+    entity_id: 'service:gridcast:ingestion'
+    key: changes_20m
+    description: GitOps commits and rollouts touching ingestion in the 20 minutes before incident end
+    parameters: {output: count, lookback_seconds: "1200"}
+  - id: forecast-pipeline-changes-20m
+    provider: changes
+    entity_id: 'service:gridcast:forecast-pipeline'
+    key: changes_20m
+    description: GitOps commits and rollouts touching forecast-pipeline in the 20 minutes before incident end
+    parameters: {output: count, lookback_seconds: "1200"}
+
+# Collected for every incident (orchestration context in each report).
+initial_query_ids: [prefect-failed-flow-runs]
+
+# Deterministic triage: diagnostic signatures written as falsifiable hypotheses. Log counts only
+# ever *support* a signature (Loki returns no fact for zero matches); every signature that uses
+# one is also falsifiable by a Prometheus observable, so a healthy estate contradicts it. Only J's
+# signature is terminal: it predicts three independent observables and fully explains its
+# symptoms. The others are conservative: a match narrows the search, then escalates to the agent
+# (if enabled) or a human, because their observables do not establish *why* (e.g. an OOM kill
+# does not say whether a limit, a leak or a spike caused it).
+checks:
+  - id: planning-api-scaled-to-zero
+    terminal: true
+    explains_entities: ['service:gridcast:planning-api', 'service:gridcast:grid-operator', 'service:gridcast:forecast-pipeline']
+    hypothesis:
+      id: sig-planning-api-scaled-to-zero
+      statement: planning-api is deliberately scaled to zero replicas, so nothing serves plan reads or publication.
+      causal_path: ['service:gridcast:planning-api', 'service:gridcast:grid-operator', 'service:gridcast:forecast-pipeline']
+      evidence_needed: [planning-desired-replicas, planning-available-replicas, operator-plan-fetch-transport-errors]
+      predictions:
+        - {entity_id: 'service:gridcast:planning-api', key: desired_replicas, operator: eq, value: 0}
+        - {entity_id: 'service:gridcast:planning-api', key: available_replicas, operator: eq, value: 0}
+        - {entity_id: 'service:gridcast:grid-operator', key: plan_fetch_transport_errors_5m, operator: gt, value: 0}
+      falsifiers:
+        - {entity_id: 'service:gridcast:planning-api', key: desired_replicas, operator: gt, value: 0}
+
+  - id: feature-query-amplification
+    hypothesis:
+      id: sig-feature-query-amplification
+      statement: feature-service issues far more SQL per build than normal, slowing builds and loading PostgreSQL.
+      causal_path: ['service:gridcast:feature-service', 'service:gridcast:postgres']
+      evidence_needed: [feature-sql-per-build, feature-build-p95]
+      predictions:
+        - {entity_id: 'service:gridcast:feature-service', key: sql_statements_per_build, operator: gt, value: 100}
+        - {entity_id: 'service:gridcast:feature-service', key: build_p95_seconds, operator: gt, value: 1}
+      falsifiers:
+        - {entity_id: 'service:gridcast:feature-service', key: sql_statements_per_build, operator: le, value: 20}
+
+  - id: feature-builds-failing
+    hypothesis:
+      id: sig-feature-builds-failing
+      statement: feature-service builds are failing (cause not established by metrics alone).
+      causal_path: ['service:gridcast:feature-service', 'service:gridcast:forecast-pipeline']
+      evidence_needed: [feature-failed-builds]
+      predictions:
+        - {entity_id: 'service:gridcast:feature-service', key: failed_builds_10m, operator: gt, value: 0}
+      falsifiers:
+        - {entity_id: 'service:gridcast:feature-service', key: failed_builds_10m, operator: eq, value: 0}
+
+  - id: feature-service-db-auth-failing
+    hypothesis:
+      id: sig-feature-service-db-auth-failing
+      statement: feature-service is being refused by PostgreSQL with password authentication failures while its builds fail.
+      causal_path: ['service:gridcast:feature-service', 'service:gridcast:postgres']
+      evidence_needed: [feature-failed-builds, feature-auth-failures]
+      predictions:
+        - {entity_id: 'service:gridcast:feature-service', key: failed_builds_10m, operator: gt, value: 0}
+        - {entity_id: 'service:gridcast:feature-service', key: db_auth_failure_log_lines, operator: gt, value: 0}
+      falsifiers:
+        - {entity_id: 'service:gridcast:feature-service', key: failed_builds_10m, operator: eq, value: 0}
+
+  - id: forecast-service-oom-killed
+    hypothesis:
+      id: sig-forecast-service-oom-killed
+      statement: forecast-service is being OOM-killed and restarting (the reason for the memory pressure is not established).
+      causal_path: ['service:gridcast:forecast-service', 'service:gridcast:forecast-pipeline']
+      evidence_needed: [forecast-oom-killed, forecast-memory-ratio, forecast-restarts]
+      predictions:
+        - {entity_id: 'service:gridcast:forecast-service', key: oom_killed_15m, operator: gt, value: 0}
+        - {entity_id: 'service:gridcast:forecast-service', key: memory_working_set_to_limit_15m, operator: gt, value: 0.9}
+        - {entity_id: 'service:gridcast:forecast-service', key: restarts_15m, operator: gt, value: 0}
+      falsifiers:
+        - {entity_id: 'service:gridcast:forecast-service', key: oom_killed_15m, operator: eq, value: 0}
+
+  - id: forecast-model-slowdown
+    hypothesis:
+      id: sig-forecast-model-slowdown
+      statement: Inference slowed after the serving model changed without a restart.
+      causal_path: ['service:gridcast:forecast-service', 'service:gridcast:forecast-pipeline']
+      evidence_needed: [forecast-inference-max, forecast-model-reloads, forecast-restarts, model-production-alias-changes]
+      predictions:
+        - {entity_id: 'service:gridcast:forecast-service', key: inference_max_10m_seconds, operator: gt, value: 2}
+        - {entity_id: 'service:gridcast:forecast-service', key: model_loads_20m, operator: gt, value: 0}
+        - {entity_id: 'service:gridcast:forecast-service', key: production_alias_changes_20m, operator: gt, value: 0}
+      falsifiers:
+        - {entity_id: 'service:gridcast:forecast-service', key: inference_max_10m_seconds, operator: lt, value: 1}
+        - {entity_id: 'service:gridcast:forecast-service', key: restarts_15m, operator: gt, value: 0}
+
+  - id: demand-feed-rejected
+    hypothesis:
+      id: sig-demand-feed-rejected
+      statement: The grid-telemetry feed is being rejected by ingestion while weather ingestion is healthy.
+      causal_path: ['service:gridcast:grid-telemetry', 'service:gridcast:ingestion']
+      evidence_needed: [ingestion-demand-errors, ingestion-weather-errors, ingestion-contract-violations]
+      predictions:
+        - {entity_id: 'service:gridcast:ingestion', key: demand_batch_errors_10m, operator: gt, value: 0}
+        - {entity_id: 'service:gridcast:ingestion', key: contract_violation_log_lines, operator: gt, value: 0}
+        - {entity_id: 'service:gridcast:ingestion', key: weather_batch_errors_10m, operator: eq, value: 0}
+      falsifiers:
+        - {entity_id: 'service:gridcast:ingestion', key: demand_batch_errors_10m, operator: eq, value: 0}
+
+  - id: demand-values-out-of-range
+    hypothesis:
+      id: sig-demand-values-out-of-range
+      statement: Demand values arriving from grid-telemetry are implausible (e.g. unit change) while ingestion succeeds.
+      causal_path: ['service:gridcast:grid-telemetry', 'service:gridcast:ingestion', 'service:gridcast:forecast-pipeline']
+      evidence_needed: [demand-range-failures, ingestion-demand-errors]
+      predictions:
+        - {entity_id: 'service:gridcast:forecast-pipeline', key: demand_range_failures_15m, operator: gt, value: 0}
+        - {entity_id: 'service:gridcast:ingestion', key: demand_batch_errors_10m, operator: eq, value: 0}
+      falsifiers:
+        - {entity_id: 'service:gridcast:forecast-pipeline', key: demand_range_failures_15m, operator: eq, value: 0}
+
+  - id: weather-feed-failing
+    hypothesis:
+      id: sig-weather-feed-failing
+      statement: The primary weather vendor's observation feed is failing.
+      causal_path: ['service:gridcast:weather-vendor-wx-primary', 'service:gridcast:ingestion']
+      evidence_needed: [ingestion-weather-errors, ingestion-weather-vendor-503]
+      predictions:
+        - {entity_id: 'service:gridcast:ingestion', key: weather_batch_errors_10m, operator: gt, value: 0}
+        - {entity_id: 'service:gridcast:ingestion', key: weather_vendor_503_log_lines, operator: gt, value: 0}
+      falsifiers:
+        - {entity_id: 'service:gridcast:ingestion', key: weather_batch_errors_10m, operator: eq, value: 0}
+
+  - id: weather-feed-repeating
+    hypothesis:
+      id: sig-weather-feed-repeating
+      statement: The primary weather vendor repeats identical values with fresh timestamps.
+      causal_path: ['service:gridcast:weather-vendor-wx-primary', 'service:gridcast:ingestion', 'service:gridcast:forecast-pipeline']
+      evidence_needed: [weather-variability-warnings, ingestion-weather-errors]
+      predictions:
+        - {entity_id: 'service:gridcast:forecast-pipeline', key: weather_variability_warnings_30m, operator: gt, value: 0}
+        - {entity_id: 'service:gridcast:ingestion', key: weather_batch_errors_10m, operator: eq, value: 0}
+      falsifiers:
+        - {entity_id: 'service:gridcast:forecast-pipeline', key: weather_variability_warnings_30m, operator: eq, value: 0}
+
+# Optional tool-using agent (only with --use-agent). It may read exactly these files and run
+# read-only git log/diff on these repositories; the chaos package and .env are never listed.
+investigator:
+  budget:
+    request_limit: 20
+    tool_calls_limit: 40          # reasoning models batch several inspect calls per turn
+    max_probes: 0
+    output_tokens_limit: 32000
+    max_tool_characters: 8000
+    max_total_tool_characters: 96000
+  repositories:
+    - id: gitops
+      root: ../.gridcast/gitops
+      include_commit_subjects: true
+      entity_ids: ['service:gridcast:planning-api', 'service:gridcast:feature-service', 'service:gridcast:forecast-service']
+      files: [kustomization.yaml, estate/planning-api.yaml, estate/feature-service.yaml,
+              estate/forecast-service.yaml, estate/ingestion.yaml, estate/config.yaml,
+              estate/forecast-pipeline.yaml, estate/grid-operator.yaml]
+    - id: gridcast-source
+      root: ..
+      entity_ids: ['service:gridcast:feature-service', 'service:gridcast:forecast-service', 'service:gridcast:planning-api']
+      files: [src/gridcast/features/store.py, src/gridcast/services/feature_service.py,
+              src/gridcast/services/forecast_service.py, src/gridcast/services/planning_api.py,
+              src/gridcast/services/ingestion.py, src/gridcast/quality/checks.py,
+              deploy/releases.yaml]
+  sandbox:
+    enabled: false
+
+budget:
+  graph_hops: 3
+  max_entities: 200
+  max_queries: 40
+  max_hypotheses: 5
+  max_model_output_tokens: 3000
+  max_context_characters: 60000
+  query_timeout_seconds: 10
+  source_timeout_seconds: 60
+  total_timeout_seconds: 300

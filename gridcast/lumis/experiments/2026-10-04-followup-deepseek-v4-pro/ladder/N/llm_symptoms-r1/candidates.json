@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Model artifact/version regression :: A newly deployed forecast model artifact or weights within service:gridcast:forecast-pipeline produced biased predictions that diverged from the published plan. :: Most likely: a model update or canary rollout at the incident start time caused the forecast to shift more than 10% versus plan."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Input data staleness or incompleteness :: Delayed, partial, or stale upstream demand/generation/weather inputs caused service:gridcast:forecast-pipeline to compute a forecast from an incomplete or unrepresentative feature window. :: If inputs lagged or dropped around 23:03, the model could project an incorrect future even with no model change."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Feature transformation or aggregation error :: A feature computation step in service:gridcast:forecast-pipeline emitted incorrect aggregations, scaling, or missing feature values that distorted the forecast input matrix. :: A data-quality break in feature engineering can produce a >10% forecast shift without any change to the model or raw inputs."
+ },
+ {
+  "entity": null,
+  "text": "Baseline plan mismatch :: The published plan used as the comparison reference was stale, mismatched, or incorrectly selected, so the forecast-to-plan deviation reflects a moved baseline rather than a changed forecast. :: The apparent 10% deviation could be caused by comparing against an old or wrong plan version."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Transient compute/resource degradation :: Resource contention, memory pressure, or a timeout in service:gridcast:forecast-pipeline forced a degraded execution path such as reduced ensemble depth or fallback parameters, lowering forecast accuracy. :: The brief 13-minute incident window is consistent with a transient scheduler or capacity issue affecting forecast quality."
+ }
+]

@@ -1,0 +1,33 @@
+{
+ "fetched_queries": [
+  "demand-zones-reporting",
+  "demand-freshness",
+  "ingestion-demand-batch-p95",
+  "ingestion-contract-violations",
+  "ingestion-changes-20m"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Upstream demand telemetry from grid-telemetry stopped or degraded below all four load zones, causing ingestion demand freshness to reach the 10-minute stale threshold.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "The ingestion service's demand batch path stalled or became unusually slow, so the newest demand reading did not advance despite the absence of demand batch errors.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "A contract violation in demand payloads from grid-telemetry caused ingestion to reject demand records and stop advancing its latest demand reading.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "A recent ingestion rollout or configuration change altered the demand ingestion path and caused the demand input to stop advancing.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

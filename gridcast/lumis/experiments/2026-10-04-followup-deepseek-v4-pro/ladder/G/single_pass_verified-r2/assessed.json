@@ -1,0 +1,31 @@
+{
+ "fetched_queries": [
+  "demand-zones-reporting",
+  "ingestion-changes-20m",
+  "ingestion-demand-batch-p95"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Candidate explanation: malformed demand payloads from grid-telemetry are violating the ingestion contract and causing demand batch failures.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Candidate explanation: grid-telemetry is reporting fewer than the expected four load zones, leaving demand payloads incomplete and causing ingestion to reject them.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Candidate explanation: demand ingestion is failing because demand vendor calls are slow or timing out, producing batch errors without affecting weather ingestion.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "Candidate explanation: a recent ingestion deployment or configuration change introduced stricter demand payload validation, causing demand batches to fail while weather batches remain unaffected.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

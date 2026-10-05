@@ -1,0 +1,32 @@
+{
+ "fetched_queries": [
+  "weather-observation-freshness",
+  "ingestion-weather-vendor-503",
+  "forecast-pipeline-changes-20m",
+  "ingestion-contract-violations"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:weather-vendor-wx-primary",
+   "text": "Upstream weather observations ingested during the incident are stale or slowly updating, causing forecast-pipeline variability checks to warn repeatedly about repeated vendor values.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:weather-vendor-wx-primary",
+   "text": "The primary weather vendor returned HTTP 503 errors during the incident, causing ingestion to use fallback or stale secondary data that produced repeated observations and triggered variability warnings.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:weather-vendor-wx-primary",
+   "text": "Weather vendor payloads are violating ingestion's expected contract or schema, and ingestion is forwarding the unusual or repeated observations rather than rejecting them, causing variability warnings downstream.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "A recent GitOps commit or rollout to forecast-pipeline changed the weather-observation variability quality check, making it warn on data patterns it previously accepted.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "Failed planning-api rollout / zero ready replicas :: The planning-api Deployment rolled out pods that never became ready (crash-loop or readiness failure), leaving zero ready pods behind the Service. :: Grid-operator could not reach planning-api because the planning-api Service had no backend endpoints."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "Kubernetes planning-api Service selector mismatch / endpoint loss :: The planning-api Service selector was changed or misconfigured so it no longer matched running planning-api pods, causing an empty endpoint set. :: DNS resolution of the Service would have succeeded, but there were no reachable planning-api backends."
+ },
+ {
+  "entity": "service:gridcast:grid-operator",
+  "text": "grid-operator client-side service discovery failure :: The grid-operator pod held a stale planning-api address, wrong port, or cached DNS entry, so its connection attempts failed regardless of planning-api health. :: The fault originates in the consumer rather than in planning-api."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "PostgreSQL dependency outage :: PostgreSQL became unavailable or too slow, causing planning-api readiness probes to fail and its pods to be removed from the Service. :: A broken critical upstream dependency made planning-api unreachable even if planning-api pods were still running."
+ },
+ {
+  "entity": "service:gridcast:grid-operator",
+  "text": "Network policy / CNI traffic block :: A Kubernetes network policy or CNI fault blocked traffic from grid-operator to planning-api, resulting in connection timeouts. :: The network path between grid-operator and planning-api was severed, so planning-api may have been healthy but unreachable."
+ }
+]

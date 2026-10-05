@@ -1,0 +1,18 @@
+[
+ {
+  "entity": "service:gridcast:grid-telemetry",
+  "text": "External demand feed from grid telemetry has stalled, so no fresh demand data reaches ingestion. :: The upstream demand producer `grid-telemetry` stopped advancing demand readings for at least 10 minutes, causing `ingestion` to see stale input. :: This is the most likely root cause because `grid-telemetry` is the direct demand input source for `ingestion`."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Ingestion is stalled internally and has stopped consuming or processing demand data. :: The `ingestion` service/pod is functionally stuck due to a blocked consumer, crash/restart loop, or backpressure, so it is not advancing even if upstream demand data is still flowing. :: This would explain `InputDataStale` while external demand sources remain healthy."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Ingestion is blocked on its database dependency. :: `postgres` is blocking ingestion's write/offset-commit path through lock contention, slow queries, or connection exhaustion, preventing demand data from advancing through ingestion. :: This is plausible because `postgres` directly serves `ingestion` in the service graph."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Upstream weather feed is stale and is blocking ingestion's input path. :: `weather-vendor-wx-primary` has stopped providing fresh data and `ingestion` is not failing over to `weather-vendor-wx-secondary`, stalling a required ingestion input. :: Less likely for a `demand` symptom, but possible if ingestion requires an associated live weather feed before advancing demand."
+ }
+]

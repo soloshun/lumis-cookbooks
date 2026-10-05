@@ -1,0 +1,13 @@
+{
+ "id": "gridcast-20261003T175049Z-d7a912",
+ "affected_entities": [
+  "service:gridcast:forecast-pipeline",
+  "service:gridcast:postgres"
+ ],
+ "symptoms": [
+  "DatabaseScanSurge: PostgreSQL rows scanned/s is ~10x above normal",
+  "ForecastPipelineSlow: Forecast pipeline p95 duration above 5s"
+ ],
+ "started_at": "2026-10-03T17:33:42Z",
+ "ended_at": "2026-10-03T17:50:49Z"
+}

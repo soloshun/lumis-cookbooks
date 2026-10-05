@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forecast-pipeline
+  namespace: gridcast
+  labels: { app.kubernetes.io/name: forecast-pipeline, app.kubernetes.io/component: orchestration, app.kubernetes.io/part-of: gridcast }
+  annotations:
+    gridcast.dev/description: "Prefect forecast pipeline worker (check, features, forecast, validate, publish)"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }
+  selector: { matchLabels: { app.kubernetes.io/name: forecast-pipeline } }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: forecast-pipeline, app.kubernetes.io/component: orchestration, app.kubernetes.io/part-of: gridcast }
+    spec:
+      terminationGracePeriodSeconds: 20
+      securityContext: { runAsNonRoot: true, runAsUser: 10001, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: forecast-pipeline
+          imagePullPolicy: Always  # dev registry: tags may be rebuilt
+          image: gridcast/forecast-pipeline
+          args: ["pipeline", "worker"]
+          envFrom:
+            - configMapRef: { name: gridcast-runtime }
+            - configMapRef: { name: pipeline-config }
+          env:
+            - name: GRIDCAST_DB_USER
+              valueFrom: { secretKeyRef: { name: db-pipeline, key: username } }
+            - name: GRIDCAST_DB_PASSWORD
+              valueFrom: { secretKeyRef: { name: db-pipeline, key: password } }
+            - name: K8S_POD_NAME
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+            - name: K8S_NAMESPACE
+              valueFrom: { fieldRef: { fieldPath: metadata.namespace } }
+            - name: K8S_NODE_NAME
+              valueFrom: { fieldRef: { fieldPath: spec.nodeName } }
+            - { name: K8S_DEPLOYMENT_NAME, value: forecast-pipeline }
+          resources:
+            requests: { cpu: 50m, memory: 256Mi }
+            limits: { cpu: "500m", memory: 768Mi }
+          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } }
+          volumeMounts: [{ name: tmp, mountPath: /tmp }]
+      volumes: [{ name: tmp, emptyDir: {} }]

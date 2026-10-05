@@ -1,0 +1,31 @@
+{
+ "fetched_queries": [
+  "feature-service-changes-20m",
+  "feature-cpu-throttling",
+  "feature-service-error-log"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "PostgreSQL password authentication failures for feature-service caused feature builds to fail and return 5xx during the incident window.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "Feature-service 5xx errors were caused by internal feature build failures that generated error log lines, independent of database authentication failures.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "A recent GitOps commit or rollout touching feature-service introduced a defect or misconfiguration that caused the 5xx errors.",
+   "state": "contradicted"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "CPU throttling of feature-service pods caused slow feature build execution and request timeouts, resulting in 5xx responses.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

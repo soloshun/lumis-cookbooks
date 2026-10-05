@@ -1,0 +1,536 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "Forecast-service crash-looping is causing forecast-pipeline failures: pipeline runs fail when forecast-service restarts.",
+   "causal_path": [
+    "service:gridcast:forecast-service",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "restarts_15m",
+     "operator": "gt",
+     "value": 2
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2
+    }
+   ],
+   "evidence_needed": [
+    "forecast-restarts",
+    "pipeline-failed-runs"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "restarts_15m",
+     "operator": "le",
+     "value": 2
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "Forecast-service crash-looping is causing forecast-pipeline failures: pipeline runs fail when forecast-service restarts.",
+    "causal_path": [
+     "service:gridcast:forecast-service",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "restarts_15m",
+      "operator": "gt",
+      "value": 2
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "ge",
+      "value": 2
+     }
+    ],
+    "evidence_needed": [
+     "forecast-restarts",
+     "pipeline-failed-runs"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "restarts_15m",
+      "operator": "le",
+      "value": 2
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "lt",
+      "value": 2
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [
+    "prometheus:forecast-restarts"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2
+    }
+   ]
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "Forecast-pipeline failures are caused by Prefect flow runs failing or crashing inside the pipeline.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2
+    }
+   ],
+   "evidence_needed": [
+    "prefect-failed-flow-runs",
+    "prefect-flow-runs",
+    "pipeline-failed-runs"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "Forecast-pipeline failures are caused by Prefect flow runs failing or crashing inside the pipeline.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "ge",
+      "value": 1
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "flow_run",
+      "operator": "ge",
+      "value": 1
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "ge",
+      "value": 2
+     }
+    ],
+    "evidence_needed": [
+     "prefect-failed-flow-runs",
+     "prefect-flow-runs",
+     "pipeline-failed-runs"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "flow_run",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "lt",
+      "value": 2
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "Forecast-pipeline failures are caused by slow pipeline execution, evidenced by traces slower than 3 seconds.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 3000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2
+    }
+   ],
+   "evidence_needed": [
+    "slow-pipeline-traces",
+    "pipeline-failed-runs"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "le",
+     "value": 3000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "Forecast-pipeline failures are caused by slow pipeline execution, evidenced by traces slower than 3 seconds.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "slow_trace_duration_ms",
+      "operator": "gt",
+      "value": 3000
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "ge",
+      "value": 2
+     }
+    ],
+    "evidence_needed": [
+     "slow-pipeline-traces",
+     "pipeline-failed-runs"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "slow_trace_duration_ms",
+      "operator": "le",
+      "value": 3000
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "lt",
+      "value": 2
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 3000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "le",
+     "value": 3000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "Forecast-pipeline failures are caused by upstream ingestion data-quality or weather-vendor access problems, not by forecast-service or forecast-pipeline code.",
+   "causal_path": [
+    "service:gridcast:ingestion",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-contract-violations",
+    "ingestion-weather-vendor-503",
+    "pipeline-failed-runs"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "Forecast-pipeline failures are caused by upstream ingestion data-quality or weather-vendor access problems, not by forecast-service or forecast-pipeline code.",
+    "causal_path": [
+     "service:gridcast:ingestion",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "ge",
+      "value": 1
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "ge",
+      "value": 1
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "ge",
+      "value": 2
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-contract-violations",
+     "ingestion-weather-vendor-503",
+     "pipeline-failed-runs"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "lt",
+      "value": 2
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2
+    }
+   ]
+  }
+ }
+]

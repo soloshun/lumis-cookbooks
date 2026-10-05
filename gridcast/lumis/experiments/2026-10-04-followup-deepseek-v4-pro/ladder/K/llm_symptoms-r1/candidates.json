@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Regression in demand ingestion code or deployment :: A bug in the demand payload parsing/validation path is causing valid demand data to be rejected as ingestion errors. :: The fault originates in service:gridcast:ingestion."
+ },
+ {
+  "entity": null,
+  "text": "Upstream demand data supplier emitting bad payloads :: An upstream demand provider began sending malformed, empty, or schema-incompatible payloads at the incident start. :: The fault originates in the upstream demand data provider."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Demand message queue or event broker delivery failure :: The broker or consumer group serving service:gridcast:ingestion stopped delivering demand messages, causing ingestion failures. :: The fault originates in the demand event broker/queue."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Backing database or datastore write failure :: A database schema issue or write contention is causing demand persistence operations to fail and surface as ingestion errors. :: The fault originates in the backing database/datastore."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Configuration or feature-flag error :: A bad configuration or feature-flag change in service:gridcast:ingestion is pointing demand ingestion at an invalid endpoint or disabling required processing. :: The fault originates in service:gridcast:ingestion configuration."
+ }
+]

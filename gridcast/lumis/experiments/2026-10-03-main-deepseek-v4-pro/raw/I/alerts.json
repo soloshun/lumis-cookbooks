@@ -1,0 +1,16 @@
+[
+ {
+  "name": "ServiceErrorRate",
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "summary": "weather-vendor-wx-primary 5xx ratio above 5%",
+  "active_at": "2026-10-03 23:59:57.944281+00:00",
+  "severity": "ticket"
+ },
+ {
+  "name": "IngestionErrors",
+  "entity": "service:gridcast:ingestion",
+  "summary": "Ingestion of weather_observations is failing",
+  "active_at": "2026-10-04 00:00:57.944281+00:00",
+  "severity": "ticket"
+ }
+]

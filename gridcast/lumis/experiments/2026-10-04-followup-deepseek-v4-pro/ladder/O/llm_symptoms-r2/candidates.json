@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Partial or delayed upstream demand data feed :: The upstream demand data source delivered a late or incomplete batch/partition, leaving the forecast-pipeline repeatedly unable to satisfy the completeness.demand check until the backlog caught up at 00:25:46Z. :: This best explains a transient, self-clearing burst of repeated completeness warnings lasting about 12 minutes with no reported forecast-pipeline change."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Misconfigured or stale quality-check rule :: The completeness.demand quality check inside `service:gridcast:forecast-pipeline` evaluated against a stale or incorrect window/threshold, causing repeated warnings despite valid demand data. :: Fits repeated identical warnings isolated to the forecast-pipeline while demand inputs were already complete."
+ },
+ {
+  "entity": null,
+  "text": "Forecast job retry loop :: A scheduler or orchestrator repeatedly retried a failing forecast run, and each retry re-ran the same completeness.demand check and emitted the same warning until the affected run completed. :: Explains the short, repetitive warning pattern from a single bad input snapshot rather than continuous new bad data."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Time-window or partition boundary bug :: The completeness.demand calculation in `service:gridcast:forecast-pipeline` repeatedly evaluated an unclosed or incomplete time window around the 00:00Z boundary, producing false warnings until the window closed. :: Plausible given the incident occurred shortly after midnight UTC and resolved within minutes."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Demand data store/replica lag :: The demand data store or read replica serving `service:gridcast:forecast-pipeline` was behind, so the pipeline saw missing recent demand rows and flagged incompleteness repeatedly until the replica caught up. :: Explains repeated quality warnings and automatic recovery without changes to the pipeline itself."
+ }
+]

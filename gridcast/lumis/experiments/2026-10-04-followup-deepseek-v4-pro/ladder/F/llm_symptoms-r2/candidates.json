@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Slow upstream data dependency :: A data source or API called by the forecast pipeline experienced higher response latency, inflating the pipeline\u2019s own p95 above 5s. :: Most likely first because forecast pipelines are typically I/O-bound and sensitive to dependency latency."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Compute or thread-pool saturation inside forecast-pipeline :: CPU, memory, or thread pool exhaustion caused request queuing and slower processing under normal or slightly elevated load. :: Plausible if scaling changed or load shifted onto fewer replicas of service:gridcast:forecast-pipeline."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Increased per-request work due to data or configuration change :: A change in forecast grid size, ensemble size, or input data volume increased computation per request enough to push p95 duration above 5s. :: Plausible if a recent deployment or input data expansion affected service:gridcast:forecast-pipeline."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Cache failure or mass cache invalidation :: A caching layer serving the forecast pipeline failed or was invalidated, forcing expensive recomputation or repeated data fetches. :: Plausible for a sudden onset and recovery if the cache was repopulated."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Network degradation between forecast-pipeline and dependencies :: Packet loss or increased network latency caused slow I/O, retries, or timeouts on calls to downstream data stores or APIs. :: Less likely if only service:gridcast:forecast-pipeline showed symptoms, but still possible."
+ }
+]

@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Postgres database latency :: The postgres instance that forecast-pipeline queries developed a slow query pattern, lock contention, or connection-pool exhaustion, causing database calls to take multiple seconds. :: Forecast-pipeline p95 exceeds 5s because it is blocked waiting on service:gridcast:postgres."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Forecast-pipeline resource saturation :: CPU throttling, memory pressure, or GC pauses in the forecast-pipeline deployment made per-run processing slower even under otherwise normal load. :: The fault originates in service:gridcast:forecast-pipeline itself, not in a downstream dependency."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Feature-service latency :: feature-service became slow responding to forecast-pipeline requests due to its own resource contention, DB wait, or a query regression, causing the pipeline to block on feature retrieval. :: Forecast-pipeline p95 is elevated because it is waiting on service:gridcast:feature-service."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Forecast-service inference slowdown :: forecast-service model inference or serving latency increased, making forecast-pipeline's calls to forecast-service unusually slow. :: A slow service:gridcast:forecast-service dependency is pushing forecast-pipeline duration above 5s."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "Planning-api load spike or retry storm :: planning-api changed its request pattern, such as a retry burst, larger batch sizes, or a traffic spike, driving forecast-pipeline beyond its capacity and causing queueing. :: Forecast-pipeline is slow because service:gridcast:planning-api is overloaded or overloading it."
+ }
+]

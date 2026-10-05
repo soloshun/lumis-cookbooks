@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-cookbooks/gridcast/lumis/src/gridcast_lumis/experiment.py", line 173, in run_system
+    raw_text = await model._request(safe.model_dump_json(), provider_schema())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-sdk/src/lumis_sdk/models/openrouter.py", line 11, in _request
+    payload = await read_json(
+              ^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-sdk/src/lumis_sdk/connectors/http.py", line 33, in read_json
+    result = await read_payload(client, method, url, max_bytes=max_bytes, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/m5/Documents/qadimlabs/lumis/lumis-sdk/src/lumis_sdk/connectors/http.py", line 55, in read_payload
+    raise ValueError("HTTP response exceeds byte budget")
+ValueError: HTTP response exceeds byte budget

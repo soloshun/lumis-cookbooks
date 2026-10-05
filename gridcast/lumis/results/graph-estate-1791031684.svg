@@ -1,0 +1,235 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="750" viewBox="0 0 1000 750">
+<title>Lumis operational graph — observed/declared relations, not causal proof</title>
+<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker></defs>
+<rect width="1000" height="750" fill="#f8fafc"/>
+<line x1="880.00" y1="375.00" x2="295.53" y2="594.15" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="587.76" y="476.58" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="880.00" y1="375.00" x2="254.66" y2="573.55" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="567.33" y="466.27" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="880.00" y1="375.00" x2="218.17" y2="549.40" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="549.09" y="454.20" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="880.00" y1="375.00" x2="436.79" y2="118.62" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="658.40" y="238.81" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="876.61" y1="409.65" x2="186.71" y2="522.15" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="531.66" y="457.90" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="876.61" y1="409.65" x2="160.84" y2="492.26" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="518.73" y="442.96" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="876.61" y1="409.65" x2="487.30" y2="115.15" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="681.96" y="254.40" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="866.50" y1="443.69" x2="141.03" y2="460.29" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="503.76" y="443.99" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="866.50" y1="443.69" x2="127.61" y2="426.79" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="497.06" y="427.24" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="866.50" y1="443.69" x2="538.04" y2="116.31" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="702.27" y="272.00" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="849.85" y1="476.50" x2="120.85" y2="392.37" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="485.35" y="426.43" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="849.85" y1="476.50" x2="120.85" y2="357.63" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="485.35" y="409.07" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="849.85" y1="476.50" x2="588.09" y2="122.08" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="718.97" y="291.29" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="826.95" y1="507.50" x2="127.61" y2="323.21" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="477.28" y="407.36" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="826.95" y1="507.50" x2="141.03" y2="289.71" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="483.99" y="390.61" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="826.95" y1="507.50" x2="725.41" y2="165.68" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="776.18" y="328.59" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="798.22" y1="536.13" x2="160.84" y2="257.74" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="479.53" y="388.94" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="798.22" y1="536.13" x2="186.71" y2="227.85" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="492.47" y="373.99" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="798.22" y1="536.13" x2="826.95" y2="242.50" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="812.59" y="381.32" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="764.17" y1="561.89" x2="387.42" y2="126.67" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="575.79" y="336.28" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="725.41" y1="584.32" x2="436.79" y2="118.62" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="581.10" y="343.47" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="682.62" y1="603.01" x2="487.30" y2="115.15" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="584.96" y="351.08" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="636.57" y1="617.63" x2="538.04" y2="116.31" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="587.31" y="358.97" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="588.09" y1="627.92" x2="588.09" y2="122.08" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="588.09" y="367.00" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="538.04" y1="633.69" x2="682.62" y2="146.99" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="610.33" y="382.34" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="487.30" y1="634.85" x2="725.41" y2="165.68" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="606.36" y="392.27" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="436.79" y1="631.38" x2="764.17" y2="188.11" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="600.48" y="401.74" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="387.42" y1="623.33" x2="798.22" y2="213.87" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="592.82" y="410.60" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="340.04" y1="610.84" x2="826.95" y2="242.50" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="583.50" y="418.67" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="295.53" y1="594.15" x2="436.79" y2="118.62" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="366.16" y="348.39" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="254.66" y1="573.55" x2="725.41" y2="584.32" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="490.03" y="570.93" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="254.66" y1="573.55" x2="436.79" y2="118.62" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="345.73" y="338.09" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="218.17" y1="549.40" x2="436.79" y2="118.62" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="327.48" y="326.01" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="186.71" y1="522.15" x2="487.30" y2="115.15" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="337.01" y="310.65" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="160.84" y1="492.26" x2="682.62" y2="603.01" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="421.73" y="539.63" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="160.84" y1="492.26" x2="487.30" y2="115.15" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="324.07" y="295.70" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="141.03" y1="460.29" x2="538.04" y2="116.31" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="339.53" y="280.30" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="127.61" y1="426.79" x2="636.57" y2="617.63" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="382.09" y="514.21" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="127.61" y1="426.79" x2="538.04" y2="116.31" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="332.83" y="263.55" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="120.85" y1="392.37" x2="588.09" y2="122.08" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="354.47" y="249.22" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="120.85" y1="357.63" x2="588.09" y2="627.92" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="354.47" y="484.78" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="120.85" y1="357.63" x2="588.09" y2="122.08" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="354.47" y="231.86" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="127.61" y1="323.21" x2="487.30" y2="634.85" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="307.46" y="471.03" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="127.61" y1="323.21" x2="725.41" y2="165.68" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="426.51" y="236.45" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="141.03" y1="289.71" x2="725.41" y2="165.68" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="433.22" y="219.70" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="160.84" y1="257.74" x2="340.04" y2="610.84" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="250.44" y="426.29" font-family="sans-serif" font-size="11" fill="#334155">owns</text>
+<line x1="160.84" y1="257.74" x2="826.95" y2="242.50" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="493.90" y="242.12" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="186.71" y1="227.85" x2="826.95" y2="242.50" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="506.83" y="227.18" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="218.17" y1="200.60" x2="725.41" y2="584.32" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="471.79" y="384.46" font-family="sans-serif" font-size="11" fill="#334155">routes_to</text>
+<line x1="218.17" y1="200.60" x2="436.79" y2="118.62" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="327.48" y="151.61" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="254.66" y1="176.45" x2="636.57" y2="617.63" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="445.62" y="389.04" font-family="sans-serif" font-size="11" fill="#334155">routes_to</text>
+<line x1="254.66" y1="176.45" x2="538.04" y2="116.31" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="396.35" y="138.38" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="295.53" y1="155.85" x2="487.30" y2="634.85" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="391.42" y="387.35" font-family="sans-serif" font-size="11" fill="#334155">routes_to</text>
+<line x1="295.53" y1="155.85" x2="725.41" y2="165.68" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="510.47" y="152.76" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="340.04" y1="139.16" x2="340.04" y2="610.84" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="340.04" y="367.00" font-family="sans-serif" font-size="11" fill="#334155">routes_to</text>
+<line x1="340.04" y1="139.16" x2="826.95" y2="242.50" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="583.50" y="182.83" font-family="sans-serif" font-size="11" fill="#334155">hosts</text>
+<line x1="436.79" y1="118.62" x2="487.30" y2="115.15" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="462.05" y="108.88" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<line x1="538.04" y1="116.31" x2="487.30" y2="115.15" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="512.67" y="107.73" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<line x1="636.57" y1="132.37" x2="725.41" y2="165.68" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="680.99" y="141.03" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<line x1="826.95" y1="242.50" x2="487.30" y2="115.15" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="657.13" y="170.82" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<line x1="826.95" y1="242.50" x2="588.09" y2="122.08" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="707.52" y="174.29" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<line x1="849.85" y1="273.50" x2="436.79" y2="118.62" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="643.32" y="188.06" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<line x1="849.85" y1="273.50" x2="487.30" y2="115.15" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="668.57" y="186.32" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<line x1="849.85" y1="273.50" x2="538.04" y2="116.31" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="693.94" y="186.90" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<line x1="849.85" y1="273.50" x2="725.41" y2="165.68" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="787.63" y="211.59" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<line x1="849.85" y1="273.50" x2="826.95" y2="242.50" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="838.40" y="250.00" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<line x1="866.50" y1="306.31" x2="725.41" y2="165.68" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="795.95" y="228.00" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<line x1="876.61" y1="340.35" x2="725.41" y2="165.68" stroke="#64748b" marker-end="url(#arrow)"/>
+<text x="801.01" y="245.01" font-family="sans-serif" font-size="11" fill="#334155">serves</text>
+<g><title>k8s:gridcast:deployment:feature-service</title><circle cx="880.00" cy="375.00" r="12" fill="#2563eb"/>
+<text x="880.00" y="403.00" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">feature-service</text></g>
+<g><title>k8s:gridcast:deployment:forecast-pipeline</title><circle cx="876.61" cy="409.65" r="12" fill="#2563eb"/>
+<text x="876.61" y="437.65" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">forecast-pipeline</text></g>
+<g><title>k8s:gridcast:deployment:forecast-service</title><circle cx="866.50" cy="443.69" r="12" fill="#2563eb"/>
+<text x="866.50" y="471.69" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">forecast-service</text></g>
+<g><title>k8s:gridcast:deployment:grid-operator</title><circle cx="849.85" cy="476.50" r="12" fill="#2563eb"/>
+<text x="849.85" y="504.50" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">grid-operator</text></g>
+<g><title>k8s:gridcast:deployment:ingestion</title><circle cx="826.95" cy="507.50" r="12" fill="#2563eb"/>
+<text x="826.95" y="535.50" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">ingestion</text></g>
+<g><title>k8s:gridcast:deployment:planning-api</title><circle cx="798.22" cy="536.13" r="12" fill="#2563eb"/>
+<text x="798.22" y="564.13" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">planning-api</text></g>
+<g><title>k8s:gridcast:pod:db-migrate-1003013915-hmsjr</title><circle cx="764.17" cy="561.89" r="12" fill="#2563eb"/>
+<text x="764.17" y="589.89" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">db-migrate-[REDACTED_PHONE]-hmsjr</text></g>
+<g><title>k8s:gridcast:pod:feature-service-7445dd9f9b-jpjv2</title><circle cx="725.41" cy="584.32" r="12" fill="#2563eb"/>
+<text x="725.41" y="612.32" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">feature-service-7445dd9f9b-jpjv2</text></g>
+<g><title>k8s:gridcast:pod:forecast-pipeline-6874878b9c-9swc2</title><circle cx="682.62" cy="603.01" r="12" fill="#2563eb"/>
+<text x="682.62" y="631.01" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">forecast-pipeline-6874878b9c-9swc2</text></g>
+<g><title>k8s:gridcast:pod:forecast-service-7c55f845c6-xs9hh</title><circle cx="636.57" cy="617.63" r="12" fill="#2563eb"/>
+<text x="636.57" y="645.63" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">forecast-service-7c55f845c6-xs9hh</text></g>
+<g><title>k8s:gridcast:pod:grid-operator-dfdccd44c-dk5mf</title><circle cx="588.09" cy="627.92" r="12" fill="#2563eb"/>
+<text x="588.09" y="655.92" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">grid-operator-dfdccd44c-dk5mf</text></g>
+<g><title>k8s:gridcast:pod:ingest-backfill-1003013941-zvsvh</title><circle cx="538.04" cy="633.69" r="12" fill="#2563eb"/>
+<text x="538.04" y="661.69" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">ingest-backfill-[REDACTED_PHONE]-zvsvh</text></g>
+<g><title>k8s:gridcast:pod:ingestion-859fb4894-28vlt</title><circle cx="487.30" cy="634.85" r="12" fill="#2563eb"/>
+<text x="487.30" y="662.85" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">ingestion-859fb4894-28vlt</text></g>
+<g><title>k8s:gridcast:pod:model-train-1003014012-smdsr</title><circle cx="436.79" cy="631.38" r="12" fill="#2563eb"/>
+<text x="436.79" y="659.38" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">model-train-[REDACTED_PHONE]-smdsr</text></g>
+<g><title>k8s:gridcast:pod:model-train-hifi-1003014047-2lq4k</title><circle cx="387.42" cy="623.33" r="12" fill="#2563eb"/>
+<text x="387.42" y="651.33" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">model-train-hifi-[REDACTED_PHONE]-2lq4k</text></g>
+<g><title>k8s:gridcast:pod:planning-api-5b6f4b67d4-dq755</title><circle cx="340.04" cy="610.84" r="12" fill="#2563eb"/>
+<text x="340.04" y="638.84" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">planning-api-5b6f4b67d4-dq755</text></g>
+<g><title>k8s:gridcast:replicaset:feature-service-5c4db787f6</title><circle cx="295.53" cy="594.15" r="12" fill="#2563eb"/>
+<text x="295.53" y="622.15" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">feature-service-5c4db787f6</text></g>
+<g><title>k8s:gridcast:replicaset:feature-service-7445dd9f9b</title><circle cx="254.66" cy="573.55" r="12" fill="#2563eb"/>
+<text x="254.66" y="601.55" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">feature-service-7445dd9f9b</text></g>
+<g><title>k8s:gridcast:replicaset:feature-service-7f8f57654f</title><circle cx="218.17" cy="549.40" r="12" fill="#2563eb"/>
+<text x="218.17" y="577.40" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">feature-service-7f8f57654f</text></g>
+<g><title>k8s:gridcast:replicaset:forecast-pipeline-544c8596b5</title><circle cx="186.71" cy="522.15" r="12" fill="#2563eb"/>
+<text x="186.71" y="550.15" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">forecast-pipeline-544c8596b5</text></g>
+<g><title>k8s:gridcast:replicaset:forecast-pipeline-6874878b9c</title><circle cx="160.84" cy="492.26" r="12" fill="#2563eb"/>
+<text x="160.84" y="520.26" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">forecast-pipeline-6874878b9c</text></g>
+<g><title>k8s:gridcast:replicaset:forecast-service-6cb7b7684</title><circle cx="141.03" cy="460.29" r="12" fill="#2563eb"/>
+<text x="141.03" y="488.29" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">forecast-service-6cb7b7684</text></g>
+<g><title>k8s:gridcast:replicaset:forecast-service-7c55f845c6</title><circle cx="127.61" cy="426.79" r="12" fill="#2563eb"/>
+<text x="127.61" y="454.79" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">forecast-service-7c55f845c6</text></g>
+<g><title>k8s:gridcast:replicaset:grid-operator-566d64995f</title><circle cx="120.85" cy="392.37" r="12" fill="#2563eb"/>
+<text x="120.85" y="420.37" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">grid-operator-566d64995f</text></g>
+<g><title>k8s:gridcast:replicaset:grid-operator-dfdccd44c</title><circle cx="120.85" cy="357.63" r="12" fill="#2563eb"/>
+<text x="120.85" y="385.63" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">grid-operator-dfdccd44c</text></g>
+<g><title>k8s:gridcast:replicaset:ingestion-859fb4894</title><circle cx="127.61" cy="323.21" r="12" fill="#2563eb"/>
+<text x="127.61" y="351.21" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">ingestion-859fb4894</text></g>
+<g><title>k8s:gridcast:replicaset:ingestion-8995996fd</title><circle cx="141.03" cy="289.71" r="12" fill="#2563eb"/>
+<text x="141.03" y="317.71" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">ingestion-8995996fd</text></g>
+<g><title>k8s:gridcast:replicaset:planning-api-5b6f4b67d4</title><circle cx="160.84" cy="257.74" r="12" fill="#2563eb"/>
+<text x="160.84" y="285.74" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">planning-api-5b6f4b67d4</text></g>
+<g><title>k8s:gridcast:replicaset:planning-api-f65c66dd8</title><circle cx="186.71" cy="227.85" r="12" fill="#2563eb"/>
+<text x="186.71" y="255.85" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">planning-api-f65c66dd8</text></g>
+<g><title>k8s:gridcast:service:feature-service</title><circle cx="218.17" cy="200.60" r="12" fill="#2563eb"/>
+<text x="218.17" y="228.60" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">feature-service</text></g>
+<g><title>k8s:gridcast:service:forecast-service</title><circle cx="254.66" cy="176.45" r="12" fill="#2563eb"/>
+<text x="254.66" y="204.45" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">forecast-service</text></g>
+<g><title>k8s:gridcast:service:ingestion</title><circle cx="295.53" cy="155.85" r="12" fill="#2563eb"/>
+<text x="295.53" y="183.85" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">ingestion</text></g>
+<g><title>k8s:gridcast:service:planning-api</title><circle cx="340.04" cy="139.16" r="12" fill="#2563eb"/>
+<text x="340.04" y="167.16" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">planning-api</text></g>
+<g><title>service:gridcast:db-migrate</title><circle cx="387.42" cy="126.67" r="12" fill="#2563eb"/>
+<text x="387.42" y="154.67" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">db-migrate</text></g>
+<g><title>service:gridcast:feature-service</title><circle cx="436.79" cy="118.62" r="12" fill="#2563eb"/>
+<text x="436.79" y="146.62" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">feature-service</text></g>
+<g><title>service:gridcast:forecast-pipeline</title><circle cx="487.30" cy="115.15" r="12" fill="#2563eb"/>
+<text x="487.30" y="143.15" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">forecast-pipeline</text></g>
+<g><title>service:gridcast:forecast-service</title><circle cx="538.04" cy="116.31" r="12" fill="#2563eb"/>
+<text x="538.04" y="144.31" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">forecast-service</text></g>
+<g><title>service:gridcast:grid-operator</title><circle cx="588.09" cy="122.08" r="12" fill="#2563eb"/>
+<text x="588.09" y="150.08" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">grid-operator</text></g>
+<g><title>service:gridcast:grid-telemetry</title><circle cx="636.57" cy="132.37" r="12" fill="#2563eb"/>
+<text x="636.57" y="160.37" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">grid-telemetry</text></g>
+<g><title>service:gridcast:ingest-backfill</title><circle cx="682.62" cy="146.99" r="12" fill="#2563eb"/>
+<text x="682.62" y="174.99" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">ingest-backfill</text></g>
+<g><title>service:gridcast:ingestion</title><circle cx="725.41" cy="165.68" r="12" fill="#2563eb"/>
+<text x="725.41" y="193.68" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">ingestion</text></g>
+<g><title>service:gridcast:model-train</title><circle cx="764.17" cy="188.11" r="12" fill="#2563eb"/>
+<text x="764.17" y="216.11" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">model-train</text></g>
+<g><title>service:gridcast:model-train-hifi</title><circle cx="798.22" cy="213.87" r="12" fill="#2563eb"/>
+<text x="798.22" y="241.87" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">model-train-hifi</text></g>
+<g><title>service:gridcast:planning-api</title><circle cx="826.95" cy="242.50" r="12" fill="#2563eb"/>
+<text x="826.95" y="270.50" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">planning-api</text></g>
+<g><title>service:gridcast:postgres</title><circle cx="849.85" cy="273.50" r="12" fill="#2563eb"/>
+<text x="849.85" y="301.50" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">postgres</text></g>
+<g><title>service:gridcast:weather-vendor-wx-primary</title><circle cx="866.50" cy="306.31" r="12" fill="#2563eb"/>
+<text x="866.50" y="334.31" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">weather-vendor-wx-primary</text></g>
+<g><title>service:gridcast:weather-vendor-wx-secondary</title><circle cx="876.61" cy="340.35" r="12" fill="#2563eb"/>
+<text x="876.61" y="368.35" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#0f172a">weather-vendor-wx-secondary</text></g>
+</svg>

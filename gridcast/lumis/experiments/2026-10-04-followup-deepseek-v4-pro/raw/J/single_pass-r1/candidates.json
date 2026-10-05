@@ -1,0 +1,582 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "The planning-api Deployment was scaled to zero, leaving the planning-api Service without endpoints and causing grid-operator plan fetches to fail.",
+   "causal_path": [
+    "k8s:gridcast:deployment:planning-api",
+    "k8s:gridcast:service:planning-api",
+    "service:gridcast:planning-api",
+    "service:gridcast:grid-operator"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "desired_replicas",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:grid-operator",
+     "key": "plan_fetch_transport_errors_5m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "planning-desired-replicas",
+    "planning-available-replicas",
+    "operator-plan-fetch-transport-errors"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "desired_replicas",
+     "operator": "ne",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "ne",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "The planning-api Deployment was scaled to zero, leaving the planning-api Service without endpoints and causing grid-operator plan fetches to fail.",
+    "causal_path": [
+     "k8s:gridcast:deployment:planning-api",
+     "k8s:gridcast:service:planning-api",
+     "service:gridcast:planning-api",
+     "service:gridcast:grid-operator"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "desired_replicas",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "available_replicas",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:grid-operator",
+      "key": "plan_fetch_transport_errors_5m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "planning-desired-replicas",
+     "planning-available-replicas",
+     "operator-plan-fetch-transport-errors"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "desired_replicas",
+      "operator": "ne",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "available_replicas",
+      "operator": "ne",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "supported",
+   "supporting_evidence_ids": [
+    "prometheus:operator-plan-fetch-transport-errors",
+    "prometheus:planning-available-replicas",
+    "prometheus:planning-desired-replicas"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": []
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "A recent GitOps commit or rollout touching planning-api changed the Deployment, reducing desired_replicas to zero.",
+   "causal_path": [
+    "k8s:gridcast:deployment:planning-api",
+    "k8s:gridcast:service:planning-api",
+    "service:gridcast:planning-api"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "desired_replicas",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "planning-api-changes-20m",
+    "planning-desired-replicas",
+    "planning-available-replicas"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "A recent GitOps commit or rollout touching planning-api changed the Deployment, reducing desired_replicas to zero.",
+    "causal_path": [
+     "k8s:gridcast:deployment:planning-api",
+     "k8s:gridcast:service:planning-api",
+     "service:gridcast:planning-api"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "desired_replicas",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "available_replicas",
+      "operator": "eq",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "planning-api-changes-20m",
+     "planning-desired-replicas",
+     "planning-available-replicas"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [
+    "prometheus:planning-available-replicas",
+    "prometheus:planning-desired-replicas"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "An upstream failure in forecast-pipeline or ingestion triggered the incident.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline",
+    "service:gridcast:ingestion",
+    "service:gridcast:planning-api"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "demand_range_failures_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "weather_variability_warnings_30m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "stability_warnings_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "pipeline-failed-runs",
+    "ingestion-demand-errors",
+    "ingestion-weather-errors",
+    "demand-range-failures",
+    "weather-variability-warnings",
+    "demand-completeness-failures",
+    "forecast-stability-warnings"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "demand_range_failures_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "weather_variability_warnings_30m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "stability_warnings_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "An upstream failure in forecast-pipeline or ingestion triggered the incident.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline",
+     "service:gridcast:ingestion",
+     "service:gridcast:planning-api"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_errors_10m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_batch_errors_10m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "demand_range_failures_15m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "weather_variability_warnings_30m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "completeness_demand_failures_20m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "stability_warnings_20m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "pipeline-failed-runs",
+     "ingestion-demand-errors",
+     "ingestion-weather-errors",
+     "demand-range-failures",
+     "weather-variability-warnings",
+     "demand-completeness-failures",
+     "forecast-stability-warnings"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_errors_10m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_batch_errors_10m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "demand_range_failures_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "weather_variability_warnings_30m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "completeness_demand_failures_20m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "stability_warnings_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "contradicted",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [
+    "prometheus:demand-range-failures",
+    "prometheus:ingestion-demand-errors",
+    "prometheus:ingestion-weather-errors",
+    "prometheus:weather-variability-warnings"
+   ],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "stability_warnings_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "stability_warnings_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "Grid-operator plan fetch failures are caused by an independent network or Service-level disconnect between grid-operator and planning-api, not by missing planning-api replicas.",
+   "causal_path": [
+    "service:gridcast:grid-operator",
+    "service:gridcast:planning-api"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:grid-operator",
+     "key": "plan_fetch_transport_errors_5m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "planning-available-replicas",
+    "operator-plan-fetch-transport-errors"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "Grid-operator plan fetch failures are caused by an independent network or Service-level disconnect between grid-operator and planning-api, not by missing planning-api replicas.",
+    "causal_path": [
+     "service:gridcast:grid-operator",
+     "service:gridcast:planning-api"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "available_replicas",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:grid-operator",
+      "key": "plan_fetch_transport_errors_5m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "planning-available-replicas",
+     "operator-plan-fetch-transport-errors"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "available_replicas",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "contradicted",
+   "supporting_evidence_ids": [
+    "prometheus:operator-plan-fetch-transport-errors"
+   ],
+   "contradicting_evidence_ids": [
+    "prometheus:planning-available-replicas"
+   ],
+   "missing_checks": []
+  }
+ }
+]

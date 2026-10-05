@@ -1,0 +1,40 @@
+{
+ "fetched_queries": [
+  "pipeline-failed-runs",
+  "prefect-failed-flow-runs",
+  "slow-pipeline-traces",
+  "forecast-pipeline-changes-20m",
+  "demand-zones-reporting",
+  "demand-completeness-failures",
+  "ingestion-contract-violations",
+  "ingestion-weather-vendor-503",
+  "feature-auth-failures",
+  "feature-service-error-log",
+  "feature-cpu-throttling",
+  "forecast-inference-p95"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "Forecast-pipeline p95 latency may be caused by the pipeline's own orchestration: flow runs failing, retrying, or tracing as slow, possibly after a recent pipeline change.",
+   "state": "contradicted"
+  },
+  {
+   "entity": "service:gridcast:weather-vendor-wx-primary",
+   "text": "Forecast-pipeline p95 latency may be caused by delayed, incomplete, or invalid upstream demand/weather data, triggering pipeline validation retries or stalls.",
+   "state": "contradicted"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "Forecast-pipeline latency may be caused by feature-service dependency degradation, including slow builds, failed builds, DB auth failures, or throttling.",
+   "state": "contradicted"
+  },
+  {
+   "entity": "service:gridcast:forecast-service",
+   "text": "Forecast-pipeline latency may be caused by forecast-service inference degradation: slow inference, memory pressure, restarts, or model reloads.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

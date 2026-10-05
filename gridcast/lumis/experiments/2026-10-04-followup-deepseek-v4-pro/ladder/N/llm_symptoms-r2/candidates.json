@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Incomplete or stale input data :: A missing or delayed upstream telemetry window caused service:gridcast:forecast-pipeline to compute features on incomplete or placeholder data, shifting the forecast. :: The new forecast was produced from incomplete recent data, causing the >10% deviation."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Model artifact or version regression :: A newly deployed model artifact in service:gridcast:forecast-pipeline produced materially different forecasts under normal input conditions. :: A recent model/weight change introduced a systematic forecast shift."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Mismatched baseline plan :: The deviation check in service:gridcast:forecast-pipeline compared the new forecast against an outdated or misaligned published plan version. :: The >10% deviation may reflect a comparison mismatch rather than a true forecast error."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Feature transformation drift :: A feature normalizer, feature schema, or timestamp alignment change in service:gridcast:forecast-pipeline introduced a systematic bias into the forecast. :: A feature assembly change created a systematic offset from the published plan."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Partial compute or ensemble failure :: One or more forecast ensemble members failed or timed out in service:gridcast:forecast-pipeline, causing a fallback forecast based on a reduced model set. :: The published forecast came from a degraded partial ensemble, increasing deviation."
+ }
+]

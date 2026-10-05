@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "service:gridcast:forecast-pipeline :: The forecast pipeline itself is exhausting CPU/memory or hitting an unhandled runtime error, causing runs to be killed or hang. :: The fault originates in the forecast-pipeline service, matching repeated held/failed runs directly."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: Postgres is experiencing slow queries, connection saturation, or lock contention, causing forecast-pipeline queries to time out or fail. :: The shared critical Postgres dependency is degrading forecast-pipeline runs through stalled or failed database access."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "service:gridcast:feature-service :: feature-service is returning slow or erroneous responses to forecast-pipeline, causing feature computation steps to exceed timeouts or fail. :: Degradation in the feature-service dependency is causing forecast-pipeline runs to be held waiting on feature data or to fail on bad responses."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "service:gridcast:forecast-service :: forecast-service is erroring or timing out on model/inference requests, causing forecast-pipeline runs to stall or fail waiting for forecast results. :: The model-serving dependency is degraded, breaking the inference stage of the forecast pipeline."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "service:gridcast:planning-api :: planning-api is returning errors or slow responses for planning data required by forecast-pipeline, causing pipeline tasks to fail or stall. :: The planning-api dependency is degraded, so forecast-pipeline cannot retrieve required planning inputs and is held or failed."
+ }
+]

@@ -1,0 +1,32 @@
+# Managed services live outside the cluster (docker compose, see infra/compose.yaml). These
+# ExternalName services give them stable in-cluster names, as a cloud estate would for RDS,
+# a hosted Prefect, S3 or an observability vendor.
+apiVersion: v1
+kind: Service
+metadata: { name: postgres, namespace: platform, labels: { gridcast.dev/managed-service: postgresql } }
+spec: { type: ExternalName, externalName: gridcast-postgres }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: prefect, namespace: platform, labels: { gridcast.dev/managed-service: prefect } }
+spec: { type: ExternalName, externalName: gridcast-prefect }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: s3, namespace: platform, labels: { gridcast.dev/managed-service: object-storage } }
+spec: { type: ExternalName, externalName: gridcast-s3 }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: prometheus, namespace: platform, labels: { gridcast.dev/managed-service: metrics } }
+spec: { type: ExternalName, externalName: gridcast-prometheus }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: loki, namespace: platform, labels: { gridcast.dev/managed-service: logs } }
+spec: { type: ExternalName, externalName: gridcast-loki }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: tempo, namespace: platform, labels: { gridcast.dev/managed-service: traces } }
+spec: { type: ExternalName, externalName: gridcast-tempo }

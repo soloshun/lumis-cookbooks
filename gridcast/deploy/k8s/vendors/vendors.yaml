@@ -1,0 +1,145 @@
+# Third-party providers, simulated. GridCast consumes their APIs but does not own them:
+# their faults are injected through vendor admin APIs, never through GridCast deployments.
+apiVersion: v1
+kind: ConfigMap
+metadata: { name: vendor-runtime, namespace: vendors }
+data:
+  GRIDCAST_ENVIRONMENT: local
+  GRIDCAST_LOG_FORMAT: json
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector.observability.svc.cluster.local:4317
+  WEATHER_VENDOR_TRUTH_MODE: hybrid
+  GRID_TELEMETRY_TRUTH_MODE: hybrid
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-vendor-primary
+  namespace: vendors
+  labels: { app.kubernetes.io/name: weather-vendor-primary, app.kubernetes.io/part-of: gridcast, gridcast.dev/vendor: wx-primary }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app.kubernetes.io/name: weather-vendor-primary } }
+  template:
+    metadata: { labels: { app.kubernetes.io/name: weather-vendor-primary, app.kubernetes.io/part-of: gridcast, gridcast.dev/vendor: wx-primary } }
+    spec:
+      securityContext: { runAsNonRoot: true, runAsUser: 10001 }
+      containers:
+        - name: weather-vendor
+          imagePullPolicy: Always  # dev registry: tags may be rebuilt
+          image: gridcast/weather-vendor
+          args: ["serve", "weather-vendor"]
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom: [{ configMapRef: { name: vendor-runtime } }]
+          env:
+            - { name: WEATHER_VENDOR_VENDOR_ID, value: wx-primary }
+            - name: WEATHER_VENDOR_ADMIN_TOKEN
+              valueFrom: { secretKeyRef: { name: vendor-admin, key: token } }
+            - name: K8S_POD_NAME
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+            - name: K8S_NAMESPACE
+              valueFrom: { fieldRef: { fieldPath: metadata.namespace } }
+            - name: K8S_NODE_NAME
+              valueFrom: { fieldRef: { fieldPath: spec.nodeName } }
+            - { name: K8S_DEPLOYMENT_NAME, value: weather-vendor-primary }
+          readinessProbe: { httpGet: { path: /readyz, port: http }, periodSeconds: 10 }
+          livenessProbe: { httpGet: { path: /healthz, port: http }, periodSeconds: 20, failureThreshold: 3 }
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-vendor-secondary
+  namespace: vendors
+  labels: { app.kubernetes.io/name: weather-vendor-secondary, app.kubernetes.io/part-of: gridcast, gridcast.dev/vendor: wx-secondary }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app.kubernetes.io/name: weather-vendor-secondary } }
+  template:
+    metadata: { labels: { app.kubernetes.io/name: weather-vendor-secondary, app.kubernetes.io/part-of: gridcast, gridcast.dev/vendor: wx-secondary } }
+    spec:
+      securityContext: { runAsNonRoot: true, runAsUser: 10001 }
+      containers:
+        - name: weather-vendor
+          imagePullPolicy: Always  # dev registry: tags may be rebuilt
+          image: gridcast/weather-vendor
+          args: ["serve", "weather-vendor"]
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom: [{ configMapRef: { name: vendor-runtime } }]
+          env:
+            - { name: WEATHER_VENDOR_VENDOR_ID, value: wx-secondary }
+            - name: WEATHER_VENDOR_ADMIN_TOKEN
+              valueFrom: { secretKeyRef: { name: vendor-admin, key: token } }
+            - name: K8S_POD_NAME
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+            - name: K8S_NAMESPACE
+              valueFrom: { fieldRef: { fieldPath: metadata.namespace } }
+            - name: K8S_NODE_NAME
+              valueFrom: { fieldRef: { fieldPath: spec.nodeName } }
+            - { name: K8S_DEPLOYMENT_NAME, value: weather-vendor-secondary }
+          readinessProbe: { httpGet: { path: /readyz, port: http }, periodSeconds: 10 }
+          livenessProbe: { httpGet: { path: /healthz, port: http }, periodSeconds: 20, failureThreshold: 3 }
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grid-telemetry
+  namespace: vendors
+  labels: { app.kubernetes.io/name: grid-telemetry, app.kubernetes.io/part-of: gridcast, gridcast.dev/vendor: grid-telemetry }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app.kubernetes.io/name: grid-telemetry } }
+  template:
+    metadata: { labels: { app.kubernetes.io/name: grid-telemetry, app.kubernetes.io/part-of: gridcast, gridcast.dev/vendor: grid-telemetry } }
+    spec:
+      securityContext: { runAsNonRoot: true, runAsUser: 10001 }
+      containers:
+        - name: grid-telemetry
+          imagePullPolicy: Always  # dev registry: tags may be rebuilt
+          image: gridcast/grid-telemetry
+          args: ["serve", "grid-telemetry"]
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom: [{ configMapRef: { name: vendor-runtime } }]
+          env:
+            - name: GRID_TELEMETRY_ADMIN_TOKEN
+              valueFrom: { secretKeyRef: { name: vendor-admin, key: token } }
+            - name: K8S_POD_NAME
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+            - name: K8S_NAMESPACE
+              valueFrom: { fieldRef: { fieldPath: metadata.namespace } }
+            - name: K8S_NODE_NAME
+              valueFrom: { fieldRef: { fieldPath: spec.nodeName } }
+            - { name: K8S_DEPLOYMENT_NAME, value: grid-telemetry }
+          readinessProbe: { httpGet: { path: /readyz, port: http }, periodSeconds: 10 }
+          livenessProbe: { httpGet: { path: /healthz, port: http }, periodSeconds: 20, failureThreshold: 3 }
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 256Mi }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: weather-primary, namespace: vendors }
+spec:
+  type: NodePort
+  selector: { app.kubernetes.io/name: weather-vendor-primary }
+  ports: [{ name: http, port: 80, targetPort: http, nodePort: 30084 }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: weather-secondary, namespace: vendors }
+spec:
+  type: NodePort
+  selector: { app.kubernetes.io/name: weather-vendor-secondary }
+  ports: [{ name: http, port: 80, targetPort: http, nodePort: 30085 }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: grid-telemetry, namespace: vendors }
+spec:
+  type: NodePort
+  selector: { app.kubernetes.io/name: grid-telemetry }
+  ports: [{ name: http, port: 80, targetPort: http, nodePort: 30086 }]

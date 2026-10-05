@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "service:gridcast:weather-vendor-wx-primary :: The primary weather vendor feed became degraded or intermittent, causing failover to secondary weather data with different coverage, cadence, or calibration. :: External primary-source instability induced the weather-observation variability warnings."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "service:gridcast:ingestion :: The ingestion service wrote duplicated, delayed, or mixed-source weather observations into `weather_observations` during a restart, reprocessing, or failover. :: Ingest-side data irregularities made the observation series appear highly variable to forecast-pipeline."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: PostgreSQL read lag, lock contention, or partial replication caused forecast-pipeline to fetch an incomplete or out-of-order view of `weather_observations`. :: Database consistency or performance issues made the weather-observation quality check fail."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "service:gridcast:forecast-pipeline :: The `variability.weather_observations` quality check in forecast-pipeline used an overly strict threshold, incorrect aggregation window, or a recent logic change. :: A faulty quality-check definition in the affected service generated repeated false positives."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "service:gridcast:feature-service :: Feature-service produced weather-derived feature data with a changed distribution, duplicate rows, or missing values consumed by forecast-pipeline. :: Upstream feature generation distorted the weather signal seen by forecast-pipeline."
+ }
+]

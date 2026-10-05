@@ -1,0 +1,53 @@
+22:00:27 [G] waiting for quiet estate and 20 min cooldown
+22:19:07 [G] injecting
+22:24:59 [G] incident gridcast-20261003T222459Z-44b603 affected=['service:gridcast:forecast-pipeline', 'service:gridcast:ingestion'] after 345s
+22:24:59 [G] rules r1: ok (0.19s)
+22:24:59 [G] rules r2: ok (0.094s)
+22:25:00 [G] rules r3: ok (0.116s)
+22:25:00 [G] rules r4: ok (0.134s)
+22:25:00 [G] rules r5: ok (0.081s)
+22:27:40 [G] single_pass r1: ok (160.548s)
+22:30:11 [G] single_pass r2: ok (150.607s)
+22:35:50 [G] lumis r1: ok (339.017s)
+22:42:15 [G] lumis r2: ok (385.372s)
+22:42:15 [G] reverting
+22:42:17 [H] waiting for quiet estate and 20 min cooldown
+23:11:38 [H] injecting
+23:19:29 [H] incident gridcast-20261003T231929Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 466s
+23:19:30 [H] rules r1: ok (0.132s)
+23:19:30 [H] rules r2: ok (0.094s)
+23:19:30 [H] rules r3: ok (0.216s)
+23:19:30 [H] rules r4: ok (0.067s)
+23:19:30 [H] rules r5: ok (0.065s)
+23:23:36 [H] single_pass r1: ok (246.042s)
+23:25:44 [H] single_pass r2: ok (128.035s)
+23:30:39 [H] lumis r1: ok (294.661s)
+23:37:41 [H] lumis r2: ok (421.999s)
+23:37:41 [H] reverting
+23:37:42 [I] waiting for quiet estate and 20 min cooldown
+23:57:42 [I] injecting
+00:03:03 [I] incident gridcast-20261004T000303Z-dcf742 affected=['service:gridcast:ingestion', 'service:gridcast:weather-vendor-wx-primary'] after 316s
+00:03:04 [I] rules r1: ok (0.151s)
+00:03:04 [I] rules r2: ok (0.079s)
+00:03:04 [I] rules r3: ok (0.095s)
+00:03:04 [I] rules r4: ok (0.077s)
+00:03:04 [I] rules r5: ok (0.063s)
+00:05:42 [I] single_pass r1: ok (157.685s)
+00:08:16 [I] single_pass r2: ok (154.295s)
+00:10:05 [I] lumis r1: ok (109.091s)
+00:11:55 [I] lumis r2: ok (109.476s)
+00:11:55 [I] reverting
+00:11:56 [B] waiting for quiet estate and 20 min cooldown
+00:31:56 [B] injecting
+00:39:47 [B] incident gridcast-20261004T003947Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 466s
+00:39:48 [B] rules r1: ok (0.176s)
+00:39:48 [B] rules r2: ok (0.122s)
+00:39:48 [B] rules r3: ok (0.087s)
+00:39:48 [B] rules r4: ok (0.073s)
+00:39:48 [B] rules r5: ok (0.078s)
+00:41:02 [B] single_pass r1: ok (73.808s)
+00:46:29 [B] single_pass r2: ok (326.62s)
+00:53:03 [B] lumis r1: ok (394.723s)
+01:05:43 [B] lumis r2: ok (759.179s)
+01:05:43 [B] reverting
+results in lumis/experiments/2026-10-03-main-deepseek-v4-pro

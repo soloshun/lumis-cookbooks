@@ -1,0 +1,3703 @@
+{
+ "api_version": "lumis.dev/incident-report-v1alpha1",
+ "sdk_version": "0.1.0rc1",
+ "context": {
+  "incident": {
+   "id": "gridcast-20261004T193638Z-dcf742-lumis-r2",
+   "affected_entities": [
+    "service:gridcast:ingestion",
+    "service:gridcast:weather-vendor-wx-primary"
+   ],
+   "symptoms": [
+    "IngestionErrors: Ingestion of weather_observations is failing",
+    "ServiceErrorRate: weather-vendor-wx-primary 5xx ratio above 5%"
+   ],
+   "started_at": "2026-10-04T19:23:27Z",
+   "ended_at": "2026-10-04T19:36:38Z"
+  },
+  "graph": {
+   "entities": [
+    {
+     "id": "k8s:gridcast:deployment:feature-service",
+     "kind": "kubernetes.deployment",
+     "name": "feature-service",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:deployment:forecast-pipeline",
+     "kind": "kubernetes.deployment",
+     "name": "forecast-pipeline",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-pipeline"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:deployment:forecast-service",
+     "kind": "kubernetes.deployment",
+     "name": "forecast-service",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:deployment:ingestion",
+     "kind": "kubernetes.deployment",
+     "name": "ingestion",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "ingestion"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:deployment:planning-api",
+     "kind": "kubernetes.deployment",
+     "name": "planning-api",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "planning-api"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:pod:feature-service-5774b8bccb-fwzwz",
+     "kind": "kubernetes.pod",
+     "name": "feature-service-5774b8bccb-fwzwz",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:pod:forecast-pipeline-75dcf6fbfd-vgvdz",
+     "kind": "kubernetes.pod",
+     "name": "forecast-pipeline-75dcf6fbfd-vgvdz",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-pipeline"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:pod:forecast-service-746b5fd4fb-c7v5q",
+     "kind": "kubernetes.pod",
+     "name": "forecast-service-746b5fd4fb-c7v5q",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:pod:ingestion-75cb4c9d78-ppfgf",
+     "kind": "kubernetes.pod",
+     "name": "ingestion-75cb4c9d78-ppfgf",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "ingestion"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:pod:planning-api-688d8967bd-rvc6g",
+     "kind": "kubernetes.pod",
+     "name": "planning-api-688d8967bd-rvc6g",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "planning-api"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:feature-service-544b575855",
+     "kind": "kubernetes.replicaset",
+     "name": "feature-service-544b575855",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:feature-service-5774b8bccb",
+     "kind": "kubernetes.replicaset",
+     "name": "feature-service-5774b8bccb",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:feature-service-57f94d48c5",
+     "kind": "kubernetes.replicaset",
+     "name": "feature-service-57f94d48c5",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:feature-service-58bdbb6b",
+     "kind": "kubernetes.replicaset",
+     "name": "feature-service-58bdbb6b",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:feature-service-598b49476",
+     "kind": "kubernetes.replicaset",
+     "name": "feature-service-598b49476",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:feature-service-5f6c6f7bcb",
+     "kind": "kubernetes.replicaset",
+     "name": "feature-service-5f6c6f7bcb",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:feature-service-66bb7f88bf",
+     "kind": "kubernetes.replicaset",
+     "name": "feature-service-66bb7f88bf",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:feature-service-6856c456db",
+     "kind": "kubernetes.replicaset",
+     "name": "feature-service-6856c456db",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:feature-service-756bf57dc6",
+     "kind": "kubernetes.replicaset",
+     "name": "feature-service-756bf57dc6",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:feature-service-845c8ddb8",
+     "kind": "kubernetes.replicaset",
+     "name": "feature-service-845c8ddb8",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:feature-service-848d775f59",
+     "kind": "kubernetes.replicaset",
+     "name": "feature-service-848d775f59",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-pipeline-544c8596b5",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-pipeline-544c8596b5",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-pipeline"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-pipeline-5c7f79fc74",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-pipeline-5c7f79fc74",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-pipeline"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-pipeline-6874878b9c",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-pipeline-6874878b9c",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-pipeline"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-pipeline-75dcf6fbfd",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-pipeline-75dcf6fbfd",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-pipeline"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-pipeline-85d68dcfb7",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-pipeline-85d68dcfb7",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-pipeline"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-service-546545bc9f",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-service-546545bc9f",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-service-5489dcfb89",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-service-5489dcfb89",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-service-55bb58d896",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-service-55bb58d896",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-service-55bf8c6b5c",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-service-55bf8c6b5c",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-service-5855b5d996",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-service-5855b5d996",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-service-5d66884fd6",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-service-5d66884fd6",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-service-69ff9cf59",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-service-69ff9cf59",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-service-6d9fdc9857",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-service-6d9fdc9857",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-service-746b5fd4fb",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-service-746b5fd4fb",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-service-78c7b64fcf",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-service-78c7b64fcf",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:forecast-service-7d48b4d",
+     "kind": "kubernetes.replicaset",
+     "name": "forecast-service-7d48b4d",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:ingestion-58d5795b4b",
+     "kind": "kubernetes.replicaset",
+     "name": "ingestion-58d5795b4b",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "ingestion"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:ingestion-65944fff6b",
+     "kind": "kubernetes.replicaset",
+     "name": "ingestion-65944fff6b",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "ingestion"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:ingestion-6d458978cb",
+     "kind": "kubernetes.replicaset",
+     "name": "ingestion-6d458978cb",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "ingestion"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:ingestion-75cb4c9d78",
+     "kind": "kubernetes.replicaset",
+     "name": "ingestion-75cb4c9d78",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "ingestion"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:ingestion-859fb4894",
+     "kind": "kubernetes.replicaset",
+     "name": "ingestion-859fb4894",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "ingestion"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:ingestion-8995996fd",
+     "kind": "kubernetes.replicaset",
+     "name": "ingestion-8995996fd",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "ingestion"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:ingestion-cf54459cb",
+     "kind": "kubernetes.replicaset",
+     "name": "ingestion-cf54459cb",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "ingestion"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:planning-api-58ddd99b65",
+     "kind": "kubernetes.replicaset",
+     "name": "planning-api-58ddd99b65",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "planning-api"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:planning-api-59c74d9b45",
+     "kind": "kubernetes.replicaset",
+     "name": "planning-api-59c74d9b45",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "planning-api"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:planning-api-5b6f4b67d4",
+     "kind": "kubernetes.replicaset",
+     "name": "planning-api-5b6f4b67d4",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "planning-api"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:planning-api-688d8967bd",
+     "kind": "kubernetes.replicaset",
+     "name": "planning-api-688d8967bd",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "planning-api"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:planning-api-766949b4bb",
+     "kind": "kubernetes.replicaset",
+     "name": "planning-api-766949b4bb",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "planning-api"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:planning-api-7747858cd7",
+     "kind": "kubernetes.replicaset",
+     "name": "planning-api-7747858cd7",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "planning-api"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:replicaset:planning-api-f65c66dd8",
+     "kind": "kubernetes.replicaset",
+     "name": "planning-api-f65c66dd8",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "planning-api"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:service:feature-service",
+     "kind": "kubernetes.service",
+     "name": "feature-service",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "feature-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:service:forecast-service",
+     "kind": "kubernetes.service",
+     "name": "forecast-service",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "forecast-service"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:service:ingestion",
+     "kind": "kubernetes.service",
+     "name": "ingestion",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "ingestion"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "k8s:gridcast:service:planning-api",
+     "kind": "kubernetes.service",
+     "name": "planning-api",
+     "attributes": {
+      "namespace": "gridcast",
+      "service.name": "planning-api"
+     },
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "id": "service:gridcast:feature-service",
+     "kind": "service",
+     "name": "feature-service",
+     "attributes": {
+      "service.namespace": "gridcast",
+      "criticality": "high",
+      "owner": "forecasting-team"
+     },
+     "provenance": [
+      "kubernetes.app-label",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "id": "service:gridcast:forecast-pipeline",
+     "kind": "service",
+     "name": "forecast-pipeline",
+     "attributes": {
+      "service.namespace": "gridcast",
+      "criticality": "high",
+      "owner": "forecasting-team"
+     },
+     "provenance": [
+      "kubernetes.app-label",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "id": "service:gridcast:forecast-service",
+     "kind": "service",
+     "name": "forecast-service",
+     "attributes": {
+      "service.namespace": "gridcast",
+      "criticality": "high",
+      "owner": "ml-platform"
+     },
+     "provenance": [
+      "kubernetes.app-label",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "id": "service:gridcast:grid-operator",
+     "kind": "service",
+     "name": "grid-operator",
+     "attributes": {
+      "service.namespace": "gridcast",
+      "role": "consumer",
+      "criticality": "critical",
+      "owner": "grid-operations"
+     },
+     "provenance": [
+      "kubernetes.app-label",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "id": "service:gridcast:grid-telemetry",
+     "kind": "service",
+     "name": "grid-telemetry",
+     "attributes": {
+      "service.namespace": "gridcast",
+      "role": "external-vendor",
+      "operable": "false"
+     },
+     "provenance": [
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "id": "service:gridcast:ingestion",
+     "kind": "service",
+     "name": "ingestion",
+     "attributes": {
+      "service.namespace": "gridcast",
+      "criticality": "high",
+      "owner": "data-platform"
+     },
+     "provenance": [
+      "kubernetes.app-label",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "id": "service:gridcast:planning-api",
+     "kind": "service",
+     "name": "planning-api",
+     "attributes": {
+      "service.namespace": "gridcast",
+      "criticality": "critical",
+      "owner": "planning-team"
+     },
+     "provenance": [
+      "kubernetes.app-label",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "id": "service:gridcast:postgres",
+     "kind": "service",
+     "name": "postgres",
+     "attributes": {
+      "service.namespace": "gridcast",
+      "role": "database",
+      "managed": "true",
+      "criticality": "critical"
+     },
+     "provenance": [
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "id": "service:gridcast:user",
+     "kind": "service",
+     "name": "user",
+     "attributes": {
+      "service.namespace": "gridcast"
+     },
+     "provenance": [
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "id": "service:gridcast:weather-vendor-wx-primary",
+     "kind": "service",
+     "name": "weather-vendor-wx-primary",
+     "attributes": {
+      "service.namespace": "gridcast",
+      "role": "external-vendor",
+      "operable": "false"
+     },
+     "provenance": [
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "id": "service:gridcast:weather-vendor-wx-secondary",
+     "kind": "service",
+     "name": "weather-vendor-wx-secondary",
+     "attributes": {
+      "service.namespace": "gridcast",
+      "role": "external-vendor",
+      "operable": "false",
+      "fallback_for": "weather-vendor-wx-primary"
+     },
+     "provenance": []
+    }
+   ],
+   "relationships": [
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "k8s:gridcast:replicaset:feature-service-544b575855",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "k8s:gridcast:replicaset:feature-service-5774b8bccb",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "k8s:gridcast:replicaset:feature-service-57f94d48c5",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "k8s:gridcast:replicaset:feature-service-58bdbb6b",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "k8s:gridcast:replicaset:feature-service-598b49476",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "k8s:gridcast:replicaset:feature-service-5f6c6f7bcb",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "k8s:gridcast:replicaset:feature-service-66bb7f88bf",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "k8s:gridcast:replicaset:feature-service-6856c456db",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "k8s:gridcast:replicaset:feature-service-756bf57dc6",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "k8s:gridcast:replicaset:feature-service-845c8ddb8",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "k8s:gridcast:replicaset:feature-service-848d775f59",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:feature-service",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-pipeline",
+     "target": "k8s:gridcast:replicaset:forecast-pipeline-544c8596b5",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-pipeline",
+     "target": "k8s:gridcast:replicaset:forecast-pipeline-5c7f79fc74",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-pipeline",
+     "target": "k8s:gridcast:replicaset:forecast-pipeline-6874878b9c",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-pipeline",
+     "target": "k8s:gridcast:replicaset:forecast-pipeline-75dcf6fbfd",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-pipeline",
+     "target": "k8s:gridcast:replicaset:forecast-pipeline-85d68dcfb7",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-pipeline",
+     "target": "service:gridcast:forecast-pipeline",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "k8s:gridcast:replicaset:forecast-service-546545bc9f",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "k8s:gridcast:replicaset:forecast-service-5489dcfb89",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "k8s:gridcast:replicaset:forecast-service-55bb58d896",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "k8s:gridcast:replicaset:forecast-service-55bf8c6b5c",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "k8s:gridcast:replicaset:forecast-service-5855b5d996",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "k8s:gridcast:replicaset:forecast-service-5d66884fd6",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "k8s:gridcast:replicaset:forecast-service-69ff9cf59",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "k8s:gridcast:replicaset:forecast-service-6d9fdc9857",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "k8s:gridcast:replicaset:forecast-service-746b5fd4fb",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "k8s:gridcast:replicaset:forecast-service-78c7b64fcf",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "k8s:gridcast:replicaset:forecast-service-7d48b4d",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:forecast-service",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:ingestion",
+     "target": "k8s:gridcast:replicaset:ingestion-58d5795b4b",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:ingestion",
+     "target": "k8s:gridcast:replicaset:ingestion-65944fff6b",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:ingestion",
+     "target": "k8s:gridcast:replicaset:ingestion-6d458978cb",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:ingestion",
+     "target": "k8s:gridcast:replicaset:ingestion-75cb4c9d78",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:ingestion",
+     "target": "k8s:gridcast:replicaset:ingestion-859fb4894",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:ingestion",
+     "target": "k8s:gridcast:replicaset:ingestion-8995996fd",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:ingestion",
+     "target": "k8s:gridcast:replicaset:ingestion-cf54459cb",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:ingestion",
+     "target": "service:gridcast:ingestion",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:planning-api",
+     "target": "k8s:gridcast:replicaset:planning-api-58ddd99b65",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:planning-api",
+     "target": "k8s:gridcast:replicaset:planning-api-59c74d9b45",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:planning-api",
+     "target": "k8s:gridcast:replicaset:planning-api-5b6f4b67d4",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:planning-api",
+     "target": "k8s:gridcast:replicaset:planning-api-688d8967bd",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:planning-api",
+     "target": "k8s:gridcast:replicaset:planning-api-766949b4bb",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:planning-api",
+     "target": "k8s:gridcast:replicaset:planning-api-7747858cd7",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:planning-api",
+     "target": "k8s:gridcast:replicaset:planning-api-f65c66dd8",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:deployment:planning-api",
+     "target": "service:gridcast:planning-api",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:pod:feature-service-5774b8bccb-fwzwz",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:pod:forecast-pipeline-75dcf6fbfd-vgvdz",
+     "target": "service:gridcast:forecast-pipeline",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:pod:forecast-service-746b5fd4fb-c7v5q",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:pod:ingestion-75cb4c9d78-ppfgf",
+     "target": "service:gridcast:ingestion",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:pod:planning-api-688d8967bd-rvc6g",
+     "target": "service:gridcast:planning-api",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-544b575855",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-5774b8bccb",
+     "target": "k8s:gridcast:pod:feature-service-5774b8bccb-fwzwz",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-5774b8bccb",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-57f94d48c5",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-58bdbb6b",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-598b49476",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-5f6c6f7bcb",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-66bb7f88bf",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-6856c456db",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-756bf57dc6",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-845c8ddb8",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:feature-service-848d775f59",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-pipeline-544c8596b5",
+     "target": "service:gridcast:forecast-pipeline",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-pipeline-5c7f79fc74",
+     "target": "service:gridcast:forecast-pipeline",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-pipeline-6874878b9c",
+     "target": "service:gridcast:forecast-pipeline",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-pipeline-75dcf6fbfd",
+     "target": "k8s:gridcast:pod:forecast-pipeline-75dcf6fbfd-vgvdz",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-pipeline-75dcf6fbfd",
+     "target": "service:gridcast:forecast-pipeline",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-pipeline-85d68dcfb7",
+     "target": "service:gridcast:forecast-pipeline",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-546545bc9f",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-5489dcfb89",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-55bb58d896",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-55bf8c6b5c",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-5855b5d996",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-5d66884fd6",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-69ff9cf59",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-6d9fdc9857",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-746b5fd4fb",
+     "target": "k8s:gridcast:pod:forecast-service-746b5fd4fb-c7v5q",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-746b5fd4fb",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-78c7b64fcf",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:forecast-service-7d48b4d",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:ingestion-58d5795b4b",
+     "target": "service:gridcast:ingestion",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:ingestion-65944fff6b",
+     "target": "service:gridcast:ingestion",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:ingestion-6d458978cb",
+     "target": "service:gridcast:ingestion",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:ingestion-75cb4c9d78",
+     "target": "k8s:gridcast:pod:ingestion-75cb4c9d78-ppfgf",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:ingestion-75cb4c9d78",
+     "target": "service:gridcast:ingestion",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:ingestion-859fb4894",
+     "target": "service:gridcast:ingestion",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:ingestion-8995996fd",
+     "target": "service:gridcast:ingestion",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:ingestion-cf54459cb",
+     "target": "service:gridcast:ingestion",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:planning-api-58ddd99b65",
+     "target": "service:gridcast:planning-api",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:planning-api-59c74d9b45",
+     "target": "service:gridcast:planning-api",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:planning-api-5b6f4b67d4",
+     "target": "service:gridcast:planning-api",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:planning-api-688d8967bd",
+     "target": "k8s:gridcast:pod:planning-api-688d8967bd-rvc6g",
+     "kind": "owns",
+     "provenance": [
+      "kubernetes"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:planning-api-688d8967bd",
+     "target": "service:gridcast:planning-api",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:planning-api-766949b4bb",
+     "target": "service:gridcast:planning-api",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:planning-api-7747858cd7",
+     "target": "service:gridcast:planning-api",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:replicaset:planning-api-f65c66dd8",
+     "target": "service:gridcast:planning-api",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:service:feature-service",
+     "target": "k8s:gridcast:pod:feature-service-5774b8bccb-fwzwz",
+     "kind": "routes_to",
+     "provenance": [
+      "kubernetes.selector"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:service:feature-service",
+     "target": "service:gridcast:feature-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:service:forecast-service",
+     "target": "k8s:gridcast:pod:forecast-service-746b5fd4fb-c7v5q",
+     "kind": "routes_to",
+     "provenance": [
+      "kubernetes.selector"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:service:forecast-service",
+     "target": "service:gridcast:forecast-service",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:service:ingestion",
+     "target": "k8s:gridcast:pod:ingestion-75cb4c9d78-ppfgf",
+     "kind": "routes_to",
+     "provenance": [
+      "kubernetes.selector"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:service:ingestion",
+     "target": "service:gridcast:ingestion",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:service:planning-api",
+     "target": "k8s:gridcast:pod:planning-api-688d8967bd-rvc6g",
+     "kind": "routes_to",
+     "provenance": [
+      "kubernetes.selector"
+     ]
+    },
+    {
+     "source": "k8s:gridcast:service:planning-api",
+     "target": "service:gridcast:planning-api",
+     "kind": "hosts",
+     "provenance": [
+      "kubernetes.app-label"
+     ]
+    },
+    {
+     "source": "service:gridcast:feature-service",
+     "target": "service:gridcast:forecast-pipeline",
+     "kind": "serves",
+     "provenance": [
+      "declared",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:forecast-service",
+     "target": "service:gridcast:forecast-pipeline",
+     "kind": "serves",
+     "provenance": [
+      "declared",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:grid-telemetry",
+     "target": "service:gridcast:ingestion",
+     "kind": "serves",
+     "provenance": [
+      "declared",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:planning-api",
+     "target": "service:gridcast:forecast-pipeline",
+     "kind": "serves",
+     "provenance": [
+      "declared",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:planning-api",
+     "target": "service:gridcast:grid-operator",
+     "kind": "serves",
+     "provenance": [
+      "declared",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:postgres",
+     "target": "service:gridcast:feature-service",
+     "kind": "serves",
+     "provenance": [
+      "declared",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:postgres",
+     "target": "service:gridcast:forecast-pipeline",
+     "kind": "serves",
+     "provenance": [
+      "declared",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:postgres",
+     "target": "service:gridcast:forecast-service",
+     "kind": "serves",
+     "provenance": [
+      "declared",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:postgres",
+     "target": "service:gridcast:ingestion",
+     "kind": "serves",
+     "provenance": [
+      "declared",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:postgres",
+     "target": "service:gridcast:planning-api",
+     "kind": "serves",
+     "provenance": [
+      "declared",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:weather-vendor-wx-primary",
+     "target": "service:gridcast:ingestion",
+     "kind": "serves",
+     "provenance": [
+      "declared",
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:weather-vendor-wx-primary",
+     "target": "service:gridcast:user",
+     "kind": "serves",
+     "provenance": [
+      "prometheus.service_graph"
+     ]
+    },
+    {
+     "source": "service:gridcast:weather-vendor-wx-secondary",
+     "target": "service:gridcast:ingestion",
+     "kind": "serves",
+     "provenance": [
+      "declared"
+     ]
+    }
+   ]
+  },
+  "queries": [
+   {
+    "id": "planning-desired-replicas",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:planning-api",
+    "key": "desired_replicas",
+    "description": "Replicas the planning-api Deployment asks for",
+    "parameters": {}
+   },
+   {
+    "id": "planning-available-replicas",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:planning-api",
+    "key": "available_replicas",
+    "description": "Replicas of planning-api that are available to serve",
+    "parameters": {}
+   },
+   {
+    "id": "operator-plan-fetch-transport-errors",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:grid-operator",
+    "key": "plan_fetch_transport_errors_5m",
+    "description": "grid-operator plan reads that could not connect in the last 5 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "pipeline-failed-runs",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "failed_runs_15m",
+    "description": "Forecast pipeline runs that failed in the last 15 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "feature-sql-per-build",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:feature-service",
+    "key": "sql_statements_per_build",
+    "description": "Mean SQL statements issued per feature build over 10 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "feature-build-p95",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:feature-service",
+    "key": "build_p95_seconds",
+    "description": "95th percentile feature build duration over 10 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "feature-failed-builds",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:feature-service",
+    "key": "failed_builds_10m",
+    "description": "Feature builds that failed in the last 10 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "postgres-rows-scanned",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:postgres",
+    "key": "rows_scanned_per_s",
+    "description": "Rows scanned per second in the gridcast database (5 minute rate)",
+    "parameters": {}
+   },
+   {
+    "id": "forecast-oom-killed",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "oom_killed_15m",
+    "description": "Whether any forecast-service container's last termination in the last 15 minutes was OOMKilled (1/0)",
+    "parameters": {}
+   },
+   {
+    "id": "forecast-memory-ratio",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "memory_working_set_to_limit_15m",
+    "description": "Peak forecast-service memory working set in the last 15 minutes divided by its current memory limit",
+    "parameters": {}
+   },
+   {
+    "id": "forecast-restarts",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "restarts_15m",
+    "description": "forecast-service container restarts in the last 15 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "forecast-inference-p95",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "inference_p95_seconds",
+    "description": "95th percentile model inference time over 10 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "forecast-model-reloads",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "model_loads_20m",
+    "description": "Model versions forecast-service loaded in the last 20 minutes (including at start-up)",
+    "parameters": {}
+   },
+   {
+    "id": "forecast-inference-max",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "inference_max_10m_seconds",
+    "description": "Slowest single model inference in the last 10 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "ingestion-demand-errors",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "demand_batch_errors_10m",
+    "description": "Failed demand ingestion batches in the last 10 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "ingestion-weather-errors",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "weather_batch_errors_10m",
+    "description": "Failed weather-observation ingestion batches in the last 10 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "demand-range-failures",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "demand_range_failures_15m",
+    "description": "Demand range-check failures recorded by the validation gate in 15 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "weather-variability-warnings",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "weather_variability_warnings_30m",
+    "description": "Weather-variability warnings (repeating vendor values) in 30 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "feature-auth-failures",
+    "provider": "loki",
+    "entity_id": "service:gridcast:feature-service",
+    "key": "db_auth_failure_log_lines",
+    "description": "feature-service log lines reporting PostgreSQL password authentication failures in the incident window",
+    "parameters": {}
+   },
+   {
+    "id": "ingestion-contract-violations",
+    "provider": "loki",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "contract_violation_log_lines",
+    "description": "ingestion log lines reporting a vendor payload contract violation in the incident window",
+    "parameters": {}
+   },
+   {
+    "id": "ingestion-weather-vendor-503",
+    "provider": "loki",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "weather_vendor_503_log_lines",
+    "description": "ingestion log lines reporting HTTP 503 from the primary weather vendor in the incident window",
+    "parameters": {}
+   },
+   {
+    "id": "feature-service-error-log",
+    "provider": "loki",
+    "entity_id": "service:gridcast:feature-service",
+    "key": "error_log",
+    "description": "feature-service error log records (messages) in the incident window",
+    "parameters": {}
+   },
+   {
+    "id": "ingestion-error-log",
+    "provider": "loki",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "error_log",
+    "description": "ingestion batch failure log records (messages) in the incident window",
+    "parameters": {}
+   },
+   {
+    "id": "slow-pipeline-traces",
+    "provider": "tempo",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "slow_trace_duration_ms",
+    "description": "Durations of forecast-pipeline traces slower than 3 s in the window (sampled matches, not a percentile)",
+    "parameters": {}
+   },
+   {
+    "id": "prefect-failed-flow-runs",
+    "provider": "prefect",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "failed_flow_runs",
+    "description": "forecast-pipeline Prefect flow runs started in the incident window that ended FAILED or CRASHED",
+    "parameters": {}
+   },
+   {
+    "id": "prefect-flow-runs",
+    "provider": "prefect",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "flow_run",
+    "description": "forecast-pipeline Prefect flow runs (state, duration) started in the incident window",
+    "parameters": {}
+   },
+   {
+    "id": "ingestion-demand-batch-p95",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "demand_batch_p95_seconds_10m",
+    "description": "95th percentile duration of ingestion's demand batches (one vendor call each) over 10 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "demand-freshness",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "demand_freshness_seconds",
+    "description": "Age of the newest ingested demand reading",
+    "parameters": {}
+   },
+   {
+    "id": "weather-observation-freshness",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "weather_observation_freshness_seconds",
+    "description": "Age of the newest ingested weather observation",
+    "parameters": {}
+   },
+   {
+    "id": "demand-completeness-failures",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "completeness_demand_failures_20m",
+    "description": "Pipeline validation-gate completeness.demand checks that warned or failed in the last 20 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "forecast-stability-warnings",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "stability_warnings_20m",
+    "description": "Validation-gate checks that the new forecast deviates from the published plan (warn or fail) in the last 20 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "demand-zones-reporting",
+    "provider": "sql",
+    "entity_id": "service:gridcast:grid-telemetry",
+    "key": "zones_reporting_demand_20m",
+    "description": "Load zones with at least one demand reading in the 20 minutes before incident end (the catalogue has 4)",
+    "parameters": {}
+   },
+   {
+    "id": "load-feature-mean",
+    "provider": "sql",
+    "entity_id": "service:gridcast:feature-service",
+    "key": "load_lag_24h_feature_mean_20m",
+    "description": "Mean of the load_lag_24h model feature in feature runs built in the 20 minutes before incident end (feature monitoring; demand is in MW)",
+    "parameters": {}
+   },
+   {
+    "id": "feature-cpu-throttling",
+    "provider": "prometheus",
+    "entity_id": "service:gridcast:feature-service",
+    "key": "cpu_throttled_ratio_5m",
+    "description": "Share of feature-service CPU scheduling periods that were throttled over 5 minutes",
+    "parameters": {}
+   },
+   {
+    "id": "model-production-alias-changes",
+    "provider": "sql",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "production_alias_changes_20m",
+    "description": "Model-registry moves of the production alias in the 20 minutes before incident end",
+    "parameters": {}
+   },
+   {
+    "id": "feature-service-changes-20m",
+    "provider": "changes",
+    "entity_id": "service:gridcast:feature-service",
+    "key": "changes_20m",
+    "description": "GitOps commits and rollouts touching feature-service in the 20 minutes before incident end",
+    "parameters": {}
+   },
+   {
+    "id": "forecast-service-changes-20m",
+    "provider": "changes",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "changes_20m",
+    "description": "GitOps commits and rollouts touching forecast-service in the 20 minutes before incident end",
+    "parameters": {}
+   },
+   {
+    "id": "planning-api-changes-20m",
+    "provider": "changes",
+    "entity_id": "service:gridcast:planning-api",
+    "key": "changes_20m",
+    "description": "GitOps commits and rollouts touching planning-api in the 20 minutes before incident end",
+    "parameters": {}
+   },
+   {
+    "id": "ingestion-changes-20m",
+    "provider": "changes",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "changes_20m",
+    "description": "GitOps commits and rollouts touching ingestion in the 20 minutes before incident end",
+    "parameters": {}
+   },
+   {
+    "id": "forecast-pipeline-changes-20m",
+    "provider": "changes",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "changes_20m",
+    "description": "GitOps commits and rollouts touching forecast-pipeline in the 20 minutes before incident end",
+    "parameters": {}
+   }
+  ],
+  "evidence": [
+   {
+    "id": "prefect:b6ededf9126ebe8285f8c45397cd4cc4:0",
+    "query_id": "prefect-failed-flow-runs",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "failed_flow_runs",
+    "value": 0,
+    "observed_at": "2026-10-04T19:33:33.902915Z",
+    "source": "prefect",
+    "retrieval_method": "POST /flow_runs/filter (read-only)",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:planning-desired-replicas",
+    "query_id": "planning-desired-replicas",
+    "entity_id": "service:gridcast:planning-api",
+    "key": "desired_replicas",
+    "value": 1.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:planning-available-replicas",
+    "query_id": "planning-available-replicas",
+    "entity_id": "service:gridcast:planning-api",
+    "key": "available_replicas",
+    "value": 1.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:operator-plan-fetch-transport-errors",
+    "query_id": "operator-plan-fetch-transport-errors",
+    "entity_id": "service:gridcast:grid-operator",
+    "key": "plan_fetch_transport_errors_5m",
+    "value": 0.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:feature-sql-per-build",
+    "query_id": "feature-sql-per-build",
+    "entity_id": "service:gridcast:feature-service",
+    "key": "sql_statements_per_build",
+    "value": 4.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:feature-build-p95",
+    "query_id": "feature-build-p95",
+    "entity_id": "service:gridcast:feature-service",
+    "key": "build_p95_seconds",
+    "value": 0.098,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:feature-failed-builds",
+    "query_id": "feature-failed-builds",
+    "entity_id": "service:gridcast:feature-service",
+    "key": "failed_builds_10m",
+    "value": 0.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:forecast-oom-killed",
+    "query_id": "forecast-oom-killed",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "oom_killed_15m",
+    "value": 0.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:forecast-memory-ratio",
+    "query_id": "forecast-memory-ratio",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "memory_working_set_to_limit_15m",
+    "value": 0.201,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:forecast-restarts",
+    "query_id": "forecast-restarts",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "restarts_15m",
+    "value": 0.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:forecast-inference-max",
+    "query_id": "forecast-inference-max",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "inference_max_10m_seconds",
+    "value": 0.241,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:forecast-model-reloads",
+    "query_id": "forecast-model-reloads",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "model_loads_20m",
+    "value": 0.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "sql:model-production-alias-changes",
+    "query_id": "model-production-alias-changes",
+    "entity_id": "service:gridcast:forecast-service",
+    "key": "production_alias_changes_20m",
+    "value": 0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "sql",
+    "retrieval_method": "SQL read-only transaction",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:ingestion-demand-errors",
+    "query_id": "ingestion-demand-errors",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "demand_batch_errors_10m",
+    "value": 0.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:ingestion-weather-errors",
+    "query_id": "ingestion-weather-errors",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "weather_batch_errors_10m",
+    "value": 5.13,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:demand-range-failures",
+    "query_id": "demand-range-failures",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "demand_range_failures_15m",
+    "value": 0.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "loki:249b4573eca5e692ee086fcad3097bc2:0",
+    "query_id": "ingestion-weather-vendor-503",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "weather_vendor_503_log_lines",
+    "value": 6,
+    "observed_at": "2026-10-04T19:36:11.638687Z",
+    "source": "loki",
+    "retrieval_method": "GET /loki/api/v1/query_range",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:weather-variability-warnings",
+    "query_id": "weather-variability-warnings",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "weather_variability_warnings_30m",
+    "value": 0.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "loki:d81744a862f953d53bad613f9e018686:0",
+    "query_id": "ingestion-error-log",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "error_log",
+    "value": "{\"timestamp\": \"2026-10-04T19:35:10.156138+00:00\", \"message\": \"ingestion batch failed\", \"error\": \"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/forecast\", \"dataset\": \"weather_forecasts\"}",
+    "observed_at": "2026-10-04T19:35:10.156138Z",
+    "source": "loki",
+    "retrieval_method": "GET /loki/api/v1/query_range",
+    "quality": "observed"
+   },
+   {
+    "id": "loki:d81744a862f953d53bad613f9e018686:1",
+    "query_id": "ingestion-error-log",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "error_log",
+    "value": "{\"timestamp\": \"2026-10-04T19:32:11.356018+00:00\", \"message\": \"ingestion batch failed\", \"error\": \"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/observations\", \"dataset\": \"weather_observations\"}",
+    "observed_at": "2026-10-04T19:32:11.356018Z",
+    "source": "loki",
+    "retrieval_method": "GET /loki/api/v1/query_range",
+    "quality": "observed"
+   },
+   {
+    "id": "loki:d81744a862f953d53bad613f9e018686:2",
+    "query_id": "ingestion-error-log",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "error_log",
+    "value": "{\"timestamp\": \"2026-10-04T19:33:11.430717+00:00\", \"message\": \"ingestion batch failed\", \"error\": \"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/observations\", \"dataset\": \"weather_observations\"}",
+    "observed_at": "2026-10-04T19:33:11.430717Z",
+    "source": "loki",
+    "retrieval_method": "GET /loki/api/v1/query_range",
+    "quality": "observed"
+   },
+   {
+    "id": "loki:d81744a862f953d53bad613f9e018686:3",
+    "query_id": "ingestion-error-log",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "error_log",
+    "value": "{\"timestamp\": \"2026-10-04T19:34:11.499790+00:00\", \"message\": \"ingestion batch failed\", \"error\": \"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/observations\", \"dataset\": \"weather_observations\"}",
+    "observed_at": "2026-10-04T19:34:11.499790Z",
+    "source": "loki",
+    "retrieval_method": "GET /loki/api/v1/query_range",
+    "quality": "observed"
+   },
+   {
+    "id": "loki:d81744a862f953d53bad613f9e018686:4",
+    "query_id": "ingestion-error-log",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "error_log",
+    "value": "{\"timestamp\": \"2026-10-04T19:35:11.550463+00:00\", \"message\": \"ingestion batch failed\", \"error\": \"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/observations\", \"dataset\": \"weather_observations\"}",
+    "observed_at": "2026-10-04T19:35:11.550463Z",
+    "source": "loki",
+    "retrieval_method": "GET /loki/api/v1/query_range",
+    "quality": "observed"
+   },
+   {
+    "id": "loki:d81744a862f953d53bad613f9e018686:5",
+    "query_id": "ingestion-error-log",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "error_log",
+    "value": "{\"timestamp\": \"2026-10-04T19:36:11.638687+00:00\", \"message\": \"ingestion batch failed\", \"error\": \"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/observations\", \"dataset\": \"weather_observations\"}",
+    "observed_at": "2026-10-04T19:36:11.638687Z",
+    "source": "loki",
+    "retrieval_method": "GET /loki/api/v1/query_range",
+    "quality": "observed"
+   },
+   {
+    "id": "changes:ingestion-changes-20m",
+    "query_id": "ingestion-changes-20m",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "changes_20m",
+    "value": 0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "changes",
+    "retrieval_method": "git log on mapped paths / Kubernetes ReplicaSet history",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:weather-observation-freshness",
+    "query_id": "weather-observation-freshness",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "weather_observation_freshness_seconds",
+    "value": 370.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:demand-freshness",
+    "query_id": "demand-freshness",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "demand_freshness_seconds",
+    "value": 130.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:ingestion-demand-batch-p95",
+    "query_id": "ingestion-demand-batch-p95",
+    "entity_id": "service:gridcast:ingestion",
+    "key": "demand_batch_p95_seconds_10m",
+    "value": 0.213,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:pipeline-failed-runs",
+    "query_id": "pipeline-failed-runs",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "failed_runs_15m",
+    "value": 0.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prefect:c928181c4ec633e58dddb5acf10fa29a:0",
+    "query_id": "prefect-flow-runs",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "flow_run",
+    "value": "{\"run_id\": \"743265cd-6730-4c2c-84f2-80379be5b63e\", \"name\": \"lean-mantis\", \"flow_name\": \"forecast-pipeline\", \"state\": \"COMPLETED\", \"state_timestamp\": \"2026-10-04T19:23:33.842511+00:00\", \"duration_ms\": 551.978, \"start\": \"2026-10-04T19:23:33.290533Z\", \"end\": \"2026-10-04T19:23:33.842511Z\"}",
+    "observed_at": "2026-10-04T19:23:33.842511Z",
+    "source": "prefect",
+    "retrieval_method": "POST /flow_runs/filter (read-only)",
+    "quality": "observed"
+   },
+   {
+    "id": "prefect:c928181c4ec633e58dddb5acf10fa29a:1",
+    "query_id": "prefect-flow-runs",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "flow_run",
+    "value": "{\"run_id\": \"cf0c8498-fcf4-4a34-af13-eb3a8b14fec2\", \"name\": \"important-poodle\", \"flow_name\": \"forecast-pipeline\", \"state\": \"COMPLETED\", \"state_timestamp\": \"2026-10-04T19:28:34.462900+00:00\", \"duration_ms\": 869.581, \"start\": \"2026-10-04T19:28:33.593319Z\", \"end\": \"2026-10-04T19:28:34.462900Z\"}",
+    "observed_at": "2026-10-04T19:28:34.462900Z",
+    "source": "prefect",
+    "retrieval_method": "POST /flow_runs/filter (read-only)",
+    "quality": "observed"
+   },
+   {
+    "id": "prefect:c928181c4ec633e58dddb5acf10fa29a:2",
+    "query_id": "prefect-flow-runs",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "flow_run",
+    "value": "{\"run_id\": \"09dea707-1921-42ad-b0da-78d2d6d25634\", \"name\": \"elfish-leech\", \"flow_name\": \"forecast-pipeline\", \"state\": \"COMPLETED\", \"state_timestamp\": \"2026-10-04T19:33:33.902915+00:00\", \"duration_ms\": 520.99, \"start\": \"2026-10-04T19:33:33.381925Z\", \"end\": \"2026-10-04T19:33:33.902915Z\"}",
+    "observed_at": "2026-10-04T19:33:33.902915Z",
+    "source": "prefect",
+    "retrieval_method": "POST /flow_runs/filter (read-only)",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:forecast-stability-warnings",
+    "query_id": "forecast-stability-warnings",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "stability_warnings_20m",
+    "value": 0.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   },
+   {
+    "id": "prometheus:demand-completeness-failures",
+    "query_id": "demand-completeness-failures",
+    "entity_id": "service:gridcast:forecast-pipeline",
+    "key": "completeness_demand_failures_20m",
+    "value": 0.0,
+    "observed_at": "2026-10-04T19:36:38Z",
+    "source": "prometheus",
+    "retrieval_method": "GET /api/v1/query",
+    "quality": "observed"
+   }
+  ]
+ },
+ "findings": [
+  {
+   "rule_id": "planning-api-scaled-to-zero",
+   "status": "no_match",
+   "terminal": true,
+   "assessment": {
+    "hypothesis": {
+     "id": "sig-planning-api-scaled-to-zero",
+     "statement": "planning-api is deliberately scaled to zero replicas, so nothing serves plan reads or publication.",
+     "causal_path": [
+      "service:gridcast:planning-api",
+      "service:gridcast:grid-operator",
+      "service:gridcast:forecast-pipeline"
+     ],
+     "predictions": [
+      {
+       "entity_id": "service:gridcast:planning-api",
+       "key": "desired_replicas",
+       "operator": "eq",
+       "value": 0
+      },
+      {
+       "entity_id": "service:gridcast:planning-api",
+       "key": "available_replicas",
+       "operator": "eq",
+       "value": 0
+      },
+      {
+       "entity_id": "service:gridcast:grid-operator",
+       "key": "plan_fetch_transport_errors_5m",
+       "operator": "gt",
+       "value": 0
+      }
+     ],
+     "evidence_needed": [
+      "planning-desired-replicas",
+      "planning-available-replicas",
+      "operator-plan-fetch-transport-errors"
+     ],
+     "falsifiers": [
+      {
+       "entity_id": "service:gridcast:planning-api",
+       "key": "desired_replicas",
+       "operator": "gt",
+       "value": 0
+      }
+     ]
+    },
+    "sources": [
+     "deterministic"
+    ],
+    "state": "contradicted",
+    "supporting_evidence_ids": [],
+    "contradicting_evidence_ids": [
+     "prometheus:operator-plan-fetch-transport-errors",
+     "prometheus:planning-available-replicas",
+     "prometheus:planning-desired-replicas"
+    ],
+    "missing_checks": []
+   }
+  },
+  {
+   "rule_id": "feature-query-amplification",
+   "status": "no_match",
+   "terminal": false,
+   "assessment": {
+    "hypothesis": {
+     "id": "sig-feature-query-amplification",
+     "statement": "feature-service issues far more SQL per build than normal, slowing builds and loading PostgreSQL.",
+     "causal_path": [
+      "service:gridcast:feature-service",
+      "service:gridcast:postgres"
+     ],
+     "predictions": [
+      {
+       "entity_id": "service:gridcast:feature-service",
+       "key": "sql_statements_per_build",
+       "operator": "gt",
+       "value": 100
+      },
+      {
+       "entity_id": "service:gridcast:feature-service",
+       "key": "build_p95_seconds",
+       "operator": "gt",
+       "value": 1
+      }
+     ],
+     "evidence_needed": [
+      "feature-sql-per-build",
+      "feature-build-p95"
+     ],
+     "falsifiers": [
+      {
+       "entity_id": "service:gridcast:feature-service",
+       "key": "sql_statements_per_build",
+       "operator": "le",
+       "value": 20
+      }
+     ]
+    },
+    "sources": [
+     "deterministic"
+    ],
+    "state": "contradicted",
+    "supporting_evidence_ids": [],
+    "contradicting_evidence_ids": [
+     "prometheus:feature-build-p95",
+     "prometheus:feature-sql-per-build"
+    ],
+    "missing_checks": []
+   }
+  },
+  {
+   "rule_id": "feature-builds-failing",
+   "status": "no_match",
+   "terminal": false,
+   "assessment": {
+    "hypothesis": {
+     "id": "sig-feature-builds-failing",
+     "statement": "feature-service builds are failing (cause not established by metrics alone).",
+     "causal_path": [
+      "service:gridcast:feature-service",
+      "service:gridcast:forecast-pipeline"
+     ],
+     "predictions": [
+      {
+       "entity_id": "service:gridcast:feature-service",
+       "key": "failed_builds_10m",
+       "operator": "gt",
+       "value": 0
+      }
+     ],
+     "evidence_needed": [
+      "feature-failed-builds"
+     ],
+     "falsifiers": [
+      {
+       "entity_id": "service:gridcast:feature-service",
+       "key": "failed_builds_10m",
+       "operator": "eq",
+       "value": 0
+      }
+     ]
+    },
+    "sources": [
+     "deterministic"
+    ],
+    "state": "contradicted",
+    "supporting_evidence_ids": [],
+    "contradicting_evidence_ids": [
+     "prometheus:feature-failed-builds"
+    ],
+    "missing_checks": []
+   }
+  },
+  {
+   "rule_id": "feature-service-db-auth-failing",
+   "status": "no_match",
+   "terminal": false,
+   "assessment": {
+    "hypothesis": {
+     "id": "sig-feature-service-db-auth-failing",
+     "statement": "feature-service is being refused by PostgreSQL with password authentication failures while its builds fail.",
+     "causal_path": [
+      "service:gridcast:feature-service",
+      "service:gridcast:postgres"
+     ],
+     "predictions": [
+      {
+       "entity_id": "service:gridcast:feature-service",
+       "key": "failed_builds_10m",
+       "operator": "gt",
+       "value": 0
+      },
+      {
+       "entity_id": "service:gridcast:feature-service",
+       "key": "db_auth_failure_log_lines",
+       "operator": "gt",
+       "value": 0
+      }
+     ],
+     "evidence_needed": [
+      "feature-failed-builds",
+      "feature-auth-failures"
+     ],
+     "falsifiers": [
+      {
+       "entity_id": "service:gridcast:feature-service",
+       "key": "failed_builds_10m",
+       "operator": "eq",
+       "value": 0
+      }
+     ]
+    },
+    "sources": [
+     "deterministic"
+    ],
+    "state": "contradicted",
+    "supporting_evidence_ids": [],
+    "contradicting_evidence_ids": [
+     "prometheus:feature-failed-builds"
+    ],
+    "missing_checks": [
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "db_auth_failure_log_lines",
+      "operator": "gt",
+      "value": 0
+     }
+    ]
+   }
+  },
+  {
+   "rule_id": "forecast-service-oom-killed",
+   "status": "no_match",
+   "terminal": false,
+   "assessment": {
+    "hypothesis": {
+     "id": "sig-forecast-service-oom-killed",
+     "statement": "forecast-service is being OOM-killed and restarting (the reason for the memory pressure is not established).",
+     "causal_path": [
+      "service:gridcast:forecast-service",
+      "service:gridcast:forecast-pipeline"
+     ],
+     "predictions": [
+      {
+       "entity_id": "service:gridcast:forecast-service",
+       "key": "oom_killed_15m",
+       "operator": "gt",
+       "value": 0
+      },
+      {
+       "entity_id": "service:gridcast:forecast-service",
+       "key": "memory_working_set_to_limit_15m",
+       "operator": "gt",
+       "value": 0.9
+      },
+      {
+       "entity_id": "service:gridcast:forecast-service",
+       "key": "restarts_15m",
+       "operator": "gt",
+       "value": 0
+      }
+     ],
+     "evidence_needed": [
+      "forecast-oom-killed",
+      "forecast-memory-ratio",
+      "forecast-restarts"
+     ],
+     "falsifiers": [
+      {
+       "entity_id": "service:gridcast:forecast-service",
+       "key": "oom_killed_15m",
+       "operator": "eq",
+       "value": 0
+      }
+     ]
+    },
+    "sources": [
+     "deterministic"
+    ],
+    "state": "contradicted",
+    "supporting_evidence_ids": [],
+    "contradicting_evidence_ids": [
+     "prometheus:forecast-memory-ratio",
+     "prometheus:forecast-oom-killed",
+     "prometheus:forecast-restarts"
+    ],
+    "missing_checks": []
+   }
+  },
+  {
+   "rule_id": "forecast-model-slowdown",
+   "status": "no_match",
+   "terminal": false,
+   "assessment": {
+    "hypothesis": {
+     "id": "sig-forecast-model-slowdown",
+     "statement": "Inference slowed after the serving model changed without a restart.",
+     "causal_path": [
+      "service:gridcast:forecast-service",
+      "service:gridcast:forecast-pipeline"
+     ],
+     "predictions": [
+      {
+       "entity_id": "service:gridcast:forecast-service",
+       "key": "inference_max_10m_seconds",
+       "operator": "gt",
+       "value": 2
+      },
+      {
+       "entity_id": "service:gridcast:forecast-service",
+       "key": "model_loads_20m",
+       "operator": "gt",
+       "value": 0
+      },
+      {
+       "entity_id": "service:gridcast:forecast-service",
+       "key": "production_alias_changes_20m",
+       "operator": "gt",
+       "value": 0
+      }
+     ],
+     "evidence_needed": [
+      "forecast-inference-max",
+      "forecast-model-reloads",
+      "forecast-restarts",
+      "model-production-alias-changes"
+     ],
+     "falsifiers": [
+      {
+       "entity_id": "service:gridcast:forecast-service",
+       "key": "inference_max_10m_seconds",
+       "operator": "lt",
+       "value": 1
+      },
+      {
+       "entity_id": "service:gridcast:forecast-service",
+       "key": "restarts_15m",
+       "operator": "gt",
+       "value": 0
+      }
+     ]
+    },
+    "sources": [
+     "deterministic"
+    ],
+    "state": "contradicted",
+    "supporting_evidence_ids": [
+     "prometheus:forecast-restarts"
+    ],
+    "contradicting_evidence_ids": [
+     "prometheus:forecast-inference-max",
+     "prometheus:forecast-model-reloads",
+     "sql:model-production-alias-changes"
+    ],
+    "missing_checks": []
+   }
+  },
+  {
+   "rule_id": "demand-feed-rejected",
+   "status": "no_match",
+   "terminal": false,
+   "assessment": {
+    "hypothesis": {
+     "id": "sig-demand-feed-rejected",
+     "statement": "The grid-telemetry feed is being rejected by ingestion while weather ingestion is healthy.",
+     "causal_path": [
+      "service:gridcast:grid-telemetry",
+      "service:gridcast:ingestion"
+     ],
+     "predictions": [
+      {
+       "entity_id": "service:gridcast:ingestion",
+       "key": "demand_batch_errors_10m",
+       "operator": "gt",
+       "value": 0
+      },
+      {
+       "entity_id": "service:gridcast:ingestion",
+       "key": "contract_violation_log_lines",
+       "operator": "gt",
+       "value": 0
+      },
+      {
+       "entity_id": "service:gridcast:ingestion",
+       "key": "weather_batch_errors_10m",
+       "operator": "eq",
+       "value": 0
+      }
+     ],
+     "evidence_needed": [
+      "ingestion-demand-errors",
+      "ingestion-weather-errors",
+      "ingestion-contract-violations"
+     ],
+     "falsifiers": [
+      {
+       "entity_id": "service:gridcast:ingestion",
+       "key": "demand_batch_errors_10m",
+       "operator": "eq",
+       "value": 0
+      }
+     ]
+    },
+    "sources": [
+     "deterministic"
+    ],
+    "state": "contradicted",
+    "supporting_evidence_ids": [],
+    "contradicting_evidence_ids": [
+     "prometheus:ingestion-demand-errors",
+     "prometheus:ingestion-weather-errors"
+    ],
+    "missing_checks": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "gt",
+      "value": 0
+     }
+    ]
+   }
+  },
+  {
+   "rule_id": "demand-values-out-of-range",
+   "status": "no_match",
+   "terminal": false,
+   "assessment": {
+    "hypothesis": {
+     "id": "sig-demand-values-out-of-range",
+     "statement": "Demand values arriving from grid-telemetry are implausible (e.g. unit change) while ingestion succeeds.",
+     "causal_path": [
+      "service:gridcast:grid-telemetry",
+      "service:gridcast:ingestion",
+      "service:gridcast:forecast-pipeline"
+     ],
+     "predictions": [
+      {
+       "entity_id": "service:gridcast:forecast-pipeline",
+       "key": "demand_range_failures_15m",
+       "operator": "gt",
+       "value": 0
+      },
+      {
+       "entity_id": "service:gridcast:ingestion",
+       "key": "demand_batch_errors_10m",
+       "operator": "eq",
+       "value": 0
+      }
+     ],
+     "evidence_needed": [
+      "demand-range-failures",
+      "ingestion-demand-errors"
+     ],
+     "falsifiers": [
+      {
+       "entity_id": "service:gridcast:forecast-pipeline",
+       "key": "demand_range_failures_15m",
+       "operator": "eq",
+       "value": 0
+      }
+     ]
+    },
+    "sources": [
+     "deterministic"
+    ],
+    "state": "contradicted",
+    "supporting_evidence_ids": [
+     "prometheus:ingestion-demand-errors"
+    ],
+    "contradicting_evidence_ids": [
+     "prometheus:demand-range-failures"
+    ],
+    "missing_checks": []
+   }
+  },
+  {
+   "rule_id": "weather-feed-failing",
+   "status": "match",
+   "terminal": false,
+   "assessment": {
+    "hypothesis": {
+     "id": "sig-weather-feed-failing",
+     "statement": "The primary weather vendor's observation feed is failing.",
+     "causal_path": [
+      "service:gridcast:weather-vendor-wx-primary",
+      "service:gridcast:ingestion"
+     ],
+     "predictions": [
+      {
+       "entity_id": "service:gridcast:ingestion",
+       "key": "weather_batch_errors_10m",
+       "operator": "gt",
+       "value": 0
+      },
+      {
+       "entity_id": "service:gridcast:ingestion",
+       "key": "weather_vendor_503_log_lines",
+       "operator": "gt",
+       "value": 0
+      }
+     ],
+     "evidence_needed": [
+      "ingestion-weather-errors",
+      "ingestion-weather-vendor-503"
+     ],
+     "falsifiers": [
+      {
+       "entity_id": "service:gridcast:ingestion",
+       "key": "weather_batch_errors_10m",
+       "operator": "eq",
+       "value": 0
+      }
+     ]
+    },
+    "sources": [
+     "deterministic"
+    ],
+    "state": "supported",
+    "supporting_evidence_ids": [
+     "loki:249b4573eca5e692ee086fcad3097bc2:0",
+     "prometheus:ingestion-weather-errors"
+    ],
+    "contradicting_evidence_ids": [],
+    "missing_checks": []
+   }
+  },
+  {
+   "rule_id": "weather-feed-repeating",
+   "status": "no_match",
+   "terminal": false,
+   "assessment": {
+    "hypothesis": {
+     "id": "sig-weather-feed-repeating",
+     "statement": "The primary weather vendor repeats identical values with fresh timestamps.",
+     "causal_path": [
+      "service:gridcast:weather-vendor-wx-primary",
+      "service:gridcast:ingestion",
+      "service:gridcast:forecast-pipeline"
+     ],
+     "predictions": [
+      {
+       "entity_id": "service:gridcast:forecast-pipeline",
+       "key": "weather_variability_warnings_30m",
+       "operator": "gt",
+       "value": 0
+      },
+      {
+       "entity_id": "service:gridcast:ingestion",
+       "key": "weather_batch_errors_10m",
+       "operator": "eq",
+       "value": 0
+      }
+     ],
+     "evidence_needed": [
+      "weather-variability-warnings",
+      "ingestion-weather-errors"
+     ],
+     "falsifiers": [
+      {
+       "entity_id": "service:gridcast:forecast-pipeline",
+       "key": "weather_variability_warnings_30m",
+       "operator": "eq",
+       "value": 0
+      }
+     ]
+    },
+    "sources": [
+     "deterministic"
+    ],
+    "state": "contradicted",
+    "supporting_evidence_ids": [],
+    "contradicting_evidence_ids": [
+     "prometheus:ingestion-weather-errors",
+     "prometheus:weather-variability-warnings"
+    ],
+    "missing_checks": []
+   }
+  }
+ ],
+ "assessments": [
+  {
+   "hypothesis": {
+    "id": "h1a-weather-primary-503",
+    "statement": "Primary weather vendor returns 503 to ingestion, causing weather_observations ingestion failures.",
+    "causal_path": [
+     "service:gridcast:weather-vendor-wx-primary",
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_batch_errors_10m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_observation_freshness_seconds",
+      "operator": "gt",
+      "value": 300
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_errors_10m",
+      "operator": "eq",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-weather-errors",
+     "ingestion-weather-vendor-503",
+     "ingestion-error-log",
+     "weather-observation-freshness",
+     "ingestion-demand-errors"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_batch_errors_10m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "agent"
+   ],
+   "state": "supported",
+   "supporting_evidence_ids": [
+    "loki:249b4573eca5e692ee086fcad3097bc2:0",
+    "prometheus:ingestion-demand-errors",
+    "prometheus:ingestion-weather-errors",
+    "prometheus:weather-observation-freshness"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": []
+  }
+ ],
+ "receipts": [
+  {
+   "id": "tool-1",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "forecast-pipeline Prefect flow runs started in the incident window that ended FAILED or CRASHED",
+   "output": "[{\"id\": \"prefect:b6ededf9126ebe8285f8c45397cd4cc4:0\", \"query_id\": \"prefect-failed-flow-runs\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"failed_flow_runs\", \"value\": 0, \"observed_at\": \"2026-10-04T19:33:33.902915Z\", \"source\": \"prefect\", \"retrieval_method\": \"POST /flow_runs/filter (read-only)\", \"quality\": \"observed\"}]",
+   "digest": "62f9be671682b1da2e1e68fd82820a5b00e5ace27df70f5c59eda360122bb023",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-2",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Replicas the planning-api Deployment asks for",
+   "output": "[{\"id\": \"prometheus:planning-desired-replicas\", \"query_id\": \"planning-desired-replicas\", \"entity_id\": \"service:gridcast:planning-api\", \"key\": \"desired_replicas\", \"value\": 1.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "4b9c45d07c2b6ef57389a7b506290018c7e4680eed8b3d1dd8783e11b7b0f0b8",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-3",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Replicas of planning-api that are available to serve",
+   "output": "[{\"id\": \"prometheus:planning-available-replicas\", \"query_id\": \"planning-available-replicas\", \"entity_id\": \"service:gridcast:planning-api\", \"key\": \"available_replicas\", \"value\": 1.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "6ef2c6a916ceb64b8e80903e8df3360065e8d3b316384d50537897d79e423fcc",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-4",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "grid-operator plan reads that could not connect in the last 5 minutes",
+   "output": "[{\"id\": \"prometheus:operator-plan-fetch-transport-errors\", \"query_id\": \"operator-plan-fetch-transport-errors\", \"entity_id\": \"service:gridcast:grid-operator\", \"key\": \"plan_fetch_transport_errors_5m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "b7bf9d42068a9c8be13c72a33be1d0c98863655a32ae64f29e0ce9c14d0039f4",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-5",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Mean SQL statements issued per feature build over 10 minutes",
+   "output": "[{\"id\": \"prometheus:feature-sql-per-build\", \"query_id\": \"feature-sql-per-build\", \"entity_id\": \"service:gridcast:feature-service\", \"key\": \"sql_statements_per_build\", \"value\": 4.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "14d9681ba32803b660afade6e01ef4e5111b089eda84e19408c0b1eb2374d656",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-6",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "95th percentile feature build duration over 10 minutes",
+   "output": "[{\"id\": \"prometheus:feature-build-p95\", \"query_id\": \"feature-build-p95\", \"entity_id\": \"service:gridcast:feature-service\", \"key\": \"build_p95_seconds\", \"value\": 0.098, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "7ef920a39678c0cdc680792c461a26473d481800f0b4f25588397abdbed78337",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-7",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Feature builds that failed in the last 10 minutes",
+   "output": "[{\"id\": \"prometheus:feature-failed-builds\", \"query_id\": \"feature-failed-builds\", \"entity_id\": \"service:gridcast:feature-service\", \"key\": \"failed_builds_10m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "648f5f6f9549235e8c28df1683798cd09b568b76d8861d893ea22b1ab984e05b",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-8",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "feature-service log lines reporting PostgreSQL password authentication failures in the incident window",
+   "output": "[]",
+   "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-9",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Whether any forecast-service container's last termination in the last 15 minutes was OOMKilled (1/0)",
+   "output": "[{\"id\": \"prometheus:forecast-oom-killed\", \"query_id\": \"forecast-oom-killed\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"oom_killed_15m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "306782a32d842400d20c3ffcede426dcbcd9aaeb8d6a98d5af556f890193f815",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-10",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Peak forecast-service memory working set in the last 15 minutes divided by its current memory limit",
+   "output": "[{\"id\": \"prometheus:forecast-memory-ratio\", \"query_id\": \"forecast-memory-ratio\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"memory_working_set_to_limit_15m\", \"value\": 0.201, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "0b49db9f07cc3f582b6c89989a718576ad16521654c325cc7a5a3664b4321d20",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-11",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "forecast-service container restarts in the last 15 minutes",
+   "output": "[{\"id\": \"prometheus:forecast-restarts\", \"query_id\": \"forecast-restarts\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"restarts_15m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "176dd3e39811b38b81cc44c6b4ef073121e1cbc959421bcb6b80a787ee6e6854",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-12",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Slowest single model inference in the last 10 minutes",
+   "output": "[{\"id\": \"prometheus:forecast-inference-max\", \"query_id\": \"forecast-inference-max\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"inference_max_10m_seconds\", \"value\": 0.241, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "4f25c3dfa6b0d97188c3682603dc6c64ee663d120433a319409ceb0f6b0e913e",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-13",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Model versions forecast-service loaded in the last 20 minutes (including at start-up)",
+   "output": "[{\"id\": \"prometheus:forecast-model-reloads\", \"query_id\": \"forecast-model-reloads\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"model_loads_20m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "44916d2ef0f0227c6f9bbebeb9fc82a24cebe45cfd7b8ddb32c01a51c1e6ad86",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-14",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Model-registry moves of the production alias in the 20 minutes before incident end",
+   "output": "[{\"id\": \"sql:model-production-alias-changes\", \"query_id\": \"model-production-alias-changes\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"production_alias_changes_20m\", \"value\": 0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"sql\", \"retrieval_method\": \"SQL read-only transaction\", \"quality\": \"observed\"}]",
+   "digest": "b2cfa40d2fcf300d171b594112e7aadff8bc40b4efa15559a1d4513b020df6d2",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-15",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Failed demand ingestion batches in the last 10 minutes",
+   "output": "[{\"id\": \"prometheus:ingestion-demand-errors\", \"query_id\": \"ingestion-demand-errors\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"demand_batch_errors_10m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "c172c80eb41c753ed46ee61186a5c456bf82e997c6703363148d396345c8dbef",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-16",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Failed weather-observation ingestion batches in the last 10 minutes",
+   "output": "[{\"id\": \"prometheus:ingestion-weather-errors\", \"query_id\": \"ingestion-weather-errors\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"weather_batch_errors_10m\", \"value\": 5.13, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "f159b10bcd3278b6b1eea14470dc031d01aa8941b0b864837b2cb39971793c67",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-17",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "ingestion log lines reporting a vendor payload contract violation in the incident window",
+   "output": "[]",
+   "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-18",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Demand range-check failures recorded by the validation gate in 15 minutes",
+   "output": "[{\"id\": \"prometheus:demand-range-failures\", \"query_id\": \"demand-range-failures\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"demand_range_failures_15m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "a93690f91e626b77452e5912874bffb717d27b2c8ad8e3e6cac87fd6b4a1a342",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-19",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "ingestion log lines reporting HTTP 503 from the primary weather vendor in the incident window",
+   "output": "[{\"id\": \"loki:249b4573eca5e692ee086fcad3097bc2:0\", \"query_id\": \"ingestion-weather-vendor-503\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"weather_vendor_503_log_lines\", \"value\": 6, \"observed_at\": \"2026-10-04T19:36:11.638687Z\", \"source\": \"loki\", \"retrieval_method\": \"GET /loki/api/v1/query_range\", \"quality\": \"observed\"}]",
+   "digest": "c1291264ab918e195d9756eb1575497428f24262e98317c76bf8276dcb829d00",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-20",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Weather-variability warnings (repeating vendor values) in 30 minutes",
+   "output": "[{\"id\": \"prometheus:weather-variability-warnings\", \"query_id\": \"weather-variability-warnings\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"weather_variability_warnings_30m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "8d6026a7fb75cc346a3f50042e45a73ed308e180c8e58a20474ebc69a57d2038",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-21",
+   "operation": "catalog",
+   "status": "ok",
+   "purpose": "Available bounded tools",
+   "output": "{\"operations\": [\"catalog\", \"graph\", \"evidence\", \"hypothesis.register\", \"code.read\", \"code.search\", \"git.log\", \"git.diff\", \"changes\"], \"queries\": [{\"id\": \"planning-desired-replicas\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:planning-api\", \"key\": \"desired_replicas\", \"description\": \"Replicas the planning-api Deployment asks for\", \"parameters\": {}}, {\"id\": \"planning-available-replicas\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:planning-api\", \"key\": \"available_replicas\", \"description\": \"Replicas of planning-api that are available to serve\", \"parameters\": {}}, {\"id\": \"operator-plan-fetch-transport-errors\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:grid-operator\", \"key\": \"plan_fetch_transport_errors_5m\", \"description\": \"grid-operator plan reads that could not connect in the last 5 minutes\", \"parameters\": {}}, {\"id\": \"pipeline-failed-runs\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"failed_runs_15m\", \"description\": \"Forecast pipeline runs that failed in the last 15 minutes\", \"parameters\": {}}, {\"id\": \"feature-sql-per-build\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:feature-service\", \"key\": \"sql_statements_per_build\", \"description\": \"Mean SQL statements issued per feature build over 10 minutes\", \"parameters\": {}}, {\"id\": \"feature-build-p95\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:feature-service\", \"key\": \"build_p95_seconds\", \"description\": \"95th percentile feature build duration over 10 minutes\", \"parameters\": {}}, {\"id\": \"feature-failed-builds\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:feature-service\", \"key\": \"failed_builds_10m\", \"description\": \"Feature builds that failed in the last 10 minutes\", \"parameters\": {}}, {\"id\": \"postgres-rows-scanned\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:postgres\", \"key\": \"rows_scanned_per_s\", \"description\": \"Rows scanned per second in the gridcast database (5 minute rate)\", \"parameters\": {}}, {\"id\": \"forecast-oom-killed\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"oom_killed_15m\", \"description\": \"Whether any forecast-service container's last termination in the last 15 minutes was OOMKilled (1/0)\", \"parameters\": {}}, {\"id\": \"forecast-memory-ratio\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"memory_working_set_to_limit_15m\", \"description\": \"Peak forecast-service memory working set in the last 15 minutes divided by its current memory limit\", \"parameters\": {}}, {\"id\": \"forecast-restarts\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"restarts_15m\", \"description\": \"forecast-service container restarts in the last 15 minutes\", \"parameters\": {}}, {\"id\": \"forecast-inference-p95\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"inference_p95_seconds\", \"description\": \"95th percentile model inference time over 10 minutes\", \"parameters\": {}}, {\"id\": \"forecast-model-reloads\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"model_loads_20m\", \"description\": \"Model versions forecast-service loaded in the last 20 minutes (including at start-up)\", \"parameters\": {}}, {\"id\": \"forecast-inference-max\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"inference_max_10m_seconds\", \"description\": \"Slowest single model inference in the last 10 minutes\", \"parameters\": {}}, {\"id\": \"ingestion-demand-errors\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"demand_batch_errors_10m\", \"description\": \"Failed demand ingestion batches in the last 10 minutes\", \"parameters\": {}}, {\"id\": \"ingestion-weather-errors\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"weather_batch_errors_10m\", \"description\": \"Failed weather-observation ingestion batches in the last 10 minutes\", \"parameters\": {}}, {\"id\": \"demand-range-failures\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"demand_range_failures_15m\", \"description\": \"Demand range-check failures recorded by the validation gate in 15 minutes\", \"parameters\": {}}, {\"id\": \"weather-variability-warnings\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"weather_variability_warnings_30m\", \"description\": \"Weather-variability warnings (repeating vendor values) in 30 minutes\", \"parameters\": {}}, {\"id\": \"feature-auth-failures\", \"provider\": \"loki\", \"entity_id\": \"service:gridcast:feature-service\", \"key\": \"db_auth_failure_log_lines\", \"description\": \"feature-service log lines reporting PostgreSQL password authentication failures in the incident window\", \"parameters\": {}}, {\"id\": \"ingestion-contract-violations\", \"provider\": \"loki\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"contract_violation_log_lines\", \"description\": \"ingestion log lines reporting a vendor payload contract violation in the incident window\", \"parameters\": {}}, {\"id\": \"ingestion-weather-vendor-503\", \"provider\": \"loki\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"weather_vendor_503_log_lines\", \"description\": \"ingestion log lines reporting HTTP 503 from the primary weather vendor in the incident window\", \"parameters\": {}}, {\"id\": \"feature-service-error-log\", \"provider\": \"loki\", \"entity_id\": \"service:gridcast:feature-service\", \"key\": \"error_log\", \"description\": \"feature-service error log records (messages) in the incident window\", \"parameters\": {}}, {\"id\": \"ingestion-error-log\", \"provider\": \"loki\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"error_log\", \"description\": \"ingestion batch failure log records (messages) in the incident window\", \"parameters\": {}}, {\"id\": \"slow-pipeline-traces\", \"provider\": \"tempo\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"slow_trace_duration_ms\", \"description\": \"Durations of forecast-pipeline traces slower than 3 s in the window (sampled matches, not a percentile)\", \"parameters\": {}}, {\"id\": \"prefect-failed-flow-runs\", \"provider\": \"prefect\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"failed_flow_runs\", \"description\": \"forecast-pipeline Prefect flow runs started in the incident window that ended FAILED or CRASHED\", \"parameters\": {}}, {\"id\": \"prefect-flow-runs\", \"provider\": \"prefect\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"flow_run\", \"description\": \"forecast-pipeline Prefect flow runs (state, duration) started in the incident window\", \"parameters\": {}}, {\"id\": \"ingestion-demand-batch-p95\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"demand_batch_p95_seconds_10m\", \"description\": \"95th percentile duration of ingestion's demand batches (one vendor call each) over 10 minutes\", \"parameters\": {}}, {\"id\": \"demand-freshness\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"demand_freshness_seconds\", \"description\": \"Age of the newest ingested demand reading\", \"parameters\": {}}, {\"id\": \"weather-observation-freshness\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"weather_observation_freshness_seconds\", \"description\": \"Age of the newest ingested weather observation\", \"parameters\": {}}, {\"id\": \"demand-completeness-failures\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"completeness_demand_failures_20m\", \"description\": \"Pipeline validation-gate completeness.demand checks that warned or failed in the last 20 minutes\", \"parameters\": {}}, {\"id\": \"forecast-stability-warnings\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"stability_warnings_20m\", \"description\": \"Validation-gate checks that the new forecast deviates from the published plan (warn or fail) in the last 20 minutes\", \"parameters\": {}}, {\"id\": \"demand-zones-reporting\", \"provider\": \"sql\", \"entity_id\": \"service:gridcast:grid-telemetry\", \"key\": \"zones_reporting_demand_20m\", \"description\": \"Load zones with at least one demand reading in the 20 minutes before incident end (the catalogue has 4)\", \"parameters\": {}}, {\"id\": \"load-feature-mean\", \"provider\": \"sql\", \"entity_id\": \"service:gridcast:feature-service\", \"key\": \"load_lag_24h_feature_mean_20m\", \"description\": \"Mean of the load_lag_24h model feature in feature runs built in the 20 minutes before incident end (feature monitoring; demand is in MW)\", \"parameters\": {}}, {\"id\": \"feature-cpu-throttling\", \"provider\": \"prometheus\", \"entity_id\": \"service:gridcast:feature-service\", \"key\": \"cpu_throttled_ratio_5m\", \"description\": \"Share of feature-service CPU scheduling periods that were throttled over 5 minutes\", \"parameters\": {}}, {\"id\": \"model-production-alias-changes\", \"provider\": \"sql\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"production_alias_changes_20m\", \"description\": \"Model-registry moves of the production alias in the 20 minutes before incident end\", \"parameters\": {}}, {\"id\": \"feature-service-changes-20m\", \"provider\": \"changes\", \"entity_id\": \"service:gridcast:feature-service\", \"key\": \"changes_20m\", \"description\": \"GitOps commits and rollouts touching feature-service in the 20 minutes before incident end\", \"parameters\": {}}, {\"id\": \"forecast-service-changes-20m\", \"provider\": \"changes\", \"entity_id\": \"service:gridcast:forecast-service\", \"key\": \"changes_20m\", \"description\": \"GitOps commits and rollouts touching forecast-service in the 20 minutes before incident end\", \"parameters\": {}}, {\"id\": \"planning-api-changes-20m\", \"provider\": \"changes\", \"entity_id\": \"service:gridcast:planning-api\", \"key\": \"changes_20m\", \"description\": \"GitOps commits and rollouts touching planning-api in the 20 minutes before incident end\", \"parameters\": {}}, {\"id\": \"ingestion-changes-20m\", \"provider\": \"changes\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"changes_20m\", \"description\": \"GitOps commits and rollouts touching ingestion in the 20 minutes before incident end\", \"parameters\": {}}, {\"id\": \"forecast-pipeline-changes-20m\", \"provider\": \"changes\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"changes_20m\", \"description\": \"GitOps commits and rollouts touching forecast-pipeline in the 20 minutes before incident end\", \"parameters\": {}}], \"repositories\": [{\"id\": \"gitops\", \"files\": [\"kustomization.yaml\", \"estate/planning-api.yaml\", \"estate/feature-service.yaml\", \"estate/forecast-service.yaml\", \"estate/ingestion.yaml\", \"estate/config.yaml\", \"estate/forecast-pipeline.yaml\", \"estate/grid-operator.yaml\"]}, {\"id\": \"gridcast-source\", \"files\": [\"src/gridcast/features/store.py\", \"src/gridcast/services/feature_service.py\", \"src/gridcast/services/forecast_service.py\", \"src/gridcast/services/planning_api.py\", \"src/gridcast/services/ingestion.py\", \"src/gridcast/quality/checks.py\", \"deploy/releases.yaml\"]}], \"probe_enabled\": false}",
+   "digest": "9dec218d52fcf53b7fff8a1c2e073e42ccf73bcdb6553ddbe47412dee798a041",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-22",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "ingestion batch failure log records (messages) in the incident window",
+   "output": "[{\"id\": \"loki:d81744a862f953d53bad613f9e018686:0\", \"query_id\": \"ingestion-error-log\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"error_log\", \"value\": \"{\\\"timestamp\\\": \\\"2026-10-04T19:35:10.156138+00:00\\\", \\\"message\\\": \\\"ingestion batch failed\\\", \\\"error\\\": \\\"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/forecast\\\", \\\"dataset\\\": \\\"weather_forecasts\\\"}\", \"observed_at\": \"2026-10-04T19:35:10.156138Z\", \"source\": \"loki\", \"retrieval_method\": \"GET /loki/api/v1/query_range\", \"quality\": \"observed\"}, {\"id\": \"loki:d81744a862f953d53bad613f9e018686:1\", \"query_id\": \"ingestion-error-log\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"error_log\", \"value\": \"{\\\"timestamp\\\": \\\"2026-10-04T19:32:11.356018+00:00\\\", \\\"message\\\": \\\"ingestion batch failed\\\", \\\"error\\\": \\\"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/observations\\\", \\\"dataset\\\": \\\"weather_observations\\\"}\", \"observed_at\": \"2026-10-04T19:32:11.356018Z\", \"source\": \"loki\", \"retrieval_method\": \"GET /loki/api/v1/query_range\", \"quality\": \"observed\"}, {\"id\": \"loki:d81744a862f953d53bad613f9e018686:2\", \"query_id\": \"ingestion-error-log\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"error_log\", \"value\": \"{\\\"timestamp\\\": \\\"2026-10-04T19:33:11.430717+00:00\\\", \\\"message\\\": \\\"ingestion batch failed\\\", \\\"error\\\": \\\"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/observations\\\", \\\"dataset\\\": \\\"weather_observations\\\"}\", \"observed_at\": \"2026-10-04T19:33:11.430717Z\", \"source\": \"loki\", \"retrieval_method\": \"GET /loki/api/v1/query_range\", \"quality\": \"observed\"}, {\"id\": \"loki:d81744a862f953d53bad613f9e018686:3\", \"query_id\": \"ingestion-error-log\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"error_log\", \"value\": \"{\\\"timestamp\\\": \\\"2026-10-04T19:34:11.499790+00:00\\\", \\\"message\\\": \\\"ingestion batch failed\\\", \\\"error\\\": \\\"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/observations\\\", \\\"dataset\\\": \\\"weather_observations\\\"}\", \"observed_at\": \"2026-10-04T19:34:11.499790Z\", \"source\": \"loki\", \"retrieval_method\": \"GET /loki/api/v1/query_range\", \"quality\": \"observed\"}, {\"id\": \"loki:d81744a862f953d53bad613f9e018686:4\", \"query_id\": \"ingestion-error-log\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"error_log\", \"value\": \"{\\\"timestamp\\\": \\\"2026-10-04T19:35:11.550463+00:00\\\", \\\"message\\\": \\\"ingestion batch failed\\\", \\\"error\\\": \\\"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/observations\\\", \\\"dataset\\\": \\\"weather_observations\\\"}\", \"observed_at\": \"2026-10-04T19:35:11.550463Z\", \"source\": \"loki\", \"retrieval_method\": \"GET /loki/api/v1/query_range\", \"quality\": \"observed\"}, {\"id\": \"loki:d81744a862f953d53bad613f9e018686:5\", \"query_id\": \"ingestion-error-log\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"error_log\", \"value\": \"{\\\"timestamp\\\": \\\"2026-10-04T19:36:11.638687+00:00\\\", \\\"message\\\": \\\"ingestion batch failed\\\", \\\"error\\\": \\\"HTTP 503 from weather-primary.vendors.svc.cluster.local/v1/observations\\\", \\\"dataset\\\": \\\"weather_observations\\\"}\", \"observed_at\": \"2026-10-04T19:36:11.638687Z\", \"source\": \"loki\", \"retrieval_method\": \"GET /loki/api/v1/query_range\", \"quality\": \"observed\"}]",
+   "digest": "f1eb5cad0114f7fc53aae35a90500bbae08f6e22c748e9b10338799d4d4dfd51",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-23",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "ingestion log lines reporting a vendor payload contract violation in the incident window",
+   "output": "[]",
+   "digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-24",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "ingestion log lines reporting HTTP 503 from the primary weather vendor in the incident window",
+   "output": "[{\"id\": \"loki:249b4573eca5e692ee086fcad3097bc2:0\", \"query_id\": \"ingestion-weather-vendor-503\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"weather_vendor_503_log_lines\", \"value\": 6, \"observed_at\": \"2026-10-04T19:36:11.638687Z\", \"source\": \"loki\", \"retrieval_method\": \"GET /loki/api/v1/query_range\", \"quality\": \"observed\"}]",
+   "digest": "c1291264ab918e195d9756eb1575497428f24262e98317c76bf8276dcb829d00",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-25",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "GitOps commits and rollouts touching ingestion in the 20 minutes before incident end",
+   "output": "[{\"id\": \"changes:ingestion-changes-20m\", \"query_id\": \"ingestion-changes-20m\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"changes_20m\", \"value\": 0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"changes\", \"retrieval_method\": \"git log on mapped paths / Kubernetes ReplicaSet history\", \"quality\": \"observed\"}]",
+   "digest": "5b88c0ef0ed3181581f93fc9a98e4e83dad564f77116b4744e39f2b8a1b64f88",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-26",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Age of the newest ingested weather observation",
+   "output": "[{\"id\": \"prometheus:weather-observation-freshness\", \"query_id\": \"weather-observation-freshness\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"weather_observation_freshness_seconds\", \"value\": 370.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "ec9721248001f439fda77643c61f1ef613963f783bd4eb7e15493de207bc6409",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-27",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Age of the newest ingested demand reading",
+   "output": "[{\"id\": \"prometheus:demand-freshness\", \"query_id\": \"demand-freshness\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"demand_freshness_seconds\", \"value\": 130.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "765fcbcb629dca07d8bb4806274cd21ba433f77b9b81a1922de2bd46a9c78dc7",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-28",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "95th percentile duration of ingestion's demand batches (one vendor call each) over 10 minutes",
+   "output": "[{\"id\": \"prometheus:ingestion-demand-batch-p95\", \"query_id\": \"ingestion-demand-batch-p95\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"demand_batch_p95_seconds_10m\", \"value\": 0.213, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "ec90a2cbbbd81495729e1937bdd240c6309d2b2d613c1ae4f77e89cb9a245cbf",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-29",
+   "operation": "git.log",
+   "status": "ok",
+   "purpose": "Allowlisted repository inspection",
+   "output": "",
+   "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": "5737240dec7c693d17bb6ee76138b5e4810d66d88e714b45273b8597e53566d3"
+  },
+  {
+   "id": "tool-30",
+   "operation": "git.log",
+   "status": "ok",
+   "purpose": "Allowlisted repository inspection",
+   "output": "",
+   "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": "6e904a15dc58266961f25afe55581a138f34824dc86d0a16a46fbdf700e96e02"
+  },
+  {
+   "id": "tool-31",
+   "operation": "code.read",
+   "status": "ok",
+   "purpose": "Allowlisted repository inspection",
+   "output": "\"\"\"Ingestion service: pulls vendor data into `raw.*`.\n\nThree independent loops (weather observations, weather forecasts, demand) each fetch everything\nnewer than what is already stored, validate the vendor payload against the contract GridCast\nexpects, upsert it and record an `raw.ingestion_batches` audit row. A failed cycle is logged,\ncounted and retried on the next tick; one dataset failing never blocks the others.\n\nWhich weather vendor is used is configuration (`INGEST_WEATHER_PROVIDER`), so switching to\nthe fallback vendor is a normal, reviewable config change.\n\"\"\"\n\nimport asyncio\nimport logging\nimport time\nfrom contextlib import asynccontextmanager\nfrom dataclasses import dataclass, field\nfrom datetime import UTC, datetime, timedelta\n\nimport httpx\nfrom fastapi import FastAPI\nfrom opentelemetry import metrics, trace\nfrom pydantic import BaseModel, ValidationError\nfrom pydantic_settings import BaseSettings, SettingsConfigDict\nfrom sqlalchemy import Engine, func, insert, select, text\nfrom sqlalchemy.dialects.postgresql import insert as pg_insert\n\nfrom gridcast.catalog import catalog\nfrom gridcast.db.engine import make_engine\nfrom gridcast.db.schema import (\n    demand_readings,\n    ingestion_batches,\n    weather_forecasts,\n    weather_observations,\n)\nfrom gridcast.services.common import create_app, serve\nfrom gridcast.telemetry import SECONDS_BUCKETS, initialize_counters\nfrom gridcast.weather.model import VARIABLES\n\nlog = logging.getLogger(__name__)\ntracer = trace.get_tracer(\"gridcast.ingestion\")\nmeter = metrics.get_meter(\"gridcast.ingestion\")\nBATCHES = meter.create_counter(\"gridcast.ingest.batches\", description=\"Ingestion batches\")\nROWS = meter.create_counter(\"gridcast.ingest.rows\", description=\"Rows upserted\")\nBATCH_SECONDS = meter.create_histogram(\n    \"gridcast.ingest.batch.duration\", unit=\"s\", explicit_bucket_boundaries_advisory=SECONDS_BUCKETS)\n\n\nclass Settings(BaseSettings):\n    model_config = SettingsConfigDict(env_prefix=\"INGEST_\", env_file=\".env\", extra=\"ignore\")\n\n    weather_provider: str = \"wx-primary\"\n    weather_primary_url: str = \"http://localhost:8084\"\n    weather_secondary_url: str = \"http://localhost:8085\"\n    grid_telemetry_url: str = \"http://localhost:8086\"\n    observations_interval_seconds: int = 60\n    forecasts_interval_seconds: int = 900\n    demand_interval_seconds: int = 60\n    http_timeout_seconds: float = 15.0\n    initial_lookback_hours: int = 6\n\n    def weather_url(self) -> str:\n        return {\n            \"wx-primary\": self.weather_primary_url,\n            \"wx-secondary\": self.weather_secondary_url,\n        }[self.weather_provider]\n\n\n# Vendor payload contracts --------------------------------------------------------------------\nclass ObservationIn(BaseModel):\n    station_id: str\n    observed_at: datetime\n    temperature_c: float\n    relative_humidity_pct: float\n    cloud_cover_pct: float\n    wind_speed_ms: float\n    shortwave_radiation_wm2: float\n    precipitation_mm: float\n\n\nclass ForecastHourIn(BaseModel):\n    valid_at: datetime\n    temperature_c: float\n    relative_humidity_pct: float\n    cloud_cover_pct: float\n    wind_speed_ms: float\n    shortwave_radiation_wm2: float\n    precipitation_mm: float\n\n\nclass ForecastIn(BaseModel):\n    station_id: str\n    provider: str\n    issued_at: datetime\n    hours: list[ForecastHourIn]\n\n\nclass DemandIn(BaseModel):\n    zone_id: str\n    ts: datetime\n    load_mw: float\n    quality: str = \"good\"\n\n\n@dataclass\nclass DatasetStatus:\n    last_success: datetime | None = None\n    last_error: str | None = None\n    last_rows: int = 0\n    freshness_seconds: float | None = None\n    consecutive_failures: int = 0\n\n\n@dataclass\nclass Ingestor:\n    settings: Settings\n    engine: Engine\n    client: httpx.Client\n    status: dict[str, DatasetStatus] = field(default_factory=dict)\n\n    # -- helpers ---------------------------------------------------------------------------\n    def _record(self, dataset: str, source: str, started: datetime, rows: int, error: str | None):\n        with self.engine.begin() as conn:\n            conn.execute(insert(ingestion_batches).values(\n                dataset=dataset, source=source, started_at=started,\n                finished_at=datetime.now(UTC), rows=rows,\n                status=\"error\" if error else \"ok\", error=error,\n            ))\n\n    def _latest(self, column, *filters) -> datetime | None:\n        with self.engine.connect() as conn:\n            return conn.execute(select(func.max(column)).where(*filters)).scalar()\n\n    def _run(self, dataset: str, source: str, fn) -> int:\n        started = datetime.now(UTC)\n        t0 = time.perf_counter()\n        status = self.status.setdefault(dataset, DatasetStatus())\n        with tracer.start_as_current_span(f\"ingest {dataset}\", attributes={\n            \"gridcast.dataset\": dataset, \"gridcast.source\": source,\n        }) as span:\n            try:\n                rows = fn()\n            except Exception as exc:  # recorded and retried next cycle\n                error = _summarize(exc)\n                span.record_exception(exc)\n                span.set_status(trace.Status(trace.StatusCode.ERROR, error))\n                status.last_error = error\n                status.consecutive_failures += 1\n                BATCHES.add(1, {\"dataset\": dataset, \"source\": source, \"status\": \"error\"})\n                log.error(\"ingestion batch failed\", extra={\n                    \"dataset\": dataset, \"source\": source, \"error\": error,\n                    \"consecutive_failures\": status.consecutive_failures,\n                })\n                try:\n                    self._record(dataset, source, started, 0, error)\n                except Exception:\n                    log.exception(\"could not record failed batch\", extra={\"dataset\": dataset})\n                return 0\n            finally:\n                BATCH_SECONDS.record(time.perf_counter() - t0, {\"dataset\": dataset})\n            span.set_attribute(\"gridcast.rows\", rows)\n        self._record(dataset, source, started, rows, None)\n        status.last_success, status.last_error, status.last_rows = datetime.now(UTC), None, rows\n        status.consecutive_failures = 0\n        BATCHES.add(1, {\"dataset\": dataset, \"source\": source, \"status\": \"ok\"})\n        ROWS.add(rows, {\"dataset\": dataset, \"source\": source})\n        log.info(\"ingestion batch ok\", extra={\"dataset\": dataset, \"source\": source, \"rows\": rows})\n        return rows\n\n    def _start_for(self, latest: datetime | None, cap: timedelta) -> datetime:\n        now = datetime.now(UTC)\n        floor = now - cap\n        if latest is None:\n            return now - timedelta(hours=self.settings.initial_lookback_hours)\n        return max(latest + timedelta(seconds=1), floor)\n\n    # -- datasets --------------------------------------------------------------------------\n    def ingest_observations(self, lookback: timedelta = timedelta(days=2)) -> int:\n        provider = self.settings.weather_provider\n\n        def work() -> int:\n            total = 0\n            for station in catalog().stations:\n                latest = self._latest(weather_observations.c.observed_at,\n                                      weather_observations.c.station_id == station.id)\n                start = self._start_for(latest, lookback)\n                response = self.client.get(f\"{self.settings.weather_url()}/v1/observations\",\n                                           params={\"station_id\": station.id,\n                                                   \"start\": start.isoformat()})\n                response.raise_for_status()\n                items = [ObservationIn.model_validate(o) for o in response.json()]\n                if not items:\n                    continue\n                rows = [{**o.model_dump(), \"provider_id\": provider} for o in items]\n                stmt = pg_insert(weather_observations).values(rows)\n                stmt = stmt.on_conflict_do_update(\n                    index_elements=[\"station_id\", \"observed_at\"],\n                    set_={c: stmt.excluded[c] for c in (*VARIABLES, \"provider_id\")}\n                    | {\"ingested_at\": func.now()},\n                )\n                with self.engine.begin() as conn:\n                    conn.execute(stmt)\n                total += len(rows)\n            return total\n\n        return self._run(\"weather_observations\", provider, work)\n\n    def ingest_forecasts(self) -> int:\n        provider = self.settings.weather_provider\n\n        def work() -> int:\n            total = 0\n            for station in catalog().stations:\n                response = self.client.get(f\"{self.settings.weather_url()}/v1/forecast\",\n                                           params={\"station_id\": station.id, \"hours\": 48})\n                response.raise_for_status()\n                fc = ForecastIn.model_validate(response.json())\n                rows = [{\"station_id\": fc.station_id, \"issued_at\": fc.issued_at,\n                         \"provider_id\": provider, **h.model_dump()} for h in fc.hours]\n                stmt = pg_insert(weather_forecasts).values(rows)\n                stmt = stmt.on_conflict_do_update(\n                    index_elements=[\"station_id\", \"issued_at\", \"valid_at\"],\n                    set_={c: stmt.excluded[c] for c in (*VARIABLES, \"provider_id\")}\n                    | {\"ingested_at\": func.now()},\n                )\n                with self.engine.begin() as conn:\n                    conn.execute(stmt)\n                total += len(rows)\n            return total\n\n        return self._run(\"weather_forecasts\", provider, work)\n\n    def ingest_demand(self, lookback: timedelta = timedelta(days=2)) -> int:\n        def work() -> int:\n            total = 0\n            for zone in catalog().zones:\n                latest = self._latest(demand_readings.c.ts, demand_readings.c.zone_id == zone.id)\n                start = self._start_for(latest, lookback)\n                response = self.client.get(f\"{self.settings.grid_telemetry_url}/v1/load\",\n                                           params={\"zone_id\": zone.id, \"start\": start.isoformat()})\n                response.raise_for_status()\n                payload = response.json()\n                try:\n                    items = [DemandIn.model_validate(r) for r in payload[\"readings\"]]\n                except ValidationError as exc:\n                    raise ContractViolation(\n                        f\"grid-telemetry payload no longer matches contract \"\n                        f\"(api_version={payload.get('api_version')}): \"\n                        f\"{exc.errors()[0]['loc']} {exc.errors()[0]['msg']}\"\n                    ) from exc\n                if not items:\n                    continue\n                rows = [i.model_dump() for i in items]\n                for chunk in range(0, len(rows), 2000):\n                    stmt = pg_insert(demand_readings).values(rows[chunk:chunk + 2000])\n                    stmt = stmt.on_conflict_do_update(\n                        index_elements=[\"zone_id\", \"ts\"],\n                        set_={\"load_mw\": stmt.excluded.load_mw, \"quality\": stmt.excluded.quality,\n                              \"ingested_at\": func.now()},\n                    )\n                    with self.engine.begin() as conn:\n                        conn.execute(stmt)\n                total += len(rows)\n            return total\n\n        return self._run(\"demand\", \"grid-telemetry\", work)\n\n    def backfill(self, days: int) -> dict[str, int]:\n        \"\"\"Historical load for a fresh estate: walk the vendor APIs in windows.\"\"\"\n        now = datetime.now(UTC)\n        start = now - timedelta(days=days)\n        counts = {\"weather_observations\": 0, \"demand\": 0}\n        cursor = start\n        while cursor < now:\n            end = min(cursor + timedelta(days=1), now)\n            for zone in catalog().zones:\n                r = self.client.get(f\"{self.settings.grid_telemetry_url}/v1/load\", params={\n                    \"zone_id\": zone.id, \"start\": cursor.isoformat(), \"end\": end.isoformat()})\n                r.raise_for_status()\n                rows = [DemandIn.model_validate(x).model_dump() for x in r.json()[\"readings\"]]\n                for chunk in range(0, len(rows), 2000):\n                    stmt = pg_insert(demand_readings).values(rows[chunk:chunk + 2000])\n                    with self.engine.begin() as conn:\n                        conn.execute(stmt.on_conflict_do_nothing())\n                counts[\"demand\"] += len(rows)\n            for station in catalog().stations:\n                r = self.client.get(f\"{self.settings.weather_url()}/v1/observations\", params={\n                    \"station_id\": station.id, \"start\": cursor.isoformat(), \"end\": end.isoformat()})\n                r.raise_for_status()\n                rows = [{**ObservationIn.model_validate(o).model_dump(),\n                         \"provider_id\": self.settings.weather_provider} for o in r.json()]\n                if rows:\n                    with self.engine.begin() as conn:\n                        conn.execute(pg_insert(weather_observations).values(rows)\n                                     .on_conflict_do_nothing())\n                counts[\"weather_observations\"] += len(rows)\n            log.info(\"backfill window done\", extra={\"window_end\": end.isoformat(), **counts})\n            cursor = end\n        self.ingest_forecasts()\n        return counts\n\n    def refresh_freshness(self) -> None:\n        queries = {\n            \"weather_observations\": \"SELECT extract(epoch FROM now() - max(observed_at)) \"\n                                    \"FROM raw.weather_observations\",\n            \"weather_forecasts\": \"SELECT extract(epoch FROM now() - max(issued_at)) \"\n                                 \"FROM raw.weather_forecasts\",\n            \"demand\": \"SELECT extract(epoch FROM now() - max(ts)) FROM raw.demand_readings\",\n        }\n        with self.engine.connect() as conn:\n            for dataset, sql in queries.items():\n                value = conn.execute(text(sql)).scalar()\n                self.status.setdefault(dataset, DatasetStatus()).freshness_seconds = (\n                    float(value) if value is not None else None\n                )\n\n\nclass ContractViolation(Exception):\n    \"\"\"The vendor payload no longer matches the agreed interface.\"\"\"\n\n\ndef _summarize(exc: Exception) -> str:\n    if isinstance(exc, httpx.HTTPStatusError):\n        return f\"HTTP {exc.response.status_code} from {exc.request.url.host}{exc.request.url.path}\"\n    if isinstance(exc, httpx.TransportError):\n        return f\"{type(exc).__name__} contacting vendor: {exc}\"[:300]\n    return f\"{type(exc).__name__}: {exc}\"[:300]\n\n\ndef build_ingestor(settings: Settings) -> Ingestor:\n    engine = make_engine(application_name=\"ingestion\")\n    client = httpx.Client(timeout=settings.http_timeout_seconds)\n    return Ingestor(settings=settings, engine=engine, client=client)\n\n\ndef create(settings: Settings | None = None) -> FastAPI:\n    settings = settings or Settings()\n    holder: dict[str, Ingestor] = {}\n\n    async def loop(name: str, interval: int, fn) -> None:\n        while True:\n            await asyncio.to_thread(fn)\n            await asyncio.sleep(interval)\n\n    @asynccontextmanager\n    async def lifespan(app: FastAPI):\n        ingestor = build_ingestor(settings)\n        holder[\"ingestor\"] = ingestor\n        initialize_counters(BATCHES, [\n            {\"dataset\": dataset, \"source\": source, \"status\": status}\n            for dataset, source in ((\"weather_observations\", settings.weather_provider),\n                                    (\"weather_forecasts\", settings.weather_provider),\n                                    (\"demand\", \"grid-telemetry\"))\n            for status in (\"ok\", \"error\")\n        ])\n\n        def freshness_cb(options):  # noqa: ANN001\n            from opentelemetry.metrics import Observation\n\n            for dataset, st in ingestor.status.items():\n                if st.freshness_seconds is not None:\n                    yield Observation(st.freshness_seconds, {\"dataset\": dataset})\n\n        meter.create_observable_gauge(\"gridcast.data.freshness\", callbacks=[freshness_cb],\n                                      unit=\"s\", description=\"Age of newest stored record\")\n\n        def refresh() -> None:\n            try:\n                ingestor.refresh_freshness()\n            except Exception as exc:\n                log.warning(\"freshness refresh failed\", extra={\"error\": _summarize(exc)})\n\n        tasks = [\n            asyncio.create_task(loop(\"observations\", settings.observations_interval_seconds,\n                                     ingestor.ingest_observations)),\n            asyncio.create_task(loop(\"forecasts\", settings.forecasts_interval_seconds,\n                                     ingestor.ingest_forecasts)),\n            asyncio.create_task(loop(\"demand\", settings.demand_interval_seconds,\n                                     ingestor.ingest_demand)),\n            asyncio.create_task(loop(\"freshness\", 30, refresh)),\n        ]\n        log.info(\"ingestion started\", extra={\"weather_provider\": settings.weather_provider})\n        yield\n        for task in tasks:\n            task.cancel()\n        ingestor.client.close()\n        ingestor.engine.dispose()\n\n    def readiness() -> tuple[bool, str]:\n        # Ready once started. Vendor failures are reported via metrics and /status, not by\n        # flipping readiness: a healthy service with a broken upstream should not be restarted.\n        return (\"ingestor\" in holder, \"ok\" if \"ingestor\" in holder else \"starting\")\n\n    app = create_app(\"ingestion\", lifespan=lifespan, readiness=readiness,\n                     description=\"Pulls weather and demand from vendors into raw tables.\")\n\n    @app.get(\"/status\", tags=[\"ops\"])\n    def status() -> dict:\n        ingestor = holder.get(\"ingestor\")\n        return {\n            \"weather_provider\": settings.weather_provider,\n            \"datasets\": {k: v.__dict__ for k, v in (ingestor.status if ingestor else {}).items()},\n        }\n\n    return app\n\n\ndef main() -> None:\n    settings = Settings()\n    serve(create(settings))\n",
+   "digest": "8a29df0ef123d5b2dff3bfe02085405023dad905d30eedac313971a89fccab88",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": "6e904a15dc58266961f25afe55581a138f34824dc86d0a16a46fbdf700e96e02"
+  },
+  {
+   "id": "tool-32",
+   "operation": "code.read",
+   "status": "ok",
+   "purpose": "Allowlisted repository inspection",
+   "output": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: ingestion\n  namespace: gridcast\n  labels: { app.kubernetes.io/name: ingestion, app.kubernetes.io/component: ingestion, app.kubernetes.io/part-of: gridcast }\n  annotations:\n    gridcast.dev/description: \"Pulls weather and demand from vendors into raw.*\"\nspec:\n  replicas: 1\n  revisionHistoryLimit: 10\n  strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }\n  selector: { matchLabels: { app.kubernetes.io/name: ingestion } }\n  template:\n    metadata:\n      labels: { app.kubernetes.io/name: ingestion, app.kubernetes.io/component: ingestion, app.kubernetes.io/part-of: gridcast }\n    spec:\n      terminationGracePeriodSeconds: 20\n      securityContext: { runAsNonRoot: true, runAsUser: 10001, seccompProfile: { type: RuntimeDefault } }\n      containers:\n        - name: ingestion\n          imagePullPolicy: Always  # dev registry: tags may be rebuilt\n          image: gridcast/ingestion\n          args: [\"serve\", \"ingestion\"]\n          ports: [{ name: http, containerPort: 8080 }]\n          envFrom:\n            - configMapRef: { name: gridcast-runtime }\n            - configMapRef: { name: ingestion-config }\n          env:\n            - name: GRIDCAST_DB_USER\n              valueFrom: { secretKeyRef: [REDACTED_SECRET] name: db-ingest, key: username } }\n            - name: GRIDCAST_DB_PASSWORD\n              valueFrom: { secretKeyRef: [REDACTED_SECRET] name: db-ingest, key: password } }\n            - name: K8S_POD_NAME\n              valueFrom: { fieldRef: { fieldPath: metadata.name } }\n            - name: K8S_NAMESPACE\n              valueFrom: { fieldRef: { fieldPath: metadata.namespace } }\n            - name: K8S_NODE_NAME\n              valueFrom: { fieldRef: { fieldPath: spec.nodeName } }\n            - { name: K8S_DEPLOYMENT_NAME, value: ingestion }\n          readinessProbe: { httpGet: { path: /readyz, port: http }, periodSeconds: 10, failureThreshold: 3 }\n          livenessProbe: { httpGet: { path: /healthz, port: http }, periodSeconds: 20, timeoutSeconds: 5, failureThreshold: 3 }\n          startupProbe: { httpGet: { path: /healthz, port: http }, periodSeconds: 5, failureThreshold: 60 }\n          resources:\n            requests: { cpu: 50m, memory: 128Mi }\n            limits: { cpu: \"500m\", memory: 384Mi }\n          securityContext: { allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: { drop: [ALL] } }\n          volumeMounts: [{ name: tmp, mountPath: /tmp }]\n      volumes: [{ name: tmp, emptyDir: {} }]\n---\napiVersion: v1\nkind: Service\nmetadata: { name: ingestion, namespace: gridcast, labels: { app.kubernetes.io/name: ingestion, app.kubernetes.io/part-of: gridcast } }\nspec:\n  type: NodePort\n  selector: { app.kubernetes.io/name: ingestion }\n  ports: [{ name: http, port: 80, targetPort: http, nodePort: 30083 }]\n",
+   "digest": "a58fa52f43791d1a8a77ac361195560fc3be43aec53b172ca3d68c4027885ebf",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": "5737240dec7c693d17bb6ee76138b5e4810d66d88e714b45273b8597e53566d3"
+  },
+  {
+   "id": "tool-33",
+   "operation": "code.read",
+   "status": "ok",
+   "purpose": "Allowlisted repository inspection",
+   "output": "apiVersion: v1\nkind: ConfigMap\nmetadata: { name: gridcast-runtime, namespace: gridcast }\ndata:\n  GRIDCAST_ENVIRONMENT: local\n  GRIDCAST_LOG_FORMAT: json\n  GRIDCAST_LOG_LEVEL: INFO\n  GRIDCAST_DB_HOST: postgres.platform.svc.cluster.local\n  GRIDCAST_DB_PORT: \"5432\"\n  GRIDCAST_DB_NAME: gridcast\n  # Pooled connections are recycled every 2 minutes (credential changes surface within ~2 min).\n  GRIDCAST_DB_POOL_RECYCLE_SECONDS: \"120\"\n  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector.observability.svc.cluster.local:4317\n  OTEL_METRIC_EXPORT_INTERVAL: \"15000\"\n  S3_ENDPOINT_URL: http://s3.platform.svc.cluster.local:8333\n  S3_BUCKET: gridcast-models\n---\napiVersion: v1\nkind: ConfigMap\nmetadata: { name: ingestion-config, namespace: gridcast }\ndata:\n  # Which weather vendor GridCast buys data from. Fallback: wx-secondary.\n  INGEST_WEATHER_PROVIDER: wx-primary\n  INGEST_WEATHER_PRIMARY_URL: http://weather-primary.vendors.svc.cluster.local\n  INGEST_WEATHER_SECONDARY_URL: http://weather-secondary.vendors.svc.cluster.local\n  INGEST_GRID_TELEMETRY_URL: http://grid-telemetry.vendors.svc.cluster.local\n  INGEST_OBSERVATIONS_INTERVAL_SECONDS: \"60\"\n  INGEST_FORECASTS_INTERVAL_SECONDS: \"900\"\n  INGEST_DEMAND_INTERVAL_SECONDS: \"60\"\n  # Per-request timeout for vendor APIs.\n  INGEST_HTTP_TIMEOUT_SECONDS: \"15\"\n---\napiVersion: v1\nkind: ConfigMap\nmetadata: { name: pipeline-config, namespace: gridcast }\ndata:\n  PIPELINE_FEATURE_SERVICE_URL: http://feature-service.gridcast.svc.cluster.local\n  PIPELINE_FORECAST_SERVICE_URL: http://forecast-service.gridcast.svc.cluster.local\n  PIPELINE_PLANNING_API_URL: http://planning-api.gridcast.svc.cluster.local\n  PIPELINE_INTERVAL_SECONDS: \"300\"\n  PIPELINE_REQUEST_TIMEOUT_SECONDS: \"120\"\n  PREFECT_API_URL: http://prefect.platform.svc.cluster.local:4200/api\n  PREFECT_LOGGING_EXTRA_LOGGERS: gridcast\n  PREFECT_LOGGING_TO_API_BATCH_INTERVAL: \"1\"\n  PREFECT_LOGGING_TO_API_WHEN_MISSING_FLOW: ignore\n---\napiVersion: v1\nkind: ConfigMap\nmetadata: { name: forecast-config, namespace: gridcast }\ndata:\n  FORECAST_MODEL_ALIAS: production\n  FORECAST_MODEL_POLL_SECONDS: \"30\"\n---\napiVersion: v1\nkind: ConfigMap\nmetadata: { name: operator-config, namespace: gridcast }\ndata:\n  OPERATOR_PLANNING_API_URL: http://planning-api.gridcast.svc.cluster.local\n  OPERATOR_POLL_SECONDS: \"60\"\n",
+   "digest": "600f5f3d12d6df3fc444f0380be0e766884dac1b7450ba575338468069ac7272",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": "5737240dec7c693d17bb6ee76138b5e4810d66d88e714b45273b8597e53566d3"
+  },
+  {
+   "id": "tool-34",
+   "operation": "code.search",
+   "status": "ok",
+   "purpose": "Allowlisted repository inspection",
+   "output": "src/gridcast/services/ingestion.py:51:     weather_provider: str = \"wx-primary\"\nsrc/gridcast/services/ingestion.py:65:         }[self.weather_provider]\nsrc/gridcast/services/ingestion.py:178:         provider = self.settings.weather_provider\nsrc/gridcast/services/ingestion.py:208:         provider = self.settings.weather_provider\nsrc/gridcast/services/ingestion.py:290:                          \"provider_id\": self.settings.weather_provider} for o in r.json()]\nsrc/gridcast/services/ingestion.py:350:             for dataset, source in ((\"weather_observations\", settings.weather_provider),\nsrc/gridcast/services/ingestion.py:351:                                     (\"weather_forecasts\", settings.weather_provider),\nsrc/gridcast/services/ingestion.py:381:         log.info(\"ingestion started\", extra={\"weather_provider\": settings.weather_provider})\nsrc/gridcast/services/ingestion.py:400:             \"weather_provider\": settings.weather_provider,",
+   "digest": "1c4db70bf9f7c015c5528d921e2c73e73f89a9d63c346344fd208f30a036af4c",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": "6e904a15dc58266961f25afe55581a138f34824dc86d0a16a46fbdf700e96e02"
+  },
+  {
+   "id": "tool-35",
+   "operation": "code.search",
+   "status": "ok",
+   "purpose": "Allowlisted repository inspection",
+   "output": "src/gridcast/features/store.py:86:         stats[\"weather_fallbacks\"] += 1\nsrc/gridcast/features/store.py:94:     stats = {\"weather_fallbacks\": 0}\nsrc/gridcast/features/store.py:130:     stats = {\"weather_fallbacks\": 0}\nsrc/gridcast/services/feature_service.py:58:     weather_fallbacks: int\nsrc/gridcast/services/feature_service.py:151:             weather_fallbacks=stats[\"weather_fallbacks\"],\nsrc/gridcast/services/ingestion.py:9: the fallback vendor is a normal, reviewable config change.",
+   "digest": "663fb4c666711d37168475f0dc45833d1ac7fa69496ae27cdc8f1cf76b8944fb",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": "6e904a15dc58266961f25afe55581a138f34824dc86d0a16a46fbdf700e96e02"
+  },
+  {
+   "id": "tool-36",
+   "operation": "code.search",
+   "status": "ok",
+   "purpose": "Allowlisted repository inspection",
+   "output": "estate/config.yaml:24:   INGEST_WEATHER_PRIMARY_URL: http://weather-primary.vendors.svc.cluster.local",
+   "digest": "3b578d6cb636748d1d2f67660bacfd56e40c7d4ee1329c6622e8cd0fe2c490a5",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": "5737240dec7c693d17bb6ee76138b5e4810d66d88e714b45273b8597e53566d3"
+  },
+  {
+   "id": "tool-37",
+   "operation": "code.search",
+   "status": "ok",
+   "purpose": "Allowlisted repository inspection",
+   "output": "",
+   "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": "6e904a15dc58266961f25afe55581a138f34824dc86d0a16a46fbdf700e96e02"
+  },
+  {
+   "id": "tool-38",
+   "operation": "code.read",
+   "status": "denied",
+   "purpose": "Read-only inspection",
+   "output": "Inspection denied, unavailable or invalid",
+   "digest": "cfc8fa293c5d16d927d285923e3a72d387248952be1de211c88aff0194fcd234",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-39",
+   "operation": "code.read",
+   "status": "ok",
+   "purpose": "Allowlisted repository inspection",
+   "output": "\"\"\"Serving-time feature builders over `raw.*`.\n\nTwo builders produce identical features with very different database access patterns:\n\n`hourly`  (feature-service <= 1.6) aggregates demand to hourly buckets inside PostgreSQL with\n          one grouped scan, plus one weather query. ~3 queries per run.\n\n`minute`  (feature-service 1.7, \"native-resolution lags\") fetches raw one-minute readings for\n          every lag hour of every target separately (bucketed with date_trunc) and averages them\n          in Python, recomputing the trailing windows per target. Same numbers, ~2,500 queries\n          per run, each scanning the zone's full history.\n\nWhich builder runs is a release flag (`lag_resolution`) baked into the feature-service image.\n\"\"\"\n\nimport contextvars\nfrom collections import defaultdict\nfrom datetime import datetime, timedelta\n\nfrom sqlalchemy import Connection, Engine, event, text\n\nfrom gridcast.catalog import catalog\nfrom gridcast.features.engineering import HOUR, LOOKBACK, FeatureRow, build_row, lag_hour\nfrom gridcast.weather.model import VARIABLES\n\n_query_counter: contextvars.ContextVar[list[int] | None] = contextvars.ContextVar(\n    \"feature_queries\", default=None\n)\n\n\ndef install_query_counter(engine: Engine) -> None:\n    @event.listens_for(engine, \"before_cursor_execute\")\n    def _count(conn, cursor, statement, parameters, context, executemany):  # noqa: ANN001\n        counter = _query_counter.get()\n        if counter is not None:\n            counter[0] += 1\n\n\nclass QueryCount:\n    \"\"\"Count SQL statements executed in this context (thread-safe via contextvars).\"\"\"\n\n    def __enter__(self) -> \"QueryCount\":\n        self.value = [0]\n        self._token = _query_counter.set(self.value)\n        return self\n\n    def __exit__(self, *exc) -> None:  # noqa: ANN002\n        _query_counter.reset(self._token)\n\n    @property\n    def count(self) -> int:\n        return self.value[0]\n\n\nWEATHER_SQL = text(f\"\"\"\n    SELECT DISTINCT ON (station_id, valid_at)\n           station_id, valid_at, {\", \".join(VARIABLES)}\n    FROM raw.weather_forecasts\n    WHERE issued_at <= :as_of AND valid_at > :as_of AND valid_at <= :until\n    ORDER BY station_id, valid_at, issued_at DESC\n\"\"\")\n\nLATEST_OBS_SQL = text(f\"\"\"\n    SELECT DISTINCT ON (station_id) station_id, {\", \".join(VARIABLES)}\n    FROM raw.weather_observations\n    WHERE observed_at < :as_of\n    ORDER BY station_id, observed_at DESC\n\"\"\")\n\n\ndef _weather(conn: Connection, as_of: datetime, horizon: int):\n    forecasts: dict[tuple[str, datetime], dict[str, float]] = {}\n    rows = conn.execute(WEATHER_SQL, {\"as_of\": as_of, \"until\": as_of + HOUR * horizon})\n    for row in rows.mappings():\n        forecasts[(row[\"station_id\"], row[\"valid_at\"])] = {v: row[v] for v in VARIABLES}\n    persistence = {\n        row[\"station_id\"]: {v: row[v] for v in VARIABLES}\n        for row in conn.execute(LATEST_OBS_SQL, {\"as_of\": as_of}).mappings()\n    }\n    return forecasts, persistence\n\n\ndef _weather_for(forecasts, persistence, station_id: str, target: datetime, stats: dict):\n    value = forecasts.get((station_id, target))\n    if value is None:\n        stats[\"weather_fallbacks\"] += 1\n        value = persistence.get(station_id)\n        if value is None:\n            raise ValueError(f\"no weather forecast or observation for {station_id}\")\n    return value\n\n\ndef build_hourly(conn: Connection, as_of: datetime, horizon: int) -> tuple[list[FeatureRow], dict]:\n    stats = {\"weather_fallbacks\": 0}\n    hourly: dict[str, dict[datetime, float]] = defaultdict(dict)\n    rows = conn.execute(text(\"\"\"\n        SELECT zone_id, date_trunc('hour', ts) AS hour, avg(load_mw) AS load_mw\n        FROM raw.demand_readings\n        WHERE ts >= :start AND ts < :as_of\n        GROUP BY zone_id, date_trunc('hour', ts)\n    \"\"\"), {\"start\": as_of - LOOKBACK, \"as_of\": as_of})\n    for zone_id, hour, load in rows:\n        hourly[zone_id][hour] = float(load)\n    forecasts, persistence = _weather(conn, as_of, horizon)\n    out = []\n    for zone in catalog().zones:\n        for k in range(1, horizon + 1):\n            target = as_of + HOUR * k\n            weather = _weather_for(forecasts, persistence, zone.station_id, target, stats)\n            out.append(build_row(zone.id, as_of, k, hourly[zone.id], weather))\n    return out, stats\n\n\n# Buckets are matched on date_trunc(ts): readable, but not sargable on the (zone_id, ts) key,\n# so every lookup walks the zone's whole history. Cost grows with retained data.\nMINUTE_SQL = text(\"\"\"\n    SELECT load_mw FROM raw.demand_readings\n    WHERE zone_id = :zone_id AND date_trunc('hour', ts) = :start AND ts < :as_of\n\"\"\")\n\n\ndef _hour_mean(conn: Connection, zone_id: str, hour: datetime, as_of: datetime) -> float | None:\n    values = conn.execute(\n        MINUTE_SQL, {\"zone_id\": zone_id, \"start\": hour, \"as_of\": as_of}\n    ).scalars().all()\n    return sum(values) / len(values) if values else None\n\n\ndef build_minute(conn: Connection, as_of: datetime, horizon: int) -> tuple[list[FeatureRow], dict]:\n    stats = {\"weather_fallbacks\": 0}\n    forecasts, persistence = _weather(conn, as_of, horizon)\n    out = []\n    for zone in catalog().zones:\n        for k in range(1, horizon + 1):\n            target = as_of + HOUR * k\n            needed = [lag_hour(as_of, target), target - timedelta(hours=168)]\n            needed += [as_of - HOUR * i for i in range(1, 25)]\n            hourly = {}\n            for hour in needed:\n                mean = _hour_mean(conn, zone.id, hour, as_of)\n                if mean is not None:\n                    hourly[hour] = mean\n            weather = _weather_for(forecasts, persistence, zone.station_id, target, stats)\n            out.append(build_row(zone.id, as_of, k, hourly, weather))\n    return out, stats\n\n\nBUILDERS = {\"hourly\": build_hourly, \"minute\": build_minute}\n",
+   "digest": "9e96506135b4ce54408ad98b88b333924c48dda87c515631d85e5c2e1977da60",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": "6e904a15dc58266961f25afe55581a138f34824dc86d0a16a46fbdf700e96e02"
+  },
+  {
+   "id": "tool-40",
+   "operation": "graph",
+   "status": "denied",
+   "purpose": "Read-only inspection",
+   "output": "Inspection denied, unavailable or invalid",
+   "digest": "cfc8fa293c5d16d927d285923e3a72d387248952be1de211c88aff0194fcd234",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-41",
+   "operation": "changes",
+   "status": "ok",
+   "purpose": "Recent changes affecting scoped entities",
+   "output": "{\"until\": \"2026-10-04T19:36:38+00:00\", \"lookback_seconds\": 1200, \"truncated\": false, \"changes\": []}",
+   "digest": "f143f2f7b0e8ce07fd72bdaba5c11ed8d26c42b20270d26226ac77d8ecc62eb7",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-42",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Forecast pipeline runs that failed in the last 15 minutes",
+   "output": "[{\"id\": \"prometheus:pipeline-failed-runs\", \"query_id\": \"pipeline-failed-runs\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"failed_runs_15m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "b42572b48c29b5e45b596e313efc6bbb716b770c6085923cd6d565c85a56a663",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-43",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "forecast-pipeline Prefect flow runs (state, duration) started in the incident window",
+   "output": "[{\"id\": \"prefect:c928181c4ec633e58dddb5acf10fa29a:0\", \"query_id\": \"prefect-flow-runs\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"flow_run\", \"value\": \"{\\\"run_id\\\": \\\"743265cd-6730-4c2c-84f2-80379be5b63e\\\", \\\"name\\\": \\\"lean-mantis\\\", \\\"flow_name\\\": \\\"forecast-pipeline\\\", \\\"state\\\": \\\"COMPLETED\\\", \\\"state_timestamp\\\": \\\"2026-10-04T19:23:33.842511+00:00\\\", \\\"duration_ms\\\": 551.978, \\\"start\\\": \\\"2026-10-04T19:23:33.290533Z\\\", \\\"end\\\": \\\"2026-10-04T19:23:33.842511Z\\\"}\", \"observed_at\": \"2026-10-04T19:23:33.842511Z\", \"source\": \"prefect\", \"retrieval_method\": \"POST /flow_runs/filter (read-only)\", \"quality\": \"observed\"}, {\"id\": \"prefect:c928181c4ec633e58dddb5acf10fa29a:1\", \"query_id\": \"prefect-flow-runs\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"flow_run\", \"value\": \"{\\\"run_id\\\": \\\"cf0c8498-fcf4-4a34-af13-eb3a8b14fec2\\\", \\\"name\\\": \\\"important-poodle\\\", \\\"flow_name\\\": \\\"forecast-pipeline\\\", \\\"state\\\": \\\"COMPLETED\\\", \\\"state_timestamp\\\": \\\"2026-10-04T19:28:34.462900+00:00\\\", \\\"duration_ms\\\": 869.581, \\\"start\\\": \\\"2026-10-04T19:28:33.593319Z\\\", \\\"end\\\": \\\"2026-10-04T19:28:34.462900Z\\\"}\", \"observed_at\": \"2026-10-04T19:28:34.462900Z\", \"source\": \"prefect\", \"retrieval_method\": \"POST /flow_runs/filter (read-only)\", \"quality\": \"observed\"}, {\"id\": \"prefect:c928181c4ec633e58dddb5acf10fa29a:2\", \"query_id\": \"prefect-flow-runs\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"flow_run\", \"value\": \"{\\\"run_id\\\": \\\"09dea707-1921-42ad-b0da-78d2d6d25634\\\", \\\"name\\\": \\\"elfish-leech\\\", \\\"flow_name\\\": \\\"forecast-pipeline\\\", \\\"state\\\": \\\"COMPLETED\\\", \\\"state_timestamp\\\": \\\"2026-10-04T19:33:33.902915+00:00\\\", \\\"duration_ms\\\": 520.99, \\\"start\\\": \\\"2026-10-04T19:33:33.381925Z\\\", \\\"end\\\": \\\"2026-10-04T19:33:33.902915Z\\\"}\", \"observed_at\": \"2026-10-04T19:33:33.902915Z\", \"source\": \"prefect\", \"retrieval_method\": \"POST /flow_runs/filter (read-only)\", \"quality\": \"observed\"}]",
+   "digest": "894530eaa5281767a1973796731246d505ad4c53bc45e71bc6be0ec11aa10b65",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-44",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Validation-gate checks that the new forecast deviates from the published plan (warn or fail) in the last 20 minutes",
+   "output": "[{\"id\": \"prometheus:forecast-stability-warnings\", \"query_id\": \"forecast-stability-warnings\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"stability_warnings_20m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "9721e3e4cd9fa2d3575cbdad2c243701d93b6bfe6daa7b420f9c31965929f25b",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-45",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Pipeline validation-gate completeness.demand checks that warned or failed in the last 20 minutes",
+   "output": "[{\"id\": \"prometheus:demand-completeness-failures\", \"query_id\": \"demand-completeness-failures\", \"entity_id\": \"service:gridcast:forecast-pipeline\", \"key\": \"completeness_demand_failures_20m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "39ac65560ed7dcc79f84ef56ff42a922c38df4f506263135a1711821bc386508",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-46",
+   "operation": "evidence",
+   "status": "ok",
+   "purpose": "Failed demand ingestion batches in the last 10 minutes",
+   "output": "[{\"id\": \"prometheus:ingestion-demand-errors\", \"query_id\": \"ingestion-demand-errors\", \"entity_id\": \"service:gridcast:ingestion\", \"key\": \"demand_batch_errors_10m\", \"value\": 0.0, \"observed_at\": \"2026-10-04T19:36:38Z\", \"source\": \"prometheus\", \"retrieval_method\": \"GET /api/v1/query\", \"quality\": \"observed\"}]",
+   "digest": "c172c80eb41c753ed46ee61186a5c456bf82e997c6703363148d396345c8dbef",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-47",
+   "operation": "graph",
+   "status": "ok",
+   "purpose": "Incident neighborhood",
+   "output": "{\"entities\":[{\"id\":\"service:gridcast:ingestion\",\"kind\":\"service\",\"name\":\"ingestion\",\"attributes\":{\"service.namespace\":\"gridcast\",\"criticality\":\"high\",\"owner\":\"data-platform\"},\"provenance\":[\"kubernetes.app-label\",\"prometheus.service_graph\"]},{\"id\":\"service:gridcast:weather-vendor-wx-secondary\",\"kind\":\"service\",\"name\":\"weather-vendor-wx-secondary\",\"attributes\":{\"service.namespace\":\"gridcast\",\"role\":\"external-vendor\",\"operable\":\"false\",\"fallback_for\":\"weather-vendor-wx-primary\"},\"provenance\":[]}],\"relationships\":[{\"source\":\"service:gridcast:weather-vendor-wx-secondary\",\"target\":\"service:gridcast:ingestion\",\"kind\":\"serves\",\"provenance\":[\"declared\"]}]}",
+   "digest": "4797cdf548a91fee9ed2de36ad5a55b8c4d7fdb0c09966868f6673db325ce929",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-48",
+   "operation": "graph",
+   "status": "ok",
+   "purpose": "Incident neighborhood",
+   "output": "{\"entities\":[{\"id\":\"service:gridcast:ingestion\",\"kind\":\"service\",\"name\":\"ingestion\",\"attributes\":{\"service.namespace\":\"gridcast\",\"criticality\":\"high\",\"owner\":\"data-platform\"},\"provenance\":[\"kubernetes.app-label\",\"prometheus.service_graph\"]},{\"id\":\"service:gridcast:user\",\"kind\":\"service\",\"name\":\"user\",\"attributes\":{\"service.namespace\":\"gridcast\"},\"provenance\":[\"prometheus.service_graph\"]},{\"id\":\"service:gridcast:weather-vendor-wx-primary\",\"kind\":\"service\",\"name\":\"weather-vendor-wx-primary\",\"attributes\":{\"service.namespace\":\"gridcast\",\"role\":\"external-vendor\",\"operable\":\"false\"},\"provenance\":[\"prometheus.service_graph\"]}],\"relationships\":[{\"source\":\"service:gridcast:weather-vendor-wx-primary\",\"target\":\"service:gridcast:ingestion\",\"kind\":\"serves\",\"provenance\":[\"declared\",\"prometheus.service_graph\"]},{\"source\":\"service:gridcast:weather-vendor-wx-primary\",\"target\":\"service:gridcast:user\",\"kind\":\"serves\",\"provenance\":[\"prometheus.service_graph\"]}]}",
+   "digest": "39eb0e2d5d9f019cf440189d5a211fa37fb999407946b42719c9503ba80db11f",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-49",
+   "operation": "hypothesis.register",
+   "status": "denied",
+   "purpose": "Read-only inspection",
+   "output": "Inspection denied, unavailable or invalid",
+   "digest": "cfc8fa293c5d16d927d285923e3a72d387248952be1de211c88aff0194fcd234",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  },
+  {
+   "id": "tool-50",
+   "operation": "hypothesis.register",
+   "status": "ok",
+   "purpose": "Register a falsifiable candidate",
+   "output": "{\"id\":\"h1a-weather-primary-503\",\"statement\":\"Primary weather vendor returns 503 to ingestion, causing weather_observations ingestion failures.\",\"causal_path\":[\"service:gridcast:weather-vendor-wx-primary\",\"service:gridcast:ingestion\"],\"predictions\":[{\"entity_id\":\"service:gridcast:ingestion\",\"key\":\"weather_batch_errors_10m\",\"operator\":\"gt\",\"value\":0},{\"entity_id\":\"service:gridcast:ingestion\",\"key\":\"weather_vendor_503_log_lines\",\"operator\":\"gt\",\"value\":0},{\"entity_id\":\"service:gridcast:ingestion\",\"key\":\"weather_observation_freshness_seconds\",\"operator\":\"gt\",\"value\":300},{\"entity_id\":\"service:gridcast:ingestion\",\"key\":\"demand_batch_errors_10m\",\"operator\":\"eq\",\"value\":0}],\"evidence_needed\":[\"ingestion-weather-errors\",\"ingestion-weather-vendor-503\",\"ingestion-error-log\",\"weather-observation-freshness\",\"ingestion-demand-errors\"],\"falsifiers\":[{\"entity_id\":\"service:gridcast:ingestion\",\"key\":\"weather_batch_errors_10m\",\"operator\":\"eq\",\"value\":0}]}",
+   "digest": "359dbe532090dafed0705875a4b40e91e1d4f2589ebd14b09be90a99975cdd13",
+   "hypothesis_id": null,
+   "code_digest": null,
+   "snapshot_digest": null
+  }
+ ],
+ "suggestions": [
+  {
+   "hypothesis_id": "h1a-weather-primary-503",
+   "description": "Verify weather-vendor-wx-secondary is healthy and, if so, have a human operator switch ingestion-config INGEST_WEATHER_PROVIDER from wx-primary to wx-secondary. Current ingestion code/config has no automatic failover and will keep retrying wx-primary each interval, so weather_observations will remain stale until the provider is changed or the primary vendor recovers. Confirm weather_observation_freshness_seconds recovers and weather_batch_errors_10m returns to 0 after the change.",
+   "evidence_ids": [
+    "prometheus:ingestion-weather-errors",
+    "loki:249b4573eca5e692ee086fcad3097bc2:0",
+    "loki:d81744a862f953d53bad613f9e018686:0",
+    "prometheus:weather-observation-freshness",
+    "changes:ingestion-changes-20m"
+   ],
+   "receipt_ids": [
+    "tool-31",
+    "tool-32",
+    "tool-33",
+    "tool-41"
+   ],
+   "patch": null,
+   "requires_human_review": true
+  }
+ ],
+ "unresolved_questions": [
+  "Whether the HTTP 503 from weather-primary.vendors.svc.cluster.local originates from the external vendor itself or from an in-cluster vendor gateway/proxy in the vendors namespace could not be determined: weather-vendor-wx-primary is operable=false and has no deployment/pod in the scoped graph or approved repositories.",
+  "The health and availability of weather-vendor-wx-secondary was not directly observable through any registered query, so it must be verified before changing INGEST_WEATHER_PROVIDER.",
+  "Ruled out by deterministic findings/evidence: planning-api scaled-to-zero, feature-service query amplification/build failures/auth failures, forecast-service OOM/model slowdown, demand feed rejection/out-of-range values, and weather value repetition."
+ ],
+ "route": "agent",
+ "conclusion": "supported_diagnosis",
+ "stop_reason": "agent_completed",
+ "metrics": {
+  "model_requests": 14,
+  "input_tokens": 573156,
+  "output_tokens": 20715,
+  "tool_attempts": 30,
+  "evidence_queries": 29,
+  "probes": 0
+ },
+ "truth_state": "unconfirmed_hypothesis",
+ "requires_human_review": true
+}

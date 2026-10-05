@@ -1,0 +1,4 @@
+injecting M-cpu-limit-squeeze: feature-service CPU limit cut by right-sizing automation
+committed 4d19154 chore(feature-service): set limits cpu=50m memory=512Mi
+run 20261004T222847Z-M-cpu-limit-squeeze-2ecc (ground truth: .gridcast/chaos/runs/20261004T222847Z-M-cpu-limit-squeeze-2ecc.json)
+symptoms expected: ~20-25 min (a slow burn: build p95 creeps past the 2 s alert)

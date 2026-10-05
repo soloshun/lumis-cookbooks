@@ -1,0 +1,40 @@
+{
+ "fetched_queries": [
+  "feature-auth-failures",
+  "feature-service-error-log",
+  "feature-service-changes-20m",
+  "forecast-pipeline-changes-20m",
+  "slow-pipeline-traces",
+  "prefect-flow-runs",
+  "pipeline-failed-runs"
+ ],
+ "facts_added": 2,
+ "ranked": [
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "Elevated feature-service build latency is the primary upstream bottleneck delaying forecast-pipeline runs.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "Feature-service is issuing an abnormally high number of SQL statements per feature build, slowing builds and therefore forecast-pipeline runs.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "A recent feature-service rollout or configuration change introduced a regression that slowed feature builds and therefore forecast-pipeline runs.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "Database authentication failures in feature-service are causing retries and delaying feature builds, which then delays forecast-pipeline runs.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "Forecast-pipeline has its own slow code path or Prefect flow issue, independent of feature-service, causing pipeline p95 duration above 5s.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

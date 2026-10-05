@@ -1,0 +1,387 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "The forecast-pipeline p95 > 5s was inflated by failed or crashed pipeline runs during the incident window.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "pipeline-failed-runs",
+    "prefect-failed-flow-runs"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "The forecast-pipeline p95 > 5s was inflated by failed or crashed pipeline runs during the incident window.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "pipeline-failed-runs",
+     "prefect-failed-flow-runs"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "The p95 > 5s was driven by one or more outlier forecast-pipeline traces exceeding 5 s, visible in the slow-trace sample.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 5000
+    }
+   ],
+   "evidence_needed": [
+    "slow-pipeline-traces"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "lt",
+     "value": "no sampled trace"
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "schema: 2 validation errors for Hypothesis\nfalsifiers.0\n  Value error, ordered comparison requires a numeric value [type=value_error, input_value={'entity_id': 'service:gr...ue': 'no sampled trace'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error\nfalsifiers\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[{'entity_id': 'service:g...e': 'no sampled trace'}], input_type=list]\n    For further information vis"
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "The forecast-pipeline slowdown was caused by degraded feature-service behavior, specifically database authentication failures or logged errors that made pipeline calls wait or retry.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline",
+    "service:gridcast:feature-service"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "error_log",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "feature-auth-failures",
+    "feature-service-error-log"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "error_log",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "The forecast-pipeline slowdown was caused by degraded feature-service behavior, specifically database authentication failures or logged errors that made pipeline calls wait or retry.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline",
+     "service:gridcast:feature-service"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "db_auth_failure_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "error_log",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "feature-auth-failures",
+     "feature-service-error-log"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "db_auth_failure_log_lines",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "error_log",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "error_log",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "error_log",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "The forecast-pipeline slowdown was caused by upstream weather-data ingestion trouble, specifically vendor HTTP 503s or payload contract violations that delayed or malformed data consumed downstream by the pipeline.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline",
+    "service:gridcast:ingestion",
+    "service:gridcast:weather-vendor-wx-primary"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-weather-vendor-503",
+    "ingestion-contract-violations"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "The forecast-pipeline slowdown was caused by upstream weather-data ingestion trouble, specifically vendor HTTP 503s or payload contract violations that delayed or malformed data consumed downstream by the pipeline.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline",
+     "service:gridcast:ingestion",
+     "service:gridcast:weather-vendor-wx-primary"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-weather-vendor-503",
+     "ingestion-contract-violations"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ }
+]

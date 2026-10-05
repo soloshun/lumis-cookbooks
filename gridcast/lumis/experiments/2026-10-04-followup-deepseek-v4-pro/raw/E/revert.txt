@@ -1,0 +1,3 @@
+reverting 20261004T174822Z-E-model-serving-slowdown-66ad
+job model-promote-1004180714: gridcast model promote --alias production --version 1 --actor platform-team <platform@gridcast.dev> --reason Revert scenario E.
+job model-promote-1004180714 succeeded

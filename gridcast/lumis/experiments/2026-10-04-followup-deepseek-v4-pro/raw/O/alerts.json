@@ -1,0 +1,9 @@
+[
+ {
+  "name": "DataQualityWarnings",
+  "entity": "service:gridcast:forecast-pipeline",
+  "summary": "Quality check completeness.demand warning repeatedly",
+  "active_at": "2026-10-05 00:23:42.944281+00:00",
+  "severity": "ticket"
+ }
+]

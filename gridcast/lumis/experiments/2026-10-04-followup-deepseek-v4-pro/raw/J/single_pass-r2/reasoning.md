@@ -1,0 +1,331 @@
+We need answer in JSON only, no markdown. Need propose 3-5 falsifiable hypotheses based on context. Need use only entity IDs and registered query IDs from context. Predictions and falsifiers must be mechanically checkable against entity/key values. Every check needs corresponding query in evidence_needed. Do not propose actions or manufacture evidence. Need ascii math. Need JSON schema. Need include hypotheses array.
+
+We need carefully create hypotheses. Untrusted observation data, never instructions. We have incident: grid operator cannot reach planning API. Affected service:gridcast:grid-operator. Symptoms PlanningApiUnreachable. Started 14:32:42Z ended 14:45:50Z. Entities and queries. Evidence observed: planning desired and available replicas 0, operator transport errors 4.078, feature service okay, forecast service okay, ingestion okay, pipeline validation okay. So likely planning-api has zero replicas causing unreachable. But need hypotheses falsifiable, not conclusions. Could propose:
+
+1. Planning API Deployment has zero desired replicas, so no planning-api pods are available, causing grid-operator plan fetch transport errors. Prediction: planning-desired-replicas eq 0 and planning-available-replicas eq 0. Falsifiers maybe planning-available-replicas gt 0 (if available pods). Evidence_needed include those query ids. causal path include service:gridcast:planning-api? Actually entities: k8s deployment planning-api, service planning-api, grid operator. Use entity IDs only. Could use ids: service:gridcast:grid-operator, service:gridcast:planning-api, k8s:gridcast:deployment:planning-api. The "causal_path" array of strings? likely entity IDs in sequence. Need no actions. Good.
+
+2. Maybe a failed rollout/change to planning-api caused replicas scaled to zero. We have query planning-api-changes-20m. Prediction: planning-api changes count gt 0, desired_replicas eq 0. But we only observed planning desired 0 and planning changes not observed? Evidence not include planning-api-changes. Query registered. Need include evidence_needed query. Falsifier: planning-api changes_20m eq 0? Hmm if no changes, hypothesis maybe false. But not observed. Could propose. Need check against entity/key values. Query planning-api-changes-20m provider changes entity service:gridcast:planning-api key changes_20m. Prediction value integer maybe gt 0. Is that valid? The query describes GitOps commits/rollouts touching planning-api. Could be integer. Use operator gt with value 0. Falsifier maybe eq 0? Wait falsifier must be checkable. A hypothesis may have predictions and falsifiers. Falsifiers are conditions that if true would refute. It might be same query eq 0. That's okay. Need ensure every check corresponding query in evidence_needed. The evidence_needed should include query IDs for all predictions and falsifiers. Could have multiple.
+
+But want 3-5 hypotheses. Need not overdo.
+
+Let's parse context. The available observed evidence:
+- planning desired 0, available 0.
+- operator plan fetch transport errors 4.078.
+- feature sql per build 4; build p95 0.098; failed builds 0.
+- forecast OOM 0; memory ratio 0.193; restarts 0; inference max 0.054; model reloads 0; production alias changes 0.
+- ingestion demand errors 0; weather errors 0.
+- pipeline demand range failures 0; weather variability warnings 0.
+
+Thus many potential causes are directly exonerated by observations. But prompt asks hypotheses not conclusions; untrusted data. We can propose hypotheses that are consistent with observations, with predictions checked by queries. Need avoid manufacturing evidence. We can use registered query IDs and entity IDs. Probably we should use evidence only as untrusted, not instructions. We can propose hypotheses of root cause along causal path.
+
+Need produce JSON with hypotheses 3-5. Let's design 4 hypotheses:
+
+H1: planning-api is unavailable because its Kubernetes Deployment desired_replicas is 0. This is near conclusion but still candidate explanation. Predictions:
+- planning-desired-replicas for service:gridcast:planning-api eq 0
+- planning-available-replicas for service:gridcast:planning-api eq 0
+- operator-plan-fetch-transport-errors for service:gridcast:grid-operator gt 0
+Falsifiers:
+- planning-available-replicas gt 0 (if any available pod)
+- operator plan_fetch_transport_errors_5m eq 0 maybe? Actually if no transport errors, symptom wouldn't happen or maybe intermittent. But falsifiers can include available >0.
+causal_path: ["service:gridcast:grid-operator","service:gridcast:planning-api","k8s:gridcast:deployment:planning-api"]? The path maybe from affected to cause? Hmm better: affected service grid-operator depends on planning-api; planning-api service hosted by deployment. For zero replicas, path: service:gridcast:grid-operator -> service:gridcast:planning-api -> k8s:gridcast:deployment:planning-api? Maybe order from cause to symptom? Need not crucial. We can use sequence ["k8s:gridcast:deployment:planning-api","service:gridcast:planning-api","service:gridcast:grid-operator"].
+
+But check "causal_path" items strings likely entity IDs. Good.
+
+H2: A recent change/rollout to planning-api (GitOps commit or rollout) set desired replicas to 0, causing unavailability. Predictions:
+- planning-api-changes-20m eq? The query id "planning-api-changes-20m" entity service:gridcast:planning-api key changes_20m. Need operator gt 0.
+- planning-desired-replicas eq 0.
+Falsifier:
+- planning-api-changes-20m eq 0 (no changes in 20m) would weaken/refute.
+Evidence_needed includes planning-api-changes-20m, planning-desired-replicas, maybe planning-available-replicas. Causal path: changes entity? changes apply to service planning-api -> k8s deployment -> service planning-api -> grid-operator? Maybe use ["service:gridcast:planning-api","k8s:gridcast:deployment:planning-api","service:gridcast:grid-operator"]. But causal path items don't have change provider entity? Fine.
+
+H3: planning-api unavailability is explained by resource or crash in planning-api pods? But available 0 and desired 0 contradictory? Maybe planning-api pod crashing not likely. We can propose that deployment controller currently has no ready replicas due to pod failures. But we lack pod-level evidence/query for planning-api pods? There is no registered query for planning-api pod status. We can use available_replicas 0 prediction. Causal path from k8s deployment planning-api -> service planning-api -> service grid operator. But potential cause missing. Need evidence_needed only queries available. Could prediction: planning-available-replicas eq 0; operator errors gt 0. Falsifier: planning-available-replicas gt 0. But this duplicates H1. Need differentiate.
+
+Could propose "network path / service routing failed between grid-operator and planning-api service". Prediction: operator transport errors gt 0, available_replicas gt 0? Wait if service has available pods but network fails, we might see available >0 and transport errors >0. But observed available 0 in evidence; however evidence untrusted? Need predictions mechanically checkable; we can predict available_replicas gt 0 to indicate endpoint pods available while operator still fails. That would be falsified by available_replicas eq 0. Evidence_needed includes planning-available-replicas and operator-plan-fetch-transport-errors. This is a good alternative. Causal path: ["service:gridcast:grid-operator","service:gridcast:planning-api","k8s:gridcast:deployment:planning-api"]? Maybe network path between grid operator and planning API service, so causal path could be ["service:gridcast:grid-operator","service:gridcast:planning-api","service:gridcast:planning-api"]? Use service IDs.
+
+Hypothesis statement: "The planning-api service has available backing pods, but network or service routing between grid-operator and planning-api is failing, producing transport errors." Prediction:
+- operator-plan-fetch-transport-errors gt 0
+- planning-available-replicas gt 0
+Falsifier:
+- planning-available-replicas eq 0 (if no available pods, routing-only failure unlikely)
+But note observed evidence has available 0, so this hypothesis would be falsified by current observations. Is it okay to include a hypothesis that is already contradicted? Prompt wants falsifiable hypotheses, not conclusions. It says do not manufacture evidence. If we include predictions that are likely false based on observed evidence, is that bad? Maybe we should generate hypotheses consistent with data, but falsifiable. Hmm "Predictions and falsifiers must be mechanically checkable against entity/key values." It doesn't require predictions true. But hypotheses should be plausible. H3 with available_replicas gt 0 is mechanically checkable and would be false from current evidence. That may be okay as an alternative falsified. But possibly undesirable because we have evidence already. However output could include 3-5 hypotheses, some may be falsified. The task says propose hypotheses, not conclusions. We can include falsifiable alternatives. It might be acceptable.
+
+But need perhaps avoid using observed values as conclusions. H1 is likely. Let's include both.
+
+H4: Upstream planning-api depends on forecast-pipeline? Actually graph shows service:gridcast:planning-api -> service:gridcast:forecast-pipeline serves, and planning-api -> grid-operator serves. So planning API serves grid operator, and forecast-pipeline serves planning API. There might be hypothesis: forecast-pipeline failure causing planning-api inability to serve? But symptom is grid operator cannot reach planning API. However available replicas zero. We can propose that forecast-pipeline degradation causes planning-api to become unavailable? Not likely. But query pipeline-failed-runs, slow-pipeline-traces etc. We observed expectations? Not in evidence for pipeline-failed-runs. Could propose: forecast-pipeline failures cause planning-api to fail readiness or scale down? Not mechanically supported. We should keep.
+
+H5: Ingestion/upstream data issues cause forecast-pipeline validation failures, leading planning-api to reject? But observed no validation failures. Not necessary.
+
+Need decide output. We can output 4 hypotheses:
+1. Planning API deployment replica count zero causing no backend.
+2. A recent change to planning-api set desired replicas zero.
+3. Service routing/network failure despite available pods.
+4. Grid operator traffic is unrestricted/direct to planning API? Hmm maybe hypothesis: grid-operator's plan fetch fails because planning-api has no ready endpoints due to all pods terminating/not ready. This is too similar.
+
+Maybe: "Forecast-pipeline is failing to provide data to planning-api, causing planning-api to become unavailable" - no evidence_needed query could be pipeline-failed-runs, planning available, operator errors. Prediction: pipeline-failed-runs gt 0 and planning-available-replicas eq 0? But planning desired 0. Hmm.
+
+Let's inspect all registered query IDs that can be used. We have:
+planning-desired-replicas
+planning-available-replicas
+operator-plan-fetch-transport-errors
+pipeline-failed-runs
+feature-sql-per-build
+feature-build-p95
+feature-failed-builds
+postgres-rows-scanned
+forecast-oom-killed
+forecast-memory-ratio
+forecast-restarts
+forecast-inference-p95
+forecast-model-reloads
+forecast-inference-max
+ingestion-demand-errors
+ingestion-weather-errors
+demand-range-failures
+weather-variability-warnings
+feature-auth-failures
+ingestion-contract-violations
+ingestion-weather-vendor-503
+feature-service-error-log
+ingestion-error-log
+slow-pipeline-traces
+prefect-failed-flow-runs
+prefect-flow-runs
+ingestion-demand-batch-p95
+demand-freshness
+weather-observation-freshness
+demand-completeness-failures
+forecast-stability-warnings
+load-feature-mean
+feature-cpu-throttling
+model-production-alias-changes
+feature-service-changes-20m
+forecast-service-changes-20m
+planning-api-changes-20m
+ingestion-changes-20m
+forecast-pipeline-changes-20m
+
+We can also use queries with no current evidence. Need only include evidence_needed query ids. Fine.
+
+Let's think of plausible causal paths given graph and incident. Grid operator cannot reach planning API. Planning API is critical. The service graph has planning-api serves grid-operator. planning-api also depends on forecast-pipeline. forecast-pipeline depends on postgres and feature-service/forecast-service. Maybe planning API is down due to missing upstream forecasts? But "cannot reach" likely connectivity. Observed desired replicas 0 confirms no deployments.
+
+Maybe include H: "Planning API is unexpectedly scaled to zero due to a bad autoscaling signal, such as CPU/memory metric absent; no replicas exist." Predictions: desired_replicas eq 0, available_replicas eq 0, operator errors gt 0. Falsifier: desired_replicas gt 0. Causal path includes maybe autoscaler not entity; but use deployment and service.
+
+Another H: "The planning-api Deployment exists but its readiness probe is failing, so available_replicas is 0 despite desired_replicas > 0." Predictions: desired_replicas gt 0, available_replicas eq 0, operator errors gt 0. Falsifier: desired_replicas eq 0 (or available >0). This is a distinct alternative. Evidence_needed: planning-desired-replicas, planning-available-replicas, operator-plan-fetch-transport-errors. This is good. Observed desired 0 would falsify. But we can propose. It's falsifiable.
+
+So we could provide 3-5 including these.
+
+Need ensure all "prediction" and "falsifier" checks use entity_id, key, operator, value with allowed types. The query key should match query "key" from context. Value type appropriate. Use numeric.
+
+Need include "id" for each hypothesis (string). statement. causal_path array of entity IDs. predictions array. evidence_needed array of query IDs. falsifiers array.
+
+Need be careful with "evidence_needed" should include query ids for every check. We can include all queries used in predictions and falsifiers. Could include extra? It says every check needs corresponding query in evidence_needed. We can include query IDs.
+
+Need output JSON no markdown. Should not include comments. Use ASCII.
+
+Let's craft hypotheses:
+
+H1: "The planning-api Deployment is scaling to zero replicas, so the planning-api service has no backends and the grid-operator cannot fetch plans." (Candidate explanation)
+causal_path: ["k8s:gridcast:deployment:planning-api", "service:gridcast:planning-api", "service:gridcast:grid-operator"]
+predictions:
+- id? checks don't have ids except properties. We need entity_id, key, operator, value. For H1:
+  {"entity_id":"service:gridcast:planning-api","key":"desired_replicas","operator":"eq","value":0}
+  {"entity_id":"service:gridcast:planning-api","key":"available_replicas","operator":"eq","value":0}
+  {"entity_id":"service:gridcast:grid-operator","key":"plan_fetch_transport_errors_5m","operator":"gt","value":0}
+falsifiers:
+  {"entity_id":"service:gridcast:planning-api","key":"desired_replicas","operator":"gt","value":0}
+  maybe available_gt 0? One is enough. Need not too many. But falsifier should be something that if true refutes hypothesis. If desired_replicas >0, this hypothesis false. However could still available 0 due to failed pods. H1 specifically zero desired. So desired >0 is falsifier. Also maybe available_gt0. We'll include desired >0.
+
+evidence_needed: ["planning-desired-replicas","planning-available-replicas","operator-plan-fetch-transport-errors"]
+
+H2: "A recent change or rollout to planning-api set desired_replicas to zero (for example a bad GitOps commit)." Predictions:
+- planning-api-changes-20m changes_20m gt 0
+- planning-desired-replicas eq 0
+- operator-plan-fetch-transport-errors gt 0? maybe no need. Falsifier:
+- planning-api-changes-20m eq 0 (if no changes in window, this cause unlikely)
+causal_path: ["service:gridcast:planning-api","k8s:gridcast:deployment:planning-api","service:gridcast:grid-operator"] maybe change at service to deployment. But "changes" entity_id service:gridcast:planning-api. Hmm.
+
+Check queries: planning-api-changes-20m key changes_20m. The value could be integer count. operator "gt", value 0. Yes.
+
+evidence_needed: ["planning-api-changes-20m","planning-desired-replicas"] maybe plus operator? Not used? Could include if in predictions? I won't include operator check. But if symptom should? Not necessary.
+
+Falsifier query also planning-api-changes-20m. ok.
+
+H3: "The planning-api Deployment desires non-zero replicas but the pods are not ready/available, causing service to have no backends." Predictions:
+- desired_replicas gt 0
+- available_replicas eq 0
+- operator-plan-fetch-transport-errors gt 0
+Falsifier:
+- available_replicas gt 0 OR desired_replicas eq 0? The hypothesis includes desired >0, so desired eq 0 is falsifier. Also available >0 falsifier. We'll include desired eq 0 maybe.
+causal_path: ["k8s:gridcast:deployment:planning-api","k8s:gridcast:service:planning-api","service:gridcast:grid-operator"]? Wait entity ID for k8s service is "k8s:gridcast:service:planning-api". Use that maybe. But we have service:gridcast:planning-api as service. Both. Maybe cause: deployment -> k8s service -> service -> operator. But path can be broader. Since the k8s Deployment hosts service:gridcast:planning-api, and k8s service also hosts. I can use ["k8s:gridcast:deployment:planning-api","k8s:gridcast:service:planning-api","service:gridcast:grid-operator"]. Good.
+But note query entity for planning available is service:gridcast:planning-api, not k8s service. That's okay.
+
+H4: "The failure is in the network path from grid-operator to the planning-api service, while planning-api has available backends." Predictions:
+- operator-plan-fetch-transport-errors gt 0
+- planning-available-replicas gt 0
+Falsifier:
+- planning-available-replicas eq 0
+causal_path: ["service:gridcast:grid-operator","service:gridcast:planning-api"] maybe only two. Evidence_needed: ["operator-plan-fetch-transport-errors","planning-available-replicas"]
+
+H5 maybe: "Planning API unavailability caused by forecast-pipeline failing to supply data, making planning API readiness fail." But predictions: pipeline-failed-runs gt 0, available_replicas eq 0, maybe desired >0? Hmm. Could include. But maybe too speculative. We can instead include "Planning API is unavailable because its service selector no longer matches any pods", which is a specific mechanism. Predictions: available_replicas eq 0, desired_replicas gt 0? Actually selector mismatch could happen while desired >0. Too similar to readiness. Could use k8s service relation. But no query for selector. Not necessary.
+
+We need 3-5. Four is enough.
+
+But there is nuance: The system says "Use only entity IDs and registered query IDs from context." We do. Entity IDs must be exact. Key must be query key. For evidence_needed, use query IDs. Good.
+
+Need ensure output valid JSON. Need no LaTeX. Use double quotes.
+
+Potential issue: Hypothesis "causal_path" items type array of strings. We include entity IDs. Good.
+
+Potential issue: Values in Check with "value": 0 as integer? JSON number no quotes. Should be okay. For float maybe 0.0. Use integer 0 or number 0.0. Either fine.
+
+Potential issue: Check "operator": "eq" etc valid. Good.
+
+Let's think if "evidence_needed" should include query IDs only, not full check. Yes.
+
+We should not include "conclusions" or "actions". Statements should be hypotheses. We need avoid "will" maybe. Fine.
+
+Let's maybe formulate 5 hypotheses to be safe. But 4 is fine. Need "Propose 3 to 5 falsifiable hypotheses". We can propose 5. Let's ensure each is distinct and uses registered queries.
+
+Let's consider adding fifth: "The planning-api unavailability is caused by upstream forecast-pipeline failure." But available desired 0? Hmm. Could be "forecast-pipeline failed runs caused planning-api dependencies to fail and the planning-api was scaled to zero by operator." Predictions: pipeline-failed-runs gt 0? query pipeline-failed-runs key failed_runs_15m. planning-desired-replicas eq 0. Falsifier: pipeline-failed-runs eq 0. But no evidence for pipeline failed runs observed. This is plausible maybe. Yet causal path: ["service:gridcast:forecast-pipeline","service:gridcast:planning-api","service:gridcast:grid-operator"]. graph shows forecast-pipeline serves planning-api. Could be upstream. But if pipeline fails, planning-api still can serve? Not necessarily. But maybe planning API depends on forecast pipeline to generate plans. If pipeline fails, planning API could return errors or be unreachable? The observed desired replicas 0 is peculiar. Maybe a cascading operator scaled planning-api to zero because pipeline outputs invalid? But no query for auto-operator. Hmm.
+
+Maybe not include speculative.
+
+Another fifth: "The planning-api service has zero available replicas because the planning-api Deployment's underlying Kubernetes Service selects pods from an old ReplicaSet; all current pods are not selected." Predictions: available_replicas eq 0, desired_replicas gt 0, operator errors gt 0. This is similar to readiness. But the query only desired/available, can't distinguish selector mismatch. Avoid.
+
+I can stick with 4.
+
+Need ensure statement phrasing uses "candidate explanation" maybe. Fine.
+
+Let's now consider whether H1 predictions include both desired and available eq 0. The evidence already observed both 0. That's okay. It's falsifiable via desired gt 0. Good.
+
+H2 uses planning-api-changes query; if evidence not observed but can be retrieved. Good.
+
+H3 uses desired gt 0. Good.
+
+H4 uses available gt 0. Good.
+
+Let's ensure every check has query in evidence_needed. For H3:
+predictions:
+- planning-desired-replicas, planning-available-replicas, operator-plan-fetch-transport-errors
+falsifier:
+- planning-desired-replicas? yes. Actually falsifier desired_replicas eq 0 uses planning-desired-replicas.
+evidence_needed includes those three.
+
+H4 predictions operator and planning available; falsifier planning available; evidence_needed both.
+
+H2 predictions planning changes and planning desired; falsifier planning changes. evidence_needed both.
+
+Good.
+
+Now need output JSON object with hypotheses array. Let's draft carefully.
+
+But let's think about "causal_path" strings: They need be "entity IDs", not relationship words. So no "changes" or "network". Use only entity IDs.
+
+H1 causality: deployment planning-api zero replicas leads to service planning-api unavailable leads to grid-operator symptom. Path order can be cause -> affected. But maybe "causal_path": ["k8s:gridcast:deployment:planning-api","service:gridcast:planning-api","service:gridcast:grid-operator"].
+
+H2: "service:gridcast:planning-api" -> "k8s:gridcast:deployment:planning-api" -> "service:gridcast:grid-operator". But changes query is on service planning API. If recent change affects service/deployment. That seems okay. Could maybe include only ["service:gridcast:planning-api","k8s:gridcast:deployment:planning-api","service:gridcast:grid-operator"].
+
+H3: deployment planning-api -> k8s service planning-api -> grid operator? But available query on service:gridcast:planning-api. Use ["k8s:gridcast:deployment:planning-api","k8s:gridcast:service:planning-api","service:gridcast:grid-operator"]. Could include service:gridcast:planning-api too? Maybe path should use entities with data. We can use ["k8s:gridcast:deployment:planning-api","k8s:gridcast:service:planning-api","service:gridcast:grid-operator"]. Hmm the Kubernetes service entity is "k8s:gridcast:service:planning-api"; it hosts service:gridcast:planning-api. We can use it. Good.
+
+H4: ["service:gridcast:grid-operator","service:gridcast:planning-api"]. It's path from grid operator to planning api service. Good.
+
+Let's ensure no extra markdown.
+
+Before final, maybe verify JSON schema. All required fields:
+Hypothesis: id, statement, causal_path, predictions, evidence_needed, falsifiers.
+Check: entity_id, key, operator, value. Good.
+Top-level: hypotheses.
+
+Let's produce.
+
+But let's consider if "value" for integer counts should be number not string. We use 0. ok.
+
+Need maybe include evidence_needed for falsifier too per instructions "Every check needs a corresponding query in evidence_needed." Our evidence_needed list includes all used queries. Yes.
+
+Potential issue: If same query appears multiple times in evidence_needed, list may have duplicates? We can avoid duplicates. But if use same query in predictions and falsifier, include once. That's enough.
+
+Let's prepare final JSON:
+
+{
+  "hypotheses": [
+    {
+      "id": "H1",
+      "statement": "The planning-api Deployment is scaled to zero desired replicas, leaving the planning-api service with no available backends and causing grid-operator plan fetch transport errors.",
+      "causal_path": ["k8s:gridcast:deployment:planning-api", "service:gridcast:planning-api", "service:gridcast:grid-operator"],
+      "predictions": [
+        {"entity_id":"service:gridcast:planning-api","key":"desired_replicas","operator":"eq","value":0},
+        {"entity_id":"service:gridcast:planning-api","key":"available_replicas","operator":"eq","value":0},
+        {"entity_id":"service:gridcast:grid-operator","key":"plan_fetch_transport_errors_5m","operator":"gt","value":0}
+      ],
+      "evidence_needed": ["planning-desired-replicas","planning-available-replicas","operator-plan-fetch-transport-errors"],
+      "falsifiers": [
+        {"entity_id":"service:gridcast:planning-api","key":"desired_replicas","operator":"gt","value":0}
+      ]
+    },
+    {
+      "id": "H2",
+      "statement": "A recent GitOps commit or rollout touching planning-api set the Deployment's desired replicas to zero, producing the outage.",
+      "causal_path": ["service:gridcast:planning-api","k8s:gridcast:deployment:planning-api","service:gridcast:grid-operator"],
+      "predictions": [
+        {"entity_id":"service:gridcast:planning-api","key":"changes_20m","operator":"gt","value":0},
+        {"entity_id":"service:gridcast:planning-api","key":"desired_replicas","operator":"eq","value":0}
+      ],
+      "evidence_needed": ["planning-api-changes-20m","planning-desired-replicas"],
+      "falsifiers": [
+        {"entity_id":"service:gridcast:planning-api","key":"changes_20m","operator":"eq","value":0}
+      ]
+    },
+    {
+      "id": "H3",
+      "statement": "The planning-api Deployment desires at least one replica, but its pods are not ready or available, so the planning-api service has no healthy backends for grid-operator.",
+      "causal_path": ["k8s:gridcast:deployment:planning-api","k8s:gridcast:service:planning-api","service:gridcast:grid-operator"],
+      "predictions": [
+        {"entity_id":"service:gridcast:planning-api","key":"desired_replicas","operator":"gt","value":0},
+        {"entity_id":"service:gridcast:planning-api","key":"available_replicas","operator":"eq","value":0},
+        {"entity_id":"service:gridcast:grid-operator","key":"plan_fetch_transport_errors_5m","operator":"gt","value":0}
+      ],
+      "evidence_needed": ["planning-desired-replicas","planning-available-replicas","operator-plan-fetch-transport-errors"],
+      "falsifiers": [
+        {"entity_id":"service:gridcast:planning-api","key":"desired_replicas","operator":"eq","value":0}
+      ]
+    },
+    {
+      "id": "H4",
+      "statement": "The planning-api service has available backends, but the network or service routing path between grid-operator and planning-api is failing, causing transport errors.",
+      "causal_path": ["service:gridcast:grid-operator","service:gridcast:planning-api"],
+      "predictions": [
+        {"entity_id":"service:gridcast:grid-operator","key":"plan_fetch_transport_errors_5m","operator":"gt","value":0},
+        {"entity_id":"service:gridcast:planning-api","key":"available_replicas","operator":"gt","value":0}
+      ],
+      "evidence_needed": ["operator-plan-fetch-transport-errors","planning-available-replicas"],
+      "falsifiers": [
+        {"entity_id":"service:gridcast:planning-api","key":"available_replicas","operator":"eq","value":0}
+      ]
+    }
+  ]
+}
+
+Need ensure H3 falsifier `desired_replicas eq 0` directly refutes "desires at least one replica". Good.
+
+But H3 prediction `available_replicas eq 0` and falsifier only desired eq 0. If desired >0 but available >0, hypothesis false but not captured by falsifier. Could we use available_replicas gt 0 as falsifier too? The instructions don't require exhaustive. But perhaps better to include multiple falsifiers? Schema allows array. Could include:
+- {"entity_id":"service:gridcast:planning-api","key":"available_replicas","operator":"gt","value":0}
+because if any available, no zero backends. That would also refute. Let's add that. Similarly H1 maybe include available >0? If desired 0 but available >0? Could be impossible if desired 0 but maybe replicas from previous? Actually if desired 0, no replicas should available. But falsifier desired >0 enough. H2 okay. H4 okay.
+
+Let's update H3 falsifiers:
+falsifiers: [
+  {"entity_id":"service:gridcast:planning-api","key":"desired_replicas","operator":"eq","value":0},
+  {"entity_id":"service:gridcast:planning-api","key":"available_replicas","operator":"gt","value":0}
+]
+Evidence_needed already includes both.
+
+Maybe H1 falsifiers also include available_replicas gt 0? If available >0, zero backends false. But desired_replicas could be 0 while available>0? Not typical. Add available gt 0 maybe. But then evidence_needed already has. Could add. More rigorous.
+
+H2: If changes_20m eq 0, no change. good.
+
+Let's output final. Need ensure no markdown. Use plain JSON. Let me think if "value": 0.0 maybe better for observed metrics, but integer accepted. We'll use 0 for counts and errors. For H1 operator transport errors value can be 0.
+
+Potential issue with key "plan_fetch_transport_errors_5m" is query key; yes.
+
+Potential issue with entity ID "k8s:gridcast:service:planning-api" exists. yes.
+
+Let's produce final JSON only.

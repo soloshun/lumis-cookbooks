@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Upstream demand data feed/API (external to service:gridcast:ingestion) :: The external demand data source began returning malformed, empty, or error responses at 20:59:42Z, causing service:gridcast:ingestion to reject or fail demand ingestion. :: Most likely: a transient upstream data quality or availability issue aligns with the short 12-minute incident window and recovery at 21:11:56Z."
+ },
+ {
+  "entity": "service:gridcast:ingestion (demand parsing/validation logic)",
+  "text": "service:gridcast:ingestion (demand parsing/validation logic) :: A recent code change or bug introduced an unhandled exception or schema mismatch in demand record parsing, causing ingestion to fail on affected messages until the bad input cleared or code was rolled back. :: Likely if a deploy or configuration change preceded the incident."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Downstream demand datastore/database used by service:gridcast:ingestion :: The demand datastore became unavailable, slow, or hit write timeouts/lock contention, causing ingestion writes to fail and surface as IngestionErrors. :: Possible storage saturation or maintenance could produce a transient write-path failure."
+ },
+ {
+  "entity": "service:gridcast:ingestion runtime infrastructure (pod/container/host)",
+  "text": "service:gridcast:ingestion runtime infrastructure (pod/container/host) :: The ingestion service hit CPU or memory limits, causing throttling, OOM kills, or request drops during a demand spike or resource leak. :: Possible resource exhaustion that recovered after a restart or load reduction."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Network/service-mesh dependency path for service:gridcast:ingestion :: A DNS resolution failure or network partition made an upstream or downstream dependency unreachable from service:gridcast:ingestion, causing transient ingestion failures without a fault in the service itself. :: Less likely but consistent with a short-lived infrastructure network blip."
+ }
+]

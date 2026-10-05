@@ -1,0 +1,225 @@
+14:41:59 [J] OpenRouter balance $15.90
+14:41:59 [J] waiting for quiet estate and 20 min cooldown
+14:41:59 [J] injecting
+14:45:50 [J] incident gridcast-20261004T144550Z-32b92f affected=['service:gridcast:grid-operator'] after 225s
+14:45:51 [J] rules r1: ok (0.42s)
+14:45:51 [J] rules r2: ok (0.124s)
+14:45:51 [J] rules r3: ok (0.306s)
+14:45:51 [J] rules r4: ok (0.25s)
+14:45:52 [J] rules r5: ok (0.194s)
+14:45:53 [J] lumis r1: ok (0.892s)
+14:45:53 [J] lumis r2: ok (0.304s)
+14:48:04 [J] single_pass r2: ok (132.099s)
+14:53:58 [J] single_pass r1: ok (486.364s)
+14:53:58 [J] reverting
+14:54:08 [A] OpenRouter balance $15.85
+14:54:08 [A] waiting for quiet estate and 20 min cooldown
+15:14:08 [A] injecting
+15:26:32 [A] incident gridcast-20261004T152632Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 736s
+15:26:33 [A] rules r1: ok (0.305s)
+15:26:33 [A] rules r2: ok (0.135s)
+15:26:33 [A] rules r3: ok (0.13s)
+15:26:33 [A] rules r4: ok (0.324s)
+15:26:33 [A] rules r5: ok (0.096s)
+15:30:10 [A] lumis r2: ok (216.43s)
+15:30:24 [A] single_pass r2: ok (230.874s)
+15:30:57 [A] lumis r1: ok (263.796s)
+15:31:17 [A] single_pass r1: ok (283.867s)
+15:31:17 [A] reverting
+15:31:26 [F] OpenRouter balance $15.55
+15:31:26 [F] waiting for quiet estate and 20 min cooldown
+15:51:26 [F] injecting
+16:01:22 [F] incident gridcast-20261004T160122Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 541s
+16:01:23 [F] rules r1: ok (0.449s)
+16:01:23 [F] rules r2: ok (0.153s)
+16:01:23 [F] rules r3: ok (0.306s)
+16:01:23 [F] rules r4: ok (0.152s)
+16:01:23 [F] rules r5: ok (0.164s)
+16:03:59 [F] single_pass r1: ok (155.566s)
+16:05:33 [F] single_pass r2: ok (249.995s)
+16:11:32 [F] lumis r2: ok (608.616s)
+16:16:21 [F] lumis r1: ok (897.383s)
+16:16:21 [F] reverting
+16:16:31 [C] OpenRouter balance $14.94
+16:16:31 [C] waiting for quiet estate and 20 min cooldown
+16:36:32 [C] injecting
+16:44:10 [C] incident gridcast-20261004T164410Z-e17d4c affected=['service:gridcast:feature-service'] after 436s
+16:44:11 [C] rules r1: ok (0.232s)
+16:44:11 [C] rules r2: ok (0.101s)
+16:44:11 [C] rules r3: ok (0.139s)
+16:44:11 [C] rules r4: ok (0.149s)
+16:44:11 [C] rules r5: ok (0.102s)
+16:44:49 [C] single_pass r2: ok (37.39s)
+16:46:52 [C] lumis r2: investigator_rejected_or_unavailable (160.479s)
+16:49:02 [C] single_pass r1: ok (290.55s)
+16:51:22 [C] lumis r1: ok (431.253s)
+16:51:22 [C] reverting
+16:51:42 [D] OpenRouter balance $14.60
+16:51:42 [D] waiting for quiet estate and 20 min cooldown
+17:11:42 [D] injecting
+17:14:44 [D] incident gridcast-20261004T171444Z-2eca58 affected=['service:gridcast:forecast-service'] after 180s
+17:14:45 [D] rules r1: ok (0.24s)
+17:14:46 [D] rules r2: ok (1.396s)
+17:14:46 [D] rules r3: ok (0.096s)
+17:14:46 [D] rules r4: ok (0.293s)
+17:14:47 [D] rules r5: ok (0.103s)
+17:16:23 [D] single_pass r1: ok (95.927s)
+17:21:42 [D] single_pass r2: ok (415.624s)
+17:21:45 [D] lumis r1: ok (418.014s)
+17:28:12 [D] lumis r2: ok (805.273s)
+17:28:12 [D] reverting
+17:28:21 [E] OpenRouter balance $14.19
+17:28:21 [E] waiting for quiet estate and 20 min cooldown
+17:48:21 [E] injecting
+18:01:19 [E] incident gridcast-20261004T180119Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 752s
+18:01:20 [E] rules r1: ok (0.265s)
+18:01:20 [E] rules r2: ok (0.143s)
+18:01:20 [E] rules r3: ok (0.34s)
+18:01:21 [E] rules r4: ok (0.125s)
+18:01:21 [E] rules r5: ok (0.136s)
+18:01:35 [E] single_pass r2: ok (14.322s)
+18:03:57 [E] lumis r1: ok (156.723s)
+18:04:57 [E] lumis r2: ok (216.4s)
+18:07:14 [E] single_pass r1: ok (352.925s)
+18:07:14 [E] reverting
+18:07:26 [G] OpenRouter balance $14.01
+18:07:26 [G] waiting for quiet estate and 20 min cooldown
+18:27:26 [G] injecting
+18:33:27 [G] incident gridcast-20261004T183327Z-e7cace affected=['service:gridcast:ingestion'] after 361s
+18:33:28 [G] rules r1: ok (0.25s)
+18:33:28 [G] rules r2: ok (0.101s)
+18:33:28 [G] rules r3: ok (0.109s)
+18:33:28 [G] rules r4: ok (0.126s)
+18:33:29 [G] rules r5: ok (0.107s)
+18:34:29 [G] single_pass r2: ok (60.147s)
+18:36:26 [G] lumis r1: ok (177.517s)
+18:36:34 [G] lumis r2: ok (185.858s)
+18:40:00 [G] single_pass r1: ok (391.555s)
+18:40:00 [G] reverting
+18:40:02 [H] OpenRouter balance $13.77
+18:40:02 [H] waiting for quiet estate and 20 min cooldown
+19:00:02 [H] injecting
+19:11:04 [H] incident gridcast-20261004T191104Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 661s
+19:11:05 [H] rules r1: ok (0.278s)
+19:11:05 [H] rules r2: ok (0.505s)
+19:11:05 [H] rules r3: ok (0.104s)
+19:11:05 [H] rules r4: ok (0.09s)
+19:11:05 [H] rules r5: ok (0.097s)
+19:11:36 [H] single_pass r2: ConnectError: [Errno 8] nodename nor servname provided, or not known (30.253s)
+19:11:36 [H] single_pass r1: ConnectError: [Errno 8] nodename nor servname provided, or not known (30.268s)
+19:11:36 [H] lumis r1: investigator_rejected_or_unavailable (30.275s)
+19:11:36 [H] lumis r2: investigator_rejected_or_unavailable (30.264s)
+19:11:36 [H] reverting
+19:11:37 [I] waiting for quiet estate and 20 min cooldown
+19:31:37 [I] injecting
+19:36:38 [I] incident gridcast-20261004T193638Z-dcf742 affected=['service:gridcast:ingestion', 'service:gridcast:weather-vendor-wx-primary'] after 300s
+19:36:39 [I] rules r1: ok (0.474s)
+19:36:39 [I] rules r2: ok (0.168s)
+19:36:40 [I] rules r3: ok (0.213s)
+19:36:40 [I] rules r4: ok (0.125s)
+19:36:40 [I] rules r5: ok (0.105s)
+19:37:38 [I] single_pass r1: ok (58.308s)
+19:38:28 [I] single_pass r2: ok (107.957s)
+19:39:56 [I] lumis r1: ok (196.583s)
+19:40:57 [I] lumis r2: ok (256.858s)
+19:40:57 [I] reverting
+19:40:58 [B] OpenRouter balance $13.51
+19:40:58 [B] waiting for quiet estate and 20 min cooldown
+20:00:58 [B] injecting
+20:30:48 [B] incident gridcast-20261004T203048Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 1789s
+20:30:48 [B] rules r1: ok (0.218s)
+20:30:48 [B] rules r2: ok (0.111s)
+20:30:49 [B] rules r3: ok (0.112s)
+20:30:49 [B] rules r4: ok (0.101s)
+20:30:49 [B] rules r5: ok (0.083s)
+20:32:57 [B] single_pass r2: ok (128.393s)
+20:33:06 [B] lumis r1: ok (137.088s)
+20:34:08 [B] lumis r2: ok (198.751s)
+20:34:25 [B] single_pass r1: ok (216.187s)
+20:34:25 [B] reverting
+20:34:26 [K] OpenRouter balance $13.37
+20:34:26 [K] waiting for quiet estate and 20 min cooldown
+21:03:47 [K] injecting
+21:11:56 [K] incident gridcast-20261004T211156Z-e7cace affected=['service:gridcast:ingestion'] after 331s
+21:11:57 [K] rules r1: ok (0.285s)
+21:11:57 [K] rules r2: ok (0.159s)
+21:11:57 [K] rules r3: ok (0.116s)
+21:11:57 [K] rules r4: ok (0.129s)
+21:11:58 [K] rules r5: ok (0.358s)
+21:14:42 [K] lumis r2: ok (164.142s)
+21:15:17 [K] single_pass r2: ok (199.413s)
+21:16:47 [K] single_pass r1: ok (289.814s)
+21:17:58 [K] lumis r1: ok (359.926s)
+21:17:58 [K] reverting
+21:18:06 [L] OpenRouter balance $12.94
+21:18:06 [L] waiting for quiet estate and 20 min cooldown
+21:38:06 [L] injecting
+21:54:31 [L] incident gridcast-20261004T215431Z-e7cace affected=['service:gridcast:ingestion'] after 857s
+21:54:32 [L] rules r1: ok (0.235s)
+21:54:32 [L] rules r2: ok (0.134s)
+21:54:32 [L] rules r3: ok (0.372s)
+21:54:33 [L] rules r4: ok (0.106s)
+21:54:33 [L] rules r5: ok (0.091s)
+21:56:09 [L] lumis r1: ok (96.83s)
+21:56:10 [L] lumis r2: ok (97.086s)
+21:56:37 [L] single_pass r1: ok (124.819s)
+22:00:17 [L] single_pass r2: ok (343.948s)
+22:00:17 [L] reverting
+22:00:25 [M] OpenRouter balance $12.18
+22:00:25 [M] waiting for quiet estate and 20 min cooldown
+22:28:46 [M] injecting
+22:41:20 [M] incident gridcast-20261004T224120Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 752s
+22:41:20 [M] rules r1: ok (0.456s)
+22:41:20 [M] rules r2: ok (0.11s)
+22:41:21 [M] rules r3: ok (0.104s)
+22:41:21 [M] rules r4: ok (0.09s)
+22:41:21 [M] rules r5: ok (0.087s)
+22:45:31 [M] single_pass r1: ok (250.447s)
+22:49:02 [M] single_pass r2: ok (461.559s)
+22:49:05 [M] lumis r2: ok (463.952s)
+22:50:51 [M] lumis r1: ok (570.056s)
+22:50:51 [M] reverting
+22:50:59 [N] OpenRouter balance $11.69
+22:50:59 [N] waiting for quiet estate and 20 min cooldown
+23:10:59 [N] injecting
+23:16:07 [N] incident gridcast-20261004T231607Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 301s
+23:16:08 [N] rules r1: ok (0.249s)
+23:16:08 [N] rules r2: ok (0.124s)
+23:16:08 [N] rules r3: ok (0.301s)
+23:16:08 [N] rules r4: ok (0.133s)
+23:16:08 [N] rules r5: ok (0.115s)
+23:18:25 [N] single_pass r1: ok (136.521s)
+23:21:26 [N] lumis r1: ok (317.62s)
+23:21:49 [N] single_pass r2: ok (341.071s)
+23:22:26 [N] lumis r2: ok (377.909s)
+23:22:26 [N] reverting
+23:22:34 [O] OpenRouter balance $11.40
+23:22:34 [O] waiting for quiet estate and 20 min cooldown
+23:53:56 [O] injecting
+00:25:46 [O] incident gridcast-20261005T002546Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 1909s
+00:25:47 [O] rules r1: ok (0.238s)
+00:25:47 [O] rules r2: ok (0.104s)
+00:25:47 [O] rules r3: ok (0.103s)
+00:25:47 [O] rules r4: ok (0.091s)
+00:25:47 [O] rules r5: ok (0.117s)
+00:27:18 [O] single_pass r1: ok (90.561s)
+00:28:42 [O] single_pass r2: ok (174.92s)
+00:29:42 [O] lumis r2: ok (234.442s)
+00:31:34 [O] lumis r1: ok (346.217s)
+00:31:34 [O] reverting
+results in lumis/experiments/2026-10-04-followup-deepseek-v4-pro
+00:32:02 [H] OpenRouter balance $10.94
+00:32:02 [H] waiting for quiet estate and 20 min cooldown
+00:51:43 [H] injecting
+01:00:44 [H] incident gridcast-20261005T010044Z-5ee52c affected=['service:gridcast:forecast-pipeline'] after 541s
+01:00:45 [H] rules r1: ok (0.339s)
+01:00:45 [H] rules r2: ok (0.106s)
+01:00:45 [H] rules r3: ok (0.123s)
+01:00:45 [H] rules r4: ok (0.116s)
+01:00:45 [H] rules r5: ok (0.108s)
+01:04:15 [H] lumis r1: ok (209.626s)
+01:04:41 [H] lumis r2: ok (235.371s)
+01:05:57 [H] single_pass r1: ok (311.432s)
+01:06:48 [H] single_pass r2: ok (362.828s)
+01:06:48 [H] reverting
+results in lumis/experiments/2026-10-04-followup-deepseek-v4-pro

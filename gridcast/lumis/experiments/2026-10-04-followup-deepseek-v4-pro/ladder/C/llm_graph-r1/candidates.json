@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Feature-service application regression :: A newly deployed feature-service build introduced an unhandled code path or exception that returns HTTP 5xx for a subset of normal requests. :: This is the most local explanation for the spike and requires no upstream or infrastructure dependency failure."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Postgres dependency degradation :: service:gridcast:postgres experienced slow queries, transient connection-limit exhaustion, or brief query failures that feature-service surfaced as 5xx. :: The dependency edge from postgres to feature-service makes this a strong competing cause, especially if DB errors are translated directly to 5xx."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Feature-service pod resource exhaustion :: k8s:gridcast:pod:feature-service-66bb7f88bf-twhht hit CPU or memory limits, causing request timeouts, readiness failures, or partial request dropping. :: This explains a transient, self-recovering 5xx burst without requiring a code change or external dependency failure."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Upstream client traffic or request pattern from forecast-pipeline :: service:gridcast:forecast-pipeline sent a burst of expensive or malformed requests to feature-service, overwhelming its handlers and driving 5xx. :: The fault originates in the caller rather than in feature-service itself."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Kubernetes Service routing or readiness mismatch :: k8s:gridcast:service:feature-service routed some traffic to unready or terminating pods during replicaset churn, producing HTTP 5xx responses. :: This explains a short-lived service-level error spike tied to deployment or scaling activity."
+ }
+]

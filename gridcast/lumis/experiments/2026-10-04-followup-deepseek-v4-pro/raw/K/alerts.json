@@ -1,0 +1,9 @@
+[
+ {
+  "name": "IngestionErrors",
+  "entity": "service:gridcast:ingestion",
+  "summary": "Ingestion of demand is failing",
+  "active_at": "2026-10-04 21:09:42.944281+00:00",
+  "severity": "ticket"
+ }
+]

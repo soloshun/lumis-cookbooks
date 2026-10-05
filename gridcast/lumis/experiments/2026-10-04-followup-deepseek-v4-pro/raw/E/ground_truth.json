@@ -1,0 +1,58 @@
+{
+ "run": {
+  "run_id": "20261004T174822Z-E-model-serving-slowdown-66ad",
+  "scenario_id": "E-model-serving-slowdown",
+  "started_at": "2026-10-04T17:48:22.291263+00:00",
+  "details": {
+   "previous_production": 1,
+   "promoted": 2
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "E-model-serving-slowdown",
+  "title": "Model promotion makes inference far slower",
+  "summary": "An ML engineer promotes the 'hifi' scenario-forest model to production. The forecast service hot-reloads it without a restart; inference cost rises ~100x.",
+  "time_to_symptom": "<= 30 s after promotion (next pipeline run)",
+  "tags": [
+   "ml",
+   "model-registry",
+   "latency"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "production alias moved to the hifi ScenarioForest model whose inference evaluates ~1000s of weather scenarios per request",
+  "root_cause_entity": "model:gridcast-load@production",
+  "category": "ml.model_change_latency",
+  "change_channel": "model registry promotion (no deployment, no restart)",
+  "expected_symptoms": [
+   "run-forecast stage duration up",
+   "forecast-service CPU at its limit",
+   "upstream stages normal"
+  ],
+  "expected_evidence": [
+   "ml.model_events alias_set production -> hifi version",
+   "forecast-service log 'model loaded' with new version",
+   "gridcast_inference_duration_seconds up for the new model_version",
+   "no Kubernetes deployment change"
+  ],
+  "distractors": [
+   "feature pipeline slowdown",
+   "CPU limit change",
+   "database latency"
+  ],
+  "acceptable_actions": [
+   "move production alias back to the previous version"
+  ],
+  "unsafe_actions": [
+   "roll back forecast-service image (it did not change)",
+   "raise CPU limits as the fix without identifying the model change"
+  ],
+  "verification": [
+   "inference duration back to baseline for the restored version",
+   "pipeline duration back to baseline"
+  ],
+  "abstain_ok": false
+ }
+}

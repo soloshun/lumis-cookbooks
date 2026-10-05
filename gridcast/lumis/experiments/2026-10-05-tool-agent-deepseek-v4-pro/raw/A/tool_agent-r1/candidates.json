@@ -1,0 +1,23 @@
+{
+ "candidates": [
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "service:gridcast:feature-service :: version 1.7.0 (FEAT-412, 'native one-minute resolution lags') ships lag_resolution=minute. The minute builder (build_minute in features/store.py) issues ~2,499 SQL statements per feature build \u2014 one per lag hour per target zone per horizon \u2014 instead of the ~3 grouped queries the <=1.6.0 hourly builder used. Each query is non-sargable (WHERE date_trunc('hour', ts) = :start), so every one scans the zone's full retained history. Feature-service logs and metrics confirm this: db_queries=2499, duration_ms\u22486250 per build, and gridcast:feature_build_seconds:p95_15m \u2248 9.5s. This slow data fetch is inside the pipeline's build_features stage, pushing the overall forecast-pipeline p95 (gridcast:pipeline_duration_seconds:p95_15m \u2248 9.6s) over the 5s SLO. :: The p95>5s alert is caused by the feature-service 1.7.0 minute-resolution feature builder doing ~2,500 full-history scans per feature build (~6.3s/build), directly inflating the pipeline's build_features stage."
+  },
+  {
+   "entity": "service:gridcast:feature-service (query design / DB amplification)",
+   "text": "service:gridcast:feature-service (query design / DB amplification) :: MINUTE_SQL filters on date_trunc('hour', ts) = :start, which negates the (zone_id, ts) composite key/index and forces a sequential scan of raw.demand_readings for every one of the ~2,500 per-hour lookups. Cost therefore grows with retained data volume; on this estate each lookup is slow enough that the aggregate feature build lands at ~6.25s. The same numbers could be produced with one grouped scan (as v1.6.0 did), so the latency is dominated by query shape, not by new features themselves. :: A non-sargable date_trunc predicate makes every per-hour lag lookup a full-history sequential scan; amplified by retained data, this turns a 3-query feature build into ~2,500 costly scans."
+  },
+  {
+   "entity": "service:gridcast:gitops (deployment thrash) \u2014 contributing factor",
+   "text": "service:gridcast:gitops (deployment thrash) \u2014 contributing factor :: Between 02:29 and 03:07 there were three conflicting deploys: 1.6.0\u21921.7.0 (02:29:50), a platform-team rollback 1.7.0\u21921.6.0 (02:46:26), then a re-deploy 1.6.0\u21921.7.0 (03:06:55). The repeated toggling re-introduced and re-exposed the 1.7.0 regression inside the incident window and kept the 15-minute rolling p95 elevated; the final 1.7.0 pod (hx4sb) resumed ~6.25s feature builds at 03:08 and 03:13. :: Conflicting automatic/manual deploys of 1.7.0 kept the slow minute builder re-entering service during the incident window and prevented a clean resolution."
+  }
+ ],
+ "suggestions": [
+  "Roll feature-service back to 1.6.0 (hourly builder) and pin it until the minute builder is proven safe; stop the 1.6\u21941.7 toggle until then.",
+  "Rewrite build_minute to fetch all needed hour-means in one grouped scan (e.g. join against a generated hour series, or ts >= :start AND ts < :start+'1 hour'), preserving an index on raw.demand_readings(zone_id, ts).",
+  "Make the predicate sargable (replace date_trunc('hour', ts) = :start with a half-open ts range) and verify the query plan uses the (zone_id, ts) index.",
+  "Add a pre-release guard: assert feature-build query count and p95 (db_queries_total / feature_build_seconds) are within the <1.6.0 baseline before promoting, and alert on db_queries_per_build regression.",
+  "Investigate the deploy-authority split (rightsizer-bot vs platform-team vs kofi.mensah) so a regression like FEAT-412 cannot be re-deployed without explicit approval."
+ ]
+}

@@ -1,0 +1,3 @@
+injecting G-vendor-schema-break: Grid telemetry vendor ships an incompatible API version
+run 20261004T182726Z-G-vendor-schema-break-69f6 (ground truth: .gridcast/chaos/runs/20261004T182726Z-G-vendor-schema-break-69f6.json)
+symptoms expected: ingestion errors immediately; forecast hold after ~15 min

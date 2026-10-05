@@ -1,0 +1,29 @@
+{
+ "fetched_queries": [
+  "ingestion-contract-violations"
+ ],
+ "facts_added": 0,
+ "ranked": [
+  {
+   "entity": "service:gridcast:weather-vendor-wx-primary",
+   "text": "The primary weather vendor (service:gridcast:weather-vendor-wx-primary) returned HTTP 503/5xx responses to ingestion during the incident window, causing weather-observation batch failures.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "The failure is specific to the weather-observation path; demand ingestion remained healthy.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:weather-vendor-wx-primary",
+   "text": "The primary weather vendor payloads violated ingestion's expected contract, causing weather-observation batch failures independently of transport 5xx responses.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:weather-vendor-wx-primary",
+   "text": "The primary weather vendor served repeated or stale values, triggering downstream weather-variability warnings.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

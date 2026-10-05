@@ -1,0 +1,3 @@
+injecting O-partial-missing-data: One zone's demand quietly stops arriving
+run 20261004T235357Z-O-partial-missing-data-0e69 (ground truth: .gridcast/chaos/runs/20261004T235357Z-O-partial-missing-data-0e69.json)
+symptoms expected: ~30 min (repeated completeness warnings), ~40 min (forecast held)

@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "Planning API backend unavailable :: The planning API crashed, was OOM-killed, or became unresponsive, so it could not accept connections from service:gridcast:grid-operator. :: Most likely, because a single consumer reporting PlanningApiUnreachable often points to the dependency itself being down or restarting."
+ },
+ {
+  "entity": "service:gridcast:grid-operator",
+  "text": "Network path or firewall change :: A routing, firewall, or security-group change dropped or blocked traffic between service:gridcast:grid-operator and the planning API. :: Common cause of one-way unreachability where the API remains healthy but the network path fails."
+ },
+ {
+  "entity": "service:gridcast:grid-operator",
+  "text": "DNS or service discovery failure :: Name resolution for the planning API returned no record, a stale IP, or SERVFAIL, so grid-operator could not obtain a valid endpoint. :: Fits a short transient outage and can affect only some clients depending on cached DNS."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "Load balancer or ingress failure :: The load balancer or ingress in front of the planning API lost healthy backend targets or misrouted traffic, causing refused/reset connections. :: Plausible if planning API instances were healthy but the front door became unavailable."
+ },
+ {
+  "entity": "service:gridcast:grid-operator",
+  "text": "Grid-operator client-side issue :: service:gridcast:grid-operator had a stale endpoint configuration, expired TLS client certificate, or exhausted connection pool, making the planning API appear unreachable. :: Less likely, but possible if the fault was isolated to the grid operator rather than the API or network."
+ }
+]

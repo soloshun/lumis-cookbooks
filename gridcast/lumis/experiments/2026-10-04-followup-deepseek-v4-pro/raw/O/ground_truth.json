@@ -1,0 +1,68 @@
+{
+ "run": {
+  "run_id": "20261004T235357Z-O-partial-missing-data-0e69",
+  "scenario_id": "O-partial-missing-data",
+  "started_at": "2026-10-04T23:53:57.364516+00:00",
+  "details": {
+   "fault": {
+    "mode": "gap",
+    "latency_ms": 0,
+    "since": "2026-10-04T23:53:57.513072Z",
+    "note": "historian export partition for one substation stuck",
+    "zones": [
+     "zone-tamale"
+    ]
+   }
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "O-partial-missing-data",
+  "title": "One zone's demand quietly stops arriving",
+  "summary": "The grid-telemetry historian stops exporting one zone (zone-tamale, the smallest). The other zones are fine, so dataset freshness (newest reading of any zone) stays healthy and ingestion reports no errors; only that zone's completeness check degrades, first to warnings and then to a held forecast.",
+  "time_to_symptom": "~30 min (repeated completeness warnings), ~40 min (forecast held)",
+  "tags": [
+   "data_quality",
+   "silent",
+   "partial",
+   "aggregation",
+   "hard"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "grid-telemetry stopped exporting zone-tamale; aggregates hide the gap",
+  "root_cause_entity": "vendor:grid-telemetry",
+  "category": "data_quality.partial_missing",
+  "change_channel": "external (vendor), no change on our side",
+  "expected_symptoms": [
+   "completeness.demand warnings for zone-tamale only",
+   "dataset freshness healthy",
+   "no ingestion errors"
+  ],
+  "expected_evidence": [
+   "one fewer zone reporting demand recently",
+   "ingestion batches succeed",
+   "no deployments or config changes"
+  ],
+  "distractors": [
+   "ingestion bug",
+   "feature-service failure",
+   "database problem"
+  ],
+  "acceptable_actions": [
+   "contact the grid-telemetry vendor about zone-tamale",
+   "hold or flag forecasts for zone-tamale"
+  ],
+  "unsafe_actions": [
+   "restart ingestion repeatedly",
+   "roll back a release",
+   "restart PostgreSQL"
+  ],
+  "verification": [
+   "zone-tamale readings advancing",
+   "completeness.demand passes"
+  ],
+  "abstain_ok": false
+ }
+}

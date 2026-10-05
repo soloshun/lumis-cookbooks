@@ -1,0 +1,594 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:ingestion",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "evidence_needed": [
+    "demand-freshness",
+    "weather-observation-freshness"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "le",
+     "value": 300
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "le",
+     "value": 300
+    }
+   ],
+   "id": "H1",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "gt",
+     "value": 900
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "gt",
+     "value": 900
+    }
+   ],
+   "statement": "Stale demand or weather observations from ingestion may have caused forecast-pipeline to build the new forecast from non-current inputs, which could shift it more than 10 percent from the published plan."
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "Stale demand or weather observations from ingestion may have caused forecast-pipeline to build the new forecast from non-current inputs, which could shift it more than 10 percent from the published plan.",
+    "causal_path": [
+     "service:gridcast:ingestion",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_freshness_seconds",
+      "operator": "gt",
+      "value": 900
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_observation_freshness_seconds",
+      "operator": "gt",
+      "value": 900
+     }
+    ],
+    "evidence_needed": [
+     "demand-freshness",
+     "weather-observation-freshness"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_freshness_seconds",
+      "operator": "le",
+      "value": 300
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_observation_freshness_seconds",
+      "operator": "le",
+      "value": 300
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "gt",
+     "value": 900
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "gt",
+     "value": 900
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "le",
+     "value": 300
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "le",
+     "value": 300
+    }
+   ]
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "evidence_needed": [
+    "pipeline-failed-runs",
+    "prefect-failed-flow-runs"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "id": "H2",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "One or more forecast-pipeline runs may have failed or crashed during the incident window, leaving a partial or fallback forecast that differed from the published plan."
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "One or more forecast-pipeline runs may have failed or crashed during the incident window, leaving a partial or fallback forecast that differed from the published plan.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "pipeline-failed-runs",
+     "prefect-failed-flow-runs"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:grid-telemetry",
+    "service:gridcast:ingestion",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "evidence_needed": [
+    "demand-completeness-failures",
+    "demand-zones-reporting"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    }
+   ],
+   "id": "H3",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    }
+   ],
+   "statement": "Incomplete demand coverage may have caused the validation gate to pass a forecast built from fewer zones than the published plan, producing a deviation."
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "Incomplete demand coverage may have caused the validation gate to pass a forecast built from fewer zones than the published plan, producing a deviation.",
+    "causal_path": [
+     "service:gridcast:grid-telemetry",
+     "service:gridcast:ingestion",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "completeness_demand_failures_20m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "lt",
+      "value": 4
+     }
+    ],
+    "evidence_needed": [
+     "demand-completeness-failures",
+     "demand-zones-reporting"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "completeness_demand_failures_20m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "eq",
+      "value": 4
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:feature-service",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "evidence_needed": [
+    "forecast-pipeline-changes-20m",
+    "feature-service-changes-20m"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "id": "H4",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "A recent code or configuration change to the forecasting path may have altered forecast behavior and caused the new forecast to diverge from the published plan."
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "A recent code or configuration change to the forecasting path may have altered forecast behavior and caused the new forecast to diverge from the published plan.",
+    "causal_path": [
+     "service:gridcast:feature-service",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "forecast-pipeline-changes-20m",
+     "feature-service-changes-20m"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 5,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:postgres",
+    "service:gridcast:feature-service",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "evidence_needed": [
+    "feature-auth-failures",
+    "postgres-rows-scanned"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:postgres",
+     "key": "rows_scanned_per_s",
+     "operator": "le",
+     "value": 10000
+    }
+   ],
+   "id": "H5",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:postgres",
+     "key": "rows_scanned_per_s",
+     "operator": "gt",
+     "value": 10000
+    }
+   ],
+   "statement": "A feature-service or database access anomaly may have generated incorrect or missing feature values used by forecast-pipeline, causing the forecast to shift."
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H5",
+    "statement": "A feature-service or database access anomaly may have generated incorrect or missing feature values used by forecast-pipeline, causing the forecast to shift.",
+    "causal_path": [
+     "service:gridcast:postgres",
+     "service:gridcast:feature-service",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "db_auth_failure_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:postgres",
+      "key": "rows_scanned_per_s",
+      "operator": "gt",
+      "value": 10000
+     }
+    ],
+    "evidence_needed": [
+     "feature-auth-failures",
+     "postgres-rows-scanned"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "db_auth_failure_log_lines",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:postgres",
+      "key": "rows_scanned_per_s",
+      "operator": "le",
+      "value": 10000
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:postgres",
+     "key": "rows_scanned_per_s",
+     "operator": "gt",
+     "value": 10000
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:postgres",
+     "key": "rows_scanned_per_s",
+     "operator": "le",
+     "value": 10000
+    }
+   ]
+  }
+ }
+]

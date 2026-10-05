@@ -1,0 +1,384 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "Upstream demand telemetry from grid-telemetry stopped or degraded below all four load zones, causing ingestion demand freshness to reach the 10-minute stale threshold.",
+   "causal_path": [
+    "service:gridcast:grid-telemetry",
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "ge",
+     "value": 600
+    }
+   ],
+   "evidence_needed": [
+    "demand-zones-reporting",
+    "demand-freshness"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "lt",
+     "value": 600
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "Upstream demand telemetry from grid-telemetry stopped or degraded below all four load zones, causing ingestion demand freshness to reach the 10-minute stale threshold.",
+    "causal_path": [
+     "service:gridcast:grid-telemetry",
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "lt",
+      "value": 4
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_freshness_seconds",
+      "operator": "ge",
+      "value": 600
+     }
+    ],
+    "evidence_needed": [
+     "demand-zones-reporting",
+     "demand-freshness"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "eq",
+      "value": 4
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_freshness_seconds",
+      "operator": "lt",
+      "value": 600
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "ge",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "lt",
+     "value": 600
+    }
+   ]
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "The ingestion service's demand batch path stalled or became unusually slow, so the newest demand reading did not advance despite the absence of demand batch errors.",
+   "causal_path": [
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_p95_seconds_10m",
+     "operator": "gt",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-demand-batch-p95",
+    "ingestion-demand-errors"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_p95_seconds_10m",
+     "operator": "le",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "ne",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "The ingestion service's demand batch path stalled or became unusually slow, so the newest demand reading did not advance despite the absence of demand batch errors.",
+    "causal_path": [
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_p95_seconds_10m",
+      "operator": "gt",
+      "value": 600
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_errors_10m",
+      "operator": "eq",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-demand-batch-p95",
+     "ingestion-demand-errors"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_p95_seconds_10m",
+      "operator": "le",
+      "value": 600
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_errors_10m",
+      "operator": "ne",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [
+    "prometheus:ingestion-demand-errors"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_p95_seconds_10m",
+     "operator": "gt",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_p95_seconds_10m",
+     "operator": "le",
+     "value": 600
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "A contract violation in demand payloads from grid-telemetry caused ingestion to reject demand records and stop advancing its latest demand reading.",
+   "causal_path": [
+    "service:gridcast:grid-telemetry",
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-contract-violations"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "A contract violation in demand payloads from grid-telemetry caused ingestion to reject demand records and stop advancing its latest demand reading.",
+    "causal_path": [
+     "service:gridcast:grid-telemetry",
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-contract-violations"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "A recent ingestion rollout or configuration change altered the demand ingestion path and caused the demand input to stop advancing.",
+   "causal_path": [
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-changes-20m"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "A recent ingestion rollout or configuration change altered the demand ingestion path and caused the demand input to stop advancing.",
+    "causal_path": [
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-changes-20m"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ }
+]

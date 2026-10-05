@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "service:gridcast:forecast-pipeline :: A recent deployment or configuration change inside forecast-pipeline caused the affected run to misapply plan constraints or use stale baseline inputs. :: Most likely internal origin because forecast-pipeline is the named affected service and generated the >10% shifted forecast."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "service:gridcast:forecast-service :: A newly promoted model version in forecast-service emitted systematically shifted predictions for the 23:03 forecast run. :: Fault originates in the model serving layer consumed by forecast-pipeline."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "service:gridcast:feature-service :: feature-service served corrupted, lagged, or incorrectly computed input features for the forecast window, biasing the pipeline output. :: Fault originates upstream in feature generation."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "service:gridcast:weather-vendor-wx-primary :: The primary weather vendor supplied bad, delayed, or missing weather data that was ingested without failing over to the secondary, distorting forecast inputs. :: Fault originates in external weather data feeding the forecast."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "service:gridcast:planning-api :: planning-api served an outdated or mid-cycle revised published plan, so the new forecast was compared against an incorrect baseline and incorrectly flagged as >10% deviated. :: Fault originates in the plan/baseline data rather than in forecast computation."
+ }
+]

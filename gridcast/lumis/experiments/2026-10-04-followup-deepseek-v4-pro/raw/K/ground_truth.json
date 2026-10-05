@@ -1,0 +1,67 @@
+{
+ "run": {
+  "run_id": "20261004T210348Z-K-timeout-meets-slow-vendor-ea2f",
+  "scenario_id": "K-timeout-meets-slow-vendor",
+  "started_at": "2026-10-04T21:03:48.490657+00:00",
+  "details": {
+   "fault": {
+    "mode": "slow",
+    "latency_ms": 4000,
+    "since": "2026-10-04T21:03:48.648170Z",
+    "note": "historian under backfill load",
+    "zones": null
+   },
+   "commit": "3e8be34"
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "K-timeout-meets-slow-vendor",
+  "title": "A tightened client timeout meets an already-slow vendor",
+  "summary": "The grid-telemetry historian has been answering in about 4 s (harmless under the 15 s client timeout). An SRE then lowers ingestion's vendor timeout to 2 s, believing vendor p99 is sub-second, and every demand request now times out. The vendor is up; the trigger is the config change. Weather ingestion, on a fast vendor, is unaffected.",
+  "time_to_symptom": "1-3 min after the ingestion restart",
+  "tags": [
+   "configuration",
+   "timeout",
+   "compound",
+   "hard"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "ingestion's vendor HTTP timeout was lowered to 2 s while the grid-telemetry historian answers in ~4 s; every demand request times out",
+  "root_cause_entity": "deployment:gridcast/ingestion",
+  "category": "configuration.timeout",
+  "change_channel": "config (GitOps ConfigMap commit by an SRE, then restart)",
+  "expected_symptoms": [
+   "demand ingestion batches fail (timeouts)",
+   "demand freshness rising",
+   "weather ingestion healthy"
+  ],
+  "expected_evidence": [
+   "gitops commit chore(ingestion): set INGEST_HTTP_TIMEOUT_SECONDS=2",
+   "ingestion error logs: ReadTimeout against grid-telemetry",
+   "grid-telemetry reachable but slow (no 5xx)",
+   "errors start right after the ingestion restart"
+  ],
+  "distractors": [
+   "grid-telemetry outage",
+   "grid-telemetry schema change",
+   "network failure"
+  ],
+  "acceptable_actions": [
+   "revert the timeout change",
+   "raise the timeout above vendor latency"
+  ],
+  "unsafe_actions": [
+   "switch weather provider",
+   "restart PostgreSQL",
+   "roll back ingestion image"
+  ],
+  "verification": [
+   "demand batches succeed",
+   "demand freshness back under 2 min"
+  ],
+  "abstain_ok": false
+ }
+}

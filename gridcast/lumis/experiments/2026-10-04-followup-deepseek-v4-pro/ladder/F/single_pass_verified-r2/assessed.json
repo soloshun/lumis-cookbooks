@@ -1,0 +1,41 @@
+{
+ "fetched_queries": [
+  "slow-pipeline-traces",
+  "feature-service-changes-20m",
+  "forecast-pipeline-changes-20m",
+  "pipeline-failed-runs",
+  "prefect-failed-flow-runs",
+  "demand-completeness-failures",
+  "demand-freshness",
+  "demand-zones-reporting"
+ ],
+ "facts_added": 2,
+ "ranked": [
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "Feature-service issues an unusually high number of SQL statements per feature build, inflating feature build duration.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "Feature-service build latency is elevated enough to propagate into forecast-pipeline p95 slowdown.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "Failed or retried pipeline runs during the incident window inflate the p95 duration of forecast-pipeline.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Demand data incompleteness or staleness stresses the pipeline validation gate or feature-building path, contributing to longer forecast-pipeline runs.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "A recent GitOps commit or rollout touching feature-service or forecast-pipeline introduced the latency regression.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

@@ -1,0 +1,27 @@
+{
+ "candidates": [
+  {
+   "entity": "service:gridcast:feature-service (image 1.7.0, FEAT-412)",
+   "text": "service:gridcast:feature-service (image 1.7.0, FEAT-412) :: FEAT-412 switched lag-feature computation from hourly to native one-minute resolution. Each feature build now issues N+1 style per-minute queries against the DB: 2499 queries/build vs 4 in v1.6.0, raising mean build duration from ~63ms to ~6.1s (max 8.2s). :: The forecast-pipeline build_features stage p95 (9.625s, measured) tracks the feature-service feature-build p95 (9.49s) almost 1:1, breaching the 5s SLO and firing ForecastPipelineSlow."
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline (build_features stage)",
+   "text": "service:gridcast:forecast-pipeline (build_features stage) :: build_features is a serial, synchronous dependency on feature-service with no timeout/backpressure, so it inherits the full 6-9s of the v1.7.0 minute-resolution feature build instead of failing fast, retrying or degrading. :: The pipeline's own stage histogram shows build_features (p95 9.63s) dominates all other stages (check_inputs 0.098s, run_forecast 0.23s, validate 0.024s, publish 0.048s), making the pipeline slow only as a consequence of the feature build regression."
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "GridCast release process (feature-service deploy/revert churn) :: feature-service was repeatedly flipped between 1.6.0/1.7.0/1.8.0 on Oct 4-5; v1.7.0 was re-deployed at 03:06:55 (commit 3888014) during the incident after a platform-team revert to 1.6.0 at 02:46:26, re-introducing the known-slow builder while the alert was active. :: The incident timeline (02:59-03:16) spans both the original 1.7.0 deploy and its re-deploy, so the slow minute-resolution build path was re-enabled mid-incident rather than being left rolled back."
+  },
+  {
+   "entity": "service:gridcast:postgres (query-count amplification target)",
+   "text": "service:gridcast:postgres (query-count amplification target) :: Average DB query latency is ~2.4ms (6094ms/2499 queries), so the DB itself is not slow; the 625x jump in queries per build (4 \u2192 2499) from minute-resolution lag windows is what consumes ~6s of wall-clock per build. :: Database is a contributing amplifier (row-by-row/per-minute lag lookups) but not the originating fault; the regression is in the feature-service query pattern."
+  }
+ ],
+ "suggestions": [
+  "Roll back feature-service to 1.6.0 (or 1.8.0 hourly path) and hold it until FEAT-412 is fixed \u2014 this is the proven fast configuration (4 queries, ~60ms/build).",
+  "Fix the v1.7.0 feature builder to compute minute-resolution lag features with a single set-based SQL query (e.g. date_trunc + window aggregates / LATERAL) instead of 2499 point queries, and add a regression test asserting db_queries stays bounded.",
+  "Add a latency/query-count guard (SLO on feature build p95 and an alert on gridcast_feature_db_queries_total rate) so minute-resolution regressions page before they push pipeline p95 over 5s.",
+  "In forecast-pipeline build_features, add a timeout and fail-fast/retry/degraded strategy so a slow feature-service cannot silently dominate the pipeline duration.",
+  "Enforce a deploy freeze/rollback policy around known-bad image tags: prevent re-deploying a tag that was just reverted during an active incident without a canary on the feature-build p95."
+ ]
+}

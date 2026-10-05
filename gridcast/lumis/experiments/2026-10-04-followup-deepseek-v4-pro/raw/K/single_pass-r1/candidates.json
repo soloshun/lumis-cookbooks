@@ -1,0 +1,534 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "Demand payloads from service:gridcast:grid-telemetry are malformed or violate the ingestion contract, causing demand batch failures in service:gridcast:ingestion.",
+   "causal_path": [
+    "service:gridcast:grid-telemetry",
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-contract-violations",
+    "demand-zones-reporting",
+    "demand-completeness-failures",
+    "ingestion-error-log"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "Demand payloads from service:gridcast:grid-telemetry are malformed or violate the ingestion contract, causing demand batch failures in service:gridcast:ingestion.",
+    "causal_path": [
+     "service:gridcast:grid-telemetry",
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "lt",
+      "value": 4
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "completeness_demand_failures_20m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-contract-violations",
+     "demand-zones-reporting",
+     "demand-completeness-failures",
+     "ingestion-error-log"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "eq",
+      "value": 4
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "completeness_demand_failures_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "A recent rollout or configuration change to service:gridcast:ingestion introduced a regression in demand batch processing.",
+   "causal_path": [
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "error_log",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-changes-20m",
+    "ingestion-error-log"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "A recent rollout or configuration change to service:gridcast:ingestion introduced a regression in demand batch processing.",
+    "causal_path": [
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "error_log",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-changes-20m",
+     "ingestion-error-log"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "error_log",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "The demand data source is slow or timing out, causing ingestion demand batch failures and stale demand data.",
+   "causal_path": [
+    "service:gridcast:grid-telemetry",
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_p95_seconds_10m",
+     "operator": "gt",
+     "value": 3.0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "gt",
+     "value": 300
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-demand-batch-p95",
+    "demand-freshness",
+    "demand-zones-reporting",
+    "ingestion-error-log"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_p95_seconds_10m",
+     "operator": "le",
+     "value": 3.0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "le",
+     "value": 300
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "The demand data source is slow or timing out, causing ingestion demand batch failures and stale demand data.",
+    "causal_path": [
+     "service:gridcast:grid-telemetry",
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_p95_seconds_10m",
+      "operator": "gt",
+      "value": 3.0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_freshness_seconds",
+      "operator": "gt",
+      "value": 300
+     },
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "lt",
+      "value": 4
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-demand-batch-p95",
+     "demand-freshness",
+     "demand-zones-reporting",
+     "ingestion-error-log"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_batch_p95_seconds_10m",
+      "operator": "le",
+      "value": 3.0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_freshness_seconds",
+      "operator": "le",
+      "value": 300
+     },
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "eq",
+      "value": 4
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_p95_seconds_10m",
+     "operator": "gt",
+     "value": 3.0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "gt",
+     "value": 300
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_p95_seconds_10m",
+     "operator": "le",
+     "value": 3.0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "le",
+     "value": 300
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "Demand batch writes to service:gridcast:postgres are failing or timing out, causing demand ingestion failures.",
+   "causal_path": [
+    "service:gridcast:ingestion",
+    "service:gridcast:postgres"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "error_log",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "gt",
+     "value": 300
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-error-log",
+    "demand-freshness"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "error_log",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "le",
+     "value": 300
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "Demand batch writes to service:gridcast:postgres are failing or timing out, causing demand ingestion failures.",
+    "causal_path": [
+     "service:gridcast:ingestion",
+     "service:gridcast:postgres"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "error_log",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_freshness_seconds",
+      "operator": "gt",
+      "value": 300
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-error-log",
+     "demand-freshness"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "error_log",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "demand_freshness_seconds",
+      "operator": "le",
+      "value": 300
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "error_log",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "gt",
+     "value": 300
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "error_log",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "le",
+     "value": 300
+    }
+   ]
+  }
+ }
+]

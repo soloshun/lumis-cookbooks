@@ -1,0 +1,9 @@
+[
+ {
+  "name": "InputDataStale",
+  "entity": "service:gridcast:ingestion",
+  "summary": "demand has not advanced for 10 minutes",
+  "active_at": "2026-10-04 21:50:27.944281+00:00",
+  "severity": "ticket"
+ }
+]

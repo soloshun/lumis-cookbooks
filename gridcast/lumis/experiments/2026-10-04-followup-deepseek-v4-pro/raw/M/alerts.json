@@ -1,0 +1,9 @@
+[
+ {
+  "name": "ForecastPipelineSlow",
+  "entity": "service:gridcast:forecast-pipeline",
+  "summary": "Forecast pipeline p95 duration above 5s",
+  "active_at": "2026-10-04 22:34:12.944281+00:00",
+  "severity": "ticket"
+ }
+]

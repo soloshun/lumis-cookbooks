@@ -1,0 +1,250 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "causal_path": [
+    "a change in k8s:gridcast:deployment:forecast-service:memory_resources",
+    "memory_pressure in k8s:gridcast:pod:forecast-service-69ff9cf59-jnmgr",
+    "k8s:gridcast:pod:forecast-service-69ff9cf59-jnmgr:last_state.terminated.reason == OOMKilled",
+    "restart loop on service:gridcast:forecast-service"
+   ],
+   "evidence_needed": [
+    "forecast-service-changes-20m",
+    "forecast-oom-killed",
+    "forecast-memory-ratio"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-oom-killed",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-memory-ratio",
+     "key": "memory_working_set_to_limit_15m",
+     "operator": "gt",
+     "value": 1.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-service-changes-20m",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "id": "H1",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-oom-killed",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-memory-ratio",
+     "key": "memory_working_set_to_limit_15m",
+     "operator": "gt",
+     "value": 1.0
+    }
+   ],
+   "statement": "A change to forecast-service reduced its memory headroom or increased its working set, causing the container to exceed its memory limit, be OOM-killed, and restart repeatedly."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "causal_path": [
+    "deployment change in k8s:gridcast:deployment:forecast-service",
+    "misconfiguration in service:gridcast:forecast-service",
+    "pod restarts in service:gridcast:forecast-service"
+   ],
+   "evidence_needed": [
+    "forecast-service-changes-20m",
+    "forecast-restarts"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-service-changes-20m",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-restarts",
+     "key": "restarts_15m",
+     "operator": "gt",
+     "value": 2
+    }
+   ],
+   "id": "H2",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-service-changes-20m",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "A recent deployment or configuration change to forecast-service introduced the crash-loop behavior."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "causal_path": [
+    "model registry alias move in service:gridcast:forecast-service",
+    "broken model load in k8s:gridcast:pod:forecast-service-69ff9cf59-jnmgr",
+    "memory spike in k8s:gridcast:pod:forecast-service-69ff9cf59-jnmgr",
+    "OOMKilled and restart on service:gridcast:forecast-service"
+   ],
+   "evidence_needed": [
+    "model-production-alias-changes",
+    "forecast-oom-killed"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service:model-production-alias-changes",
+     "key": "production_alias_changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-oom-killed",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 1
+    }
+   ],
+   "id": "H3",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service:model-production-alias-changes",
+     "key": "production_alias_changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "A production model alias change in the model registry triggered forecast-service to load a broken or incompatible model version, leading to repeated crashes."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "causal_path": [
+    "upstream data quality failure in service:gridcast:ingestion or service:gridcast:forecast-pipeline",
+    "invalid or anomalous inputs to service:gridcast:forecast-service",
+    "memory pressure in k8s:gridcast:pod:forecast-service-69ff9cf59-jnmgr",
+    "restart loop on service:gridcast:forecast-service"
+   ],
+   "evidence_needed": [
+    "ingestion-demand-errors",
+    "ingestion-weather-errors",
+    "demand-range-failures",
+    "weather-variability-warnings"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion:ingestion-demand-errors",
+     "key": "demand_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion:ingestion-weather-errors",
+     "key": "weather_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline:demand-range-failures",
+     "key": "demand_range_failures_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline:weather-variability-warnings",
+     "key": "weather_variability_warnings_30m",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "id": "H4",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion:ingestion-demand-errors",
+     "key": "demand_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion:ingestion-weather-errors",
+     "key": "weather_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline:demand-range-failures",
+     "key": "demand_range_failures_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline:weather-variability-warnings",
+     "key": "weather_variability_warnings_30m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "Upstream demand or weather ingestion anomalies, or forecast-pipeline validation failures, generated inputs that caused forecast-service to crash-loop."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 5,
+  "hypothesis": {
+   "causal_path": [
+    "model reload storm in service:gridcast:forecast-service",
+    "memory pressure in k8s:gridcast:pod:forecast-service-69ff9cf59-jnmgr",
+    "OOMKilled and restart on service:gridcast:forecast-service"
+   ],
+   "evidence_needed": [
+    "forecast-model-reloads",
+    "forecast-oom-killed"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-model-reloads",
+     "key": "model_loads_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-oom-killed",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 1
+    }
+   ],
+   "id": "H5",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service:forecast-model-reloads",
+     "key": "model_loads_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "Repeated model version loads in forecast-service caused transient memory pressure, leading to OOM kills and the observed restart loop."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ }
+]

@@ -1,0 +1,22 @@
+[
+ {
+  "entity": null,
+  "text": "Upstream weather observation feed: but service ID :: A weather station or upstream ingest adapter emitted noisy, duplicated, or miscalibrated observations that exceeded the variability.weather_observations quality threshold. :: Noisy/miscalibrated upstream observations repeatedly tripped the variability check."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline: but service ID",
+  "text": "service:gridcast:forecast-pipeline: but service ID :: The quality-check logic or configuration for variability.weather_observations became overly strict after a code or config change, flagging normal observation variance as a warning. :: A recent pipeline change made the quality check overly sensitive."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Message/queue delivery path feeding service:gridcast:forecast-pipeline :: Delayed, partial, or replayed observation batches caused incomplete or time-misaligned observation sets, inflating apparent variability. :: Input delivery/replay created false variability across incomplete batches."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Observation data store/cache read path for service:gridcast:forecast-pipeline :: A read replica or cache mixed stale and fresh weather observations, causing the check to compare mismatched observations and generate repeated warnings. :: Mixed stale/fresh observations caused spurious variability."
+ },
+ {
+  "entity": null,
+  "text": "Natural atmosphere / observing network (not a service fault) :: A real transient weather feature caused legitimate spatial/temporal variability above the static warning threshold for the 12-minute window. :: Real weather variability temporarily exceeded the configured threshold."
+ }
+]

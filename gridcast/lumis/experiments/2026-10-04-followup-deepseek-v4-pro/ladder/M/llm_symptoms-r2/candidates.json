@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Departure from normal performance in a downstream dependency :: A downstream service called by the forecast pipeline (such as a feature store or model inference endpoint) became slower, causing forecast-pipeline workers to block and requests to queue. :: The p95 latency increase in service:gridcast:forecast-pipeline was likely caused by worker-pool saturation while waiting on a slow downstream dependency."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Unexpected CPU saturation or throttling within the forecast pipeline :: A sudden increase in forecast request volume or input data size caused CPU contention or throttling, increasing processing time per request. :: CPU saturation or throttling in service:gridcast:forecast-pipeline pushed p95 duration above 5s."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Elevated latency in an upstream data feed :: The upstream data source feeding service:gridcast:forecast-pipeline returned data more slowly or began timing out, adding latency to every forecast computation. :: Slow or failing upstream data ingestion delayed forecast generation and raised pipeline p95."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Memory pressure or garbage-collection pauses in the forecast pipeline :: Memory pressure or frequent garbage-collection pauses caused intermittent stalls during forecast processing. :: Runtime memory or GC issues inside service:gridcast:forecast-pipeline caused slow p95 responses during the incident window."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Reduced cache effectiveness in the forecast pipeline :: A drop in cache hit rate forced expensive recomputation or backend fetches for each forecast request. :: Lower cache efficiency increased per-request work and contributed to the p95 latency breach in service:gridcast:forecast-pipeline."
+ }
+]

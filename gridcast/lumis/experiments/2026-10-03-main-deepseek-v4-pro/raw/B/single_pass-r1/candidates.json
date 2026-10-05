@@ -1,0 +1,319 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "Forecast-pipeline p95 slowdown is caused by increased feature-service build latency.",
+   "causal_path": [
+    "service:gridcast:feature-service",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "build_p95_seconds",
+     "operator": "gt",
+     "value": 5.0
+    }
+   ],
+   "evidence_needed": [
+    "feature-build-p95"
+   ],
+   "falsifiers": []
+  },
+  "accepted_by_lumis": false,
+  "rejection": "schema: 1 validation error for Hypothesis\nfalsifiers\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short"
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "Forecast-pipeline p95 slowdown is caused by increased forecast-service model inference latency.",
+   "causal_path": [
+    "service:gridcast:forecast-service",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "gt",
+     "value": 5.0
+    }
+   ],
+   "evidence_needed": [
+    "forecast-inference-p95"
+   ],
+   "falsifiers": []
+  },
+  "accepted_by_lumis": false,
+  "rejection": "schema: 1 validation error for Hypothesis\nfalsifiers\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short"
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "Forecast-pipeline p95 slowdown is caused by planning-api capacity shortage or replica unavailability.",
+   "causal_path": [
+    "service:gridcast:planning-api",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "lt",
+     "value": "planning-desired-replicas value for same entity"
+    }
+   ],
+   "evidence_needed": [
+    "planning-desired-replicas",
+    "planning-available-replicas"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "ge",
+     "value": "planning-desired-replicas value for same entity"
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "schema: 4 validation errors for Hypothesis\npredictions.0\n  Value error, ordered comparison requires a numeric value [type=value_error, input_value={'entity_id': 'service:gr... value for same entity'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error\npredictions\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[{'entity_id': 'service:g...value for same entity'}], input_type=list]\n    For further information v"
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "Forecast-pipeline p95 slowdown is caused by database authentication failures or retries when feature-service builds features from Postgres.",
+   "causal_path": [
+    "service:gridcast:postgres",
+    "service:gridcast:feature-service",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "feature-auth-failures"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "Forecast-pipeline p95 slowdown is caused by database authentication failures or retries when feature-service builds features from Postgres.",
+    "causal_path": [
+     "service:gridcast:postgres",
+     "service:gridcast:feature-service",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "db_auth_failure_log_lines",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "feature-auth-failures"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "db_auth_failure_log_lines",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 5,
+  "hypothesis": {
+   "id": "H5",
+   "statement": "Forecast-pipeline p95 slowdown is caused by Prefect flow-run failures or crashed runs triggering retries or reprocessing.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "eq",
+     "value": "FAILED"
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "eq",
+     "value": "CRASHED"
+    }
+   ],
+   "evidence_needed": [
+    "prefect-failed-flow-runs",
+    "prefect-flow-runs"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "ne",
+     "value": "FAILED"
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "ne",
+     "value": "CRASHED"
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H5",
+    "statement": "Forecast-pipeline p95 slowdown is caused by Prefect flow-run failures or crashed runs triggering retries or reprocessing.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "flow_run",
+      "operator": "eq",
+      "value": "FAILED"
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "flow_run",
+      "operator": "eq",
+      "value": "CRASHED"
+     }
+    ],
+    "evidence_needed": [
+     "prefect-failed-flow-runs",
+     "prefect-flow-runs"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "flow_run",
+      "operator": "ne",
+      "value": "FAILED"
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "flow_run",
+      "operator": "ne",
+      "value": "CRASHED"
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "eq",
+     "value": "FAILED"
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "eq",
+     "value": "CRASHED"
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "ne",
+     "value": "FAILED"
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run",
+     "operator": "ne",
+     "value": "CRASHED"
+    }
+   ]
+  }
+ }
+]

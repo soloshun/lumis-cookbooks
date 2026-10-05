@@ -1,0 +1,46 @@
+{
+ "started_at": "2026-10-04T14:41:58.829450+00:00",
+ "args": {
+  "scenarios": [
+   "J",
+   "A",
+   "F",
+   "C",
+   "D",
+   "E",
+   "G",
+   "H",
+   "I",
+   "B",
+   "K",
+   "L",
+   "M",
+   "N",
+   "O"
+  ],
+  "systems": [
+   "rules",
+   "single_pass",
+   "lumis"
+  ],
+  "repeats": 2,
+  "rules_repeats": 5,
+  "model": "deepseek/deepseek-v4-pro-0813"
+ },
+ "lumis_sdk": {
+  "commit": "51016d2b08dff67beb972b29cc3015aa344802c5",
+  "dirty": false
+ },
+ "cookbooks": {
+  "commit": "e4f2e37ef8f85e7c2eb077da4d794e1f3ff486f6",
+  "dirty": true
+ },
+ "python": "3.12.13",
+ "platform": "macOS-26.6.2-arm64-arm-64bit",
+ "budgets": "SDK investigator/evidence budgets raised to schema maxima; no pydantic-ai request/tool/token caps (see experiment.unbounded)",
+ "workarounds": [],
+ "experiment_settings": [
+  "investigator.py: pydantic-ai caps lifted (unbounded) and OpenRouter usage accounting on; otherwise the SDK reference investigator",
+  "single-pass: replica of the SDK OpenRouter request with reasoning and usage on, candidates judged individually"
+ ]
+}

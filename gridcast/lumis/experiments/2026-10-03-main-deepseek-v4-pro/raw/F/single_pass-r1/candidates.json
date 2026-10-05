@@ -1,0 +1,381 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "feature-service build latency is directly driven by an excessive SQL fan-out (N+1-style) rather than by compute, memory, or upstream errors.",
+   "causal_path": [
+    "service:gridcast:feature-service"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "build_p95_seconds",
+     "operator": "gt",
+     "value": 2.0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "sql_statements_per_build",
+     "operator": "gt",
+     "value": 1000
+    }
+   ],
+   "evidence_needed": [
+    "feature-build-p95",
+    "feature-sql-per-build"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "build_p95_seconds",
+     "operator": "le",
+     "value": 2.0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "sql_statements_per_build",
+     "operator": "le",
+     "value": 1000
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "feature-service build latency is directly driven by an excessive SQL fan-out (N+1-style) rather than by compute, memory, or upstream errors.",
+    "causal_path": [
+     "service:gridcast:feature-service"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "build_p95_seconds",
+      "operator": "gt",
+      "value": 2.0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "sql_statements_per_build",
+      "operator": "gt",
+      "value": 1000
+     }
+    ],
+    "evidence_needed": [
+     "feature-build-p95",
+     "feature-sql-per-build"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "build_p95_seconds",
+      "operator": "le",
+      "value": 2.0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "sql_statements_per_build",
+      "operator": "le",
+      "value": 1000
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "supported",
+   "supporting_evidence_ids": [
+    "prometheus:feature-build-p95",
+    "prometheus:feature-sql-per-build"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": []
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "feature-service\u2019s SQL fan-out saturates the shared PostgreSQL instance, and that shared database load also slows forecast-pipeline runs since both services depend on the same database.",
+   "causal_path": [
+    "service:gridcast:feature-service",
+    "service:gridcast:postgres",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:postgres",
+     "key": "rows_scanned_per_s",
+     "operator": "gt",
+     "value": 10000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 5000
+    }
+   ],
+   "evidence_needed": [
+    "postgres-rows-scanned",
+    "slow-pipeline-traces"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:postgres",
+     "key": "rows_scanned_per_s",
+     "operator": "le",
+     "value": 10000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "le",
+     "value": 5000
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "feature-service\u2019s SQL fan-out saturates the shared PostgreSQL instance, and that shared database load also slows forecast-pipeline runs since both services depend on the same database.",
+    "causal_path": [
+     "service:gridcast:feature-service",
+     "service:gridcast:postgres",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:postgres",
+      "key": "rows_scanned_per_s",
+      "operator": "gt",
+      "value": 10000
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "slow_trace_duration_ms",
+      "operator": "gt",
+      "value": 5000
+     }
+    ],
+    "evidence_needed": [
+     "postgres-rows-scanned",
+     "slow-pipeline-traces"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:postgres",
+      "key": "rows_scanned_per_s",
+      "operator": "le",
+      "value": 10000
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "slow_trace_duration_ms",
+      "operator": "le",
+      "value": 5000
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:postgres",
+     "key": "rows_scanned_per_s",
+     "operator": "gt",
+     "value": 10000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 5000
+    },
+    {
+     "entity_id": "service:gridcast:postgres",
+     "key": "rows_scanned_per_s",
+     "operator": "le",
+     "value": 10000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "le",
+     "value": 5000
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "forecast-pipeline p95 slowness is caused by waiting on feature-service feature builds in its dependency path, not by pipeline-local work or failures.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline",
+    "service:gridcast:feature-service"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 5000
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "build_p95_seconds",
+     "operator": "gt",
+     "value": 2.0
+    }
+   ],
+   "evidence_needed": [
+    "slow-pipeline-traces",
+    "feature-build-p95"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "le",
+     "value": 5000
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "build_p95_seconds",
+     "operator": "le",
+     "value": 2.0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "forecast-pipeline p95 slowness is caused by waiting on feature-service feature builds in its dependency path, not by pipeline-local work or failures.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline",
+     "service:gridcast:feature-service"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "slow_trace_duration_ms",
+      "operator": "gt",
+      "value": 5000
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "build_p95_seconds",
+      "operator": "gt",
+      "value": 2.0
+     }
+    ],
+    "evidence_needed": [
+     "slow-pipeline-traces",
+     "feature-build-p95"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "slow_trace_duration_ms",
+      "operator": "le",
+      "value": 5000
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "build_p95_seconds",
+      "operator": "le",
+      "value": 2.0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [
+    "prometheus:feature-build-p95"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "gt",
+     "value": 5000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "le",
+     "value": 5000
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "forecast-pipeline slowness is explained by failed, crashed, or long-running Prefect flow executions inside the pipeline itself rather than by upstream feature-service or database pressure.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run.duration",
+     "operator": "gt",
+     "value": 5000
+    }
+   ],
+   "evidence_needed": [
+    "pipeline-failed-runs",
+    "prefect-failed-flow-runs",
+    "prefect-flow-runs"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "flow_run.duration",
+     "operator": "le",
+     "value": 5000
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis check cannot be tested by registered queries"
+ }
+]

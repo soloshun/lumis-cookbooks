@@ -1,0 +1,44 @@
+# Template for one-off estate jobs (rendered by gridcastctl; not part of the kustomization).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${JOB_NAME}
+  namespace: gridcast
+  labels: { app.kubernetes.io/name: ${JOB_KIND}, app.kubernetes.io/component: job, app.kubernetes.io/part-of: gridcast }
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: ${JOB_KIND}, app.kubernetes.io/component: job, app.kubernetes.io/part-of: gridcast }
+    spec:
+      restartPolicy: Never
+      securityContext: { runAsNonRoot: true, runAsUser: 10001 }
+      containers:
+        - name: job
+          image: ${IMAGE}
+          imagePullPolicy: Always
+          args: ${ARGS}
+          envFrom:
+            - configMapRef: { name: gridcast-runtime }
+            - configMapRef: { name: ingestion-config }
+            - configMapRef: { name: pipeline-config }
+          env:
+            - name: GRIDCAST_DB_USER
+              valueFrom: { secretKeyRef: { name: ${DB_SECRET}, key: username } }
+            - name: GRIDCAST_DB_PASSWORD
+              valueFrom: { secretKeyRef: { name: ${DB_SECRET}, key: password } }
+            - name: S3_ACCESS_KEY
+              valueFrom: { secretKeyRef: { name: s3-credentials, key: access_key } }
+            - name: S3_SECRET_KEY
+              valueFrom: { secretKeyRef: { name: s3-credentials, key: secret_key } }
+            - name: K8S_POD_NAME
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+            - name: K8S_NAMESPACE
+              valueFrom: { fieldRef: { fieldPath: metadata.namespace } }
+            - { name: K8S_DEPLOYMENT_NAME, value: ${JOB_KIND} }
+          resources:
+            requests: { cpu: 200m, memory: 512Mi }
+            limits: { cpu: "2", memory: 3Gi }
+          volumeMounts: [{ name: tmp, mountPath: /tmp }]
+      volumes: [{ name: tmp, emptyDir: {} }]

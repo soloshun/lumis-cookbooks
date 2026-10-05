@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "External weather vendor outage or degradation :: The primary external weather vendor API is returning 5xx or timing out, causing service:gridcast:weather-vendor-wx-primary to fail requests from service:gridcast:ingestion. :: The upstream weather data source is unavailable or degraded, causing the vendor-facing service to emit 5xx and ingestion to fail."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "Faulty deployment or configuration in weather-vendor-wx-primary :: A recent code or configuration change in service:gridcast:weather-vendor-wx-primary introduced a regression that produces 5xx for valid weather_observations requests. :: The service itself is failing on valid traffic due to a bad deploy or config change."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "Resource exhaustion in weather-vendor-wx-primary :: service:gridcast:weather-vendor-wx-primary exhausted critical resources such as CPU, memory, thread pool, or connection pool, causing valid requests to return 5xx. :: The vendor-facing service is overloaded or internally constrained, driving the 5xx spike and downstream ingestion errors."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Bad inbound requests from ingestion :: service:gridcast:ingestion began sending malformed or unexpected weather_observations payloads that service:gridcast:weather-vendor-wx-primary cannot handle and returns 5xx. :: Ingestion is triggering 5xx from the vendor-facing service by sending invalid or incompatible requests."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "Network or load balancer failure between services :: The network path or load balancer between service:gridcast:ingestion and service:gridcast:weather-vendor-wx-primary experienced timeouts, TLS/connection failures, or misconfiguration, surfacing as 5xx or request failures. :: The transport layer between ingestion and the vendor-facing service is failing, causing the observed error rates."
+ }
+]

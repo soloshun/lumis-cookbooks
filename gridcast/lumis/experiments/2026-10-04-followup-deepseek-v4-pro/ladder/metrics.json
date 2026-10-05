@@ -1,0 +1,74 @@
+{
+ "rules": {
+  "runs": 75,
+  "top1_entity": 0.667,
+  "top3_entity": 0.667,
+  "top1_mechanism": 0.533,
+  "top1_diagnosis": 0.533,
+  "any_diagnosis": 0.6,
+  "concluded": 5,
+  "conclusion_precision": 1.0,
+  "cost_usd_total": 0,
+  "seconds_median": 0.134
+ },
+ "llm_symptoms": {
+  "runs": 30,
+  "top1_entity": 0.333,
+  "top3_entity": 0.333,
+  "top1_mechanism": 0.233,
+  "top1_diagnosis": 0.033,
+  "any_diagnosis": 0.1,
+  "concluded": 0,
+  "conclusion_precision": null,
+  "cost_usd_total": 0.1497,
+  "seconds_median": null
+ },
+ "llm_graph": {
+  "runs": 30,
+  "top1_entity": 0.433,
+  "top3_entity": 0.833,
+  "top1_mechanism": 0.233,
+  "top1_diagnosis": 0.167,
+  "any_diagnosis": 0.233,
+  "concluded": 0,
+  "conclusion_precision": null,
+  "cost_usd_total": 0.4506,
+  "seconds_median": null
+ },
+ "single_pass": {
+  "runs": 30,
+  "top1_entity": 0.633,
+  "top3_entity": 0.767,
+  "top1_mechanism": 0.567,
+  "top1_diagnosis": 0.5,
+  "any_diagnosis": 0.567,
+  "concluded": 9,
+  "conclusion_precision": 0.889,
+  "cost_usd_total": 1.0551,
+  "seconds_median": 223.53050000000002
+ },
+ "single_pass_verified": {
+  "runs": 30,
+  "top1_entity": 0.6,
+  "top3_entity": 0.733,
+  "top1_mechanism": 0.5,
+  "top1_diagnosis": 0.5,
+  "any_diagnosis": 0.533,
+  "concluded": 3,
+  "conclusion_precision": 1.0,
+  "cost_usd_total": 0,
+  "seconds_median": 0.0
+ },
+ "lumis": {
+  "runs": 30,
+  "top1_entity": 0.933,
+  "top3_entity": 0.967,
+  "top1_mechanism": 0.967,
+  "top1_diagnosis": 0.9,
+  "any_diagnosis": 0.967,
+  "concluded": 24,
+  "conclusion_precision": 0.958,
+  "cost_usd_total": 4.2808,
+  "seconds_median": 225.436
+ }
+}

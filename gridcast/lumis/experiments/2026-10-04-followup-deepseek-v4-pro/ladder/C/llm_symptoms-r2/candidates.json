@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Recent bad deployment or config change in feature-service :: A new version or configuration of service:gridcast:feature-service introduced a regression that causes unhandled exceptions on a subset of requests. :: Most likely because the 5xx spike is isolated to feature-service and aligns with a change window."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Resource exhaustion in feature-service :: Thread pool or connection pool saturation inside service:gridcast:feature-service caused requests to be rejected with 5xx errors. :: Likely if the spike correlates with a traffic increase or increased request latency."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Downstream dependency failure :: A downstream service called by service:gridcast:feature-service began timing out or returning errors, which feature-service surfaced as 5xx responses. :: Plausible if downstream error or latency metrics correlate with the incident window."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Database backing feature-service degraded :: Slow queries or database connection saturation caused service:gridcast:feature-service to exhaust its DB connection pool and fail requests with 5xx. :: Likely if database latency or connection errors spiked during the same period."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Load balancer or network path issue :: A load balancer misroute or failed health check caused a subset of service:gridcast:feature-service nodes to receive invalid requests or return 5xx. :: Possible if the issue was node-specific or if other services on the same load balancer were also affected."
+ }
+]

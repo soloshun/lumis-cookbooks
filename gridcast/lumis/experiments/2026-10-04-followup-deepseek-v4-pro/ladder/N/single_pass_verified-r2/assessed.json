@@ -1,0 +1,14 @@
+{
+ "fetched_queries": [
+  "forecast-pipeline-changes-20m"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "A recent GitOps commit or rollout touching service:gridcast:forecast-pipeline altered forecast run behavior or validation thresholds, causing the forecast to deviate from the published plan.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

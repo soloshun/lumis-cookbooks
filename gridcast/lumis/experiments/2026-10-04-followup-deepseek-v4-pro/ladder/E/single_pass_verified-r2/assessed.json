@@ -1,0 +1,38 @@
+{
+ "fetched_queries": [
+  "forecast-inference-p95",
+  "slow-pipeline-traces",
+  "prefect-failed-flow-runs",
+  "forecast-pipeline-changes-20m",
+  "forecast-service-changes-20m"
+ ],
+ "facts_added": 2,
+ "ranked": [
+  {
+   "entity": "service:gridcast:forecast-service",
+   "text": "The forecast-pipeline p95 duration increase is caused by a recent model production-alias change in forecast-service, which triggered a model reload and a slow inference path.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:forecast-service",
+   "text": "The forecast-pipeline p95 duration increase is caused by slow model inference in forecast-service, where the slowest single inference in the last 10 minutes reached 8.718 seconds.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "The forecast-pipeline p95 duration increase is caused by a slow Prefect flow run in the forecast-pipeline itself, independent of forecast-service inference.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "The forecast-pipeline p95 duration increase is caused by a failed or crashed Prefect flow run in the forecast-pipeline.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "The forecast-pipeline p95 duration increase is caused by a recent change (GitOps commit or rollout) to forecast-pipeline or forecast-service.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

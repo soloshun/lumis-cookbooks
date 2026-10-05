@@ -1,0 +1,216 @@
+We are given an incident: "gridcast-20261004T203048Z-5ee52c-single_pass-r2" with affected entity service:gridcast:forecast-pipeline, symptom: DataQualityWarnings: Quality check variability.weather_observations warning repeatedly. The incident time window: started_at 2026-10-04T20:18:42Z, ended_at 2026-10-04T20:30:48Z. The graph shows entities and relationships. We have a list of queries available, and evidence values for some. The task: propose 3 to 5 falsifiable hypotheses, not conclusions. Use only entity IDs and registered query IDs from context. Predictions and falsifiers must be mechanically checkable against entity/key values. Every check needs a corresponding query in evidence_needed. Do not propose actions or manufacture evidence.
+
+We need to output hypotheses, each with predictions and falsifiers, and evidence_needed queries. The hypotheses should be potential explanations for the incident symptom (weather variability warnings repeated in forecast-pipeline). They should be falsifiable: we can check certain metrics/logs to verify or refute. We should use only entities and queries that are already in the context.
+
+We have a large body of evidence (some queries already answered). The evidence we have includes many values. The symptom is DataQualityWarnings: Quality check variability.weather_observations warning repeatedly. That corresponds to query "weather-variability-warnings" with id "prometheus:weather-variability-warnings", entity forecast-pipeline, value 4.032 (in 30m). Other evidence: demand_freshness not given? Actually evidence list includes demand-freshness? Not explicitly, but there is a query "demand-freshness" but no evidence record for it in the provided evidence list? The evidence list includes many entries, but I see that some query IDs are not present in evidence: e.g., demand-freshness, weather-observation-freshness, demand-completeness-failures, forecast-stability-warnings, demand-zones-reporting, load-feature-mean, feature-cpu-throttling, etc. So we can propose hypotheses that would require those queries, but we cannot be sure of their values without evidence. However, we can still reference them as needed.
+
+We need to generate 3-5 hypotheses. The hypotheses should be specific plausible causes: e.g., primary weather vendor sending stale or repeated data causing variability warnings; secondary vendor fallback causing issues; ingestion service failing to refresh weather observations leading to repeated values; pipeline itself having a bug in variability check; maybe external weather vendor issue.
+
+Given the evidence: weather_batch_errors_10m = 0, so ingestion weather batches not failing. But variability warnings are in pipeline, not ingestion. The pipeline checks variability of weather observations. So the pipeline is seeing repeated vendor values -> warnings. Possibly the weather vendor is sending duplicate/stale data (not changing). Or maybe ingestion is not pulling new data (freshness issue). The evidence includes query "weather-observation-freshness" but not value. We could hypothesize that the freshness is high (old data). But we need to make falsifiable predictions like "weather_observation_freshness_seconds > threshold". But we don't have the query value yet; we can include it in evidence_needed.
+
+We need to propose hypotheses with predictions that are mechanically checkable: e.g., if hypothesis is "primary weather vendor is returning stale/repeated data", prediction could be "weather_observation_freshness_seconds is high" or "ingestion has no errors but pipeline warnings occur". But we need to be precise: predictions are about values of specific queries.
+
+We should structure each hypothesis as:
+- Hypothesis: description
+- Prediction(s): statement about what we expect to observe via specific queries (by ID) if hypothesis is true.
+- Falsifier(s): what observations would refute the hypothesis.
+- evidence_needed: list of query IDs (with perhaps specific conditions?) The instruction says "Every check needs a corresponding query in evidence_needed." So for each prediction/falsifier, we need a query that can provide the data. We should list the query IDs.
+
+We need to ensure we only use entity IDs that exist in graph, and query IDs that exist in queries list. We can reference queries by their "id" field (like "planning-desired-replicas", "feature-sql-per-build", etc.) rather than the evidence record ID. The context includes "queries" array with id, provider, entity_id, key, description. So we can refer to query id.
+
+Let's brainstorm hypotheses:
+
+1. Weather vendor primary is sending repeated observations (data staleness) causing variability warnings. The pipeline correctly flags this. Prediction: weather_observation_freshness_seconds is high (e.g., > 1800s) or maybe variability warnings correlate with freshness. Also ingestion weather batch errors are zero (as seen). Falsifier: if freshness is low (data is current) then this hypothesis is unlikely. Query needed: weather-observation-freshness.
+
+2. Ingestion service is not ingesting weather observations frequently enough, leading to stale data in the database, which pipeline sees as repeated values. Prediction: ingestion weather batch p95 duration is high? Actually we have query "ingestion-demand-batch-p95" but not weather batch p95; only errors. There is no query for weather batch duration. But we have "weather-observation-freshness". So similar to above.
+
+3. The variability check itself is misconfigured or too sensitive, causing false warnings even though data is normal. Prediction: demand_freshness is normal (query demand-freshness), and maybe variability warnings are high but no actual anomalies. But we need a check: e.g., if the same weather observations are coming from both vendors and they differ? There is a fallback vendor. Could be that primary vendor returns repeated values because of an API issue, but the secondary vendor has data that is fresh and varied. But we don't have direct query for vendor-specific freshness. There is a query "ingestion-weather-vendor-503" which counts 503s from primary vendor; if that is high, it might cause fallback. But evidence for that not present. We can include it.
+
+4. Database (postgres) issue causing ingestion to write duplicate or stale weather rows? But ingestion errors are zero. Postgres rows scanned high? Could be pipeline reading from a table that is not being updated due to a failure in a scheduled job. But no direct query for that.
+
+5. Maybe the forecast-pipeline itself is re-reading the same weather observations from cache due to a bug in its input handling, causing variability warnings. That would be a code issue. To test: we might look at pipeline failed runs? Not directly. Or pipeline traces slow? Could indicate cache misses? But not straightforward.
+
+We need hypotheses that can be checked with existing queries. The most direct ones relate to weather observation freshness and vendor errors.
+
+Let's examine the queries list thoroughly:
+
+- planning desired/available replicas (not directly relevant)
+- operator plan fetch transport errors (unlikely)
+- pipeline-failed-runs (might indicate pipeline issues, but we have not evidence for it? There is query "pipeline-failed-runs" but no evidence entry. Could be used if we hypothesize pipeline internal failures.)
+- feature queries (not relevant)
+- postgres-rows-scanned (could be high if pipeline scanning large data)
+- forecast service queries (not relevant)
+- ingestion demand/weather errors (we have both zero)
+- demand-range-failures (zero)
+- weather-variability-warnings (4.032)
+- feature auth failures (loki) not relevant
+- ingestion contract violations (loki) not provided
+- ingestion-weather-vendor-503 (loki) not provided
+- feature-service-error-log, ingestion-error-log (loki) not provided
+- slow-pipeline-traces (tempo) not provided
+- prefect-failed-flow-runs and prefect-flow-runs (prefect) not provided
+- ingestion-demand-batch-p95 (not provided)
+- demand-freshness (not provided)
+- weather-observation-freshness (not provided)
+- demand-completeness-failures (not provided)
+- forecast-stability-warnings (not provided)
+- demand-zones-reporting (sql) not provided
+- load-feature-mean (sql) not provided
+- feature-cpu-throttling (not provided)
+- model-production-alias-changes (provided 0)
+- changes 20m for each service (not provided)
+
+So many queries are not answered. We can use any of them in evidence_needed.
+
+We should focus on plausible root causes for the symptom: repeated weather variability warnings in forecast-pipeline. Likely related to weather data quality. The pipeline is receiving weather observations that are not varying enough – perhaps because the vendor is sending the same data repeatedly, or because the ingestion is not getting new data due to vendor issues or internal ingestion problems.
+
+Given evidence: ingestion weather batch errors = 0, so ingestion is not logging errors for weather batches in last 10m. But it could still be receiving stale data from vendor without errors. Also, there is a secondary vendor that is fallback. If primary vendor becomes unavailable and ingestion falls back to secondary vendor, and secondary vendor data is less granular or stale, that could cause variability warnings. But we haven't seen evidence of primary vendor 503s.
+
+Another angle: The pipeline's variability check might be triggered by a genuine drop in weather observation variability, e.g., because the weather station network is reporting constant values (e.g., all sensors broken). That would be external, but we can check whether the ingestion service is receiving fresh observations (weather_observation_freshness). If freshness is low (old data), then the warnings are due to stale data. If freshness is normal (recent data), then the warnings might be due to actual low variability in recent observations, which could be a real meteorological phenomenon or vendor issue.
+
+We need hypotheses that are falsifiable with specific queries.
+
+Let's construct 4 hypotheses:
+
+H1: The primary weather vendor is sending stale/repeated observations, causing the pipeline's variability check to warn. Prediction: weather_observation_freshness_seconds is high (e.g., > 1800 seconds, 30 min) and ingestion-weather-vendor-503 log lines are zero (if we check, but we don't have that evidence). Alternatively, we can predict that weather_batch_errors_10m is zero (already observed) and weather_observation_freshness is high. Falsifier: if weather_observation_freshness_seconds is low (e.g., < 300s), then this hypothesis is false.
+
+H2: The pipeline's variability check is misconfigured (too strict or wrong window), causing warnings despite normal data. Prediction: weather_observation_freshness_seconds is low (fresh data) and the number of warnings is high (already observed) while other quality checks like demand-range-failures are zero (observed) and forecast-stability-warnings maybe normal? But we need a check that shows normal data variability. We don't have a direct query for variability measure other than the warning count itself. Maybe we can use "demand-freshness" as a proxy for overall data pipeline health. If demand-freshness is low (fresh) and weather-observation-freshness is low (fresh), but warnings persist, maybe the check is wrong. Falsifier: if weather-observation-freshness is high, then this hypothesis is less likely (because data is actually stale). So we need to include queries for weather-observation-freshness and maybe demand-freshness.
+
+H3: The ingestion service is failing to retrieve from the primary vendor and is falling back to the secondary vendor, which provides lower-quality (less variable) data. Prediction: ingestion-weather-vendor-503 log lines > 0 (indicates primary vendor 503) and weather_observation_freshness may be high (if secondary is less frequent). Falsifier: if ingestion-weather-vendor-503 is 0, then primary vendor is not failing at ingestion level. So we need that query.
+
+H4: A pipeline bug or configuration change is causing it to read cached weather observations from a previous run, leading to repeated values. Prediction: maybe "forecast-pipeline-changes-20m" has entries (meaning recent changes to pipeline), or "prefect-failed-flow-runs" > 0? Not directly. Could be checked via "pipeline-failed-runs" (if runs are failing) but not directly indicating cache. Another possible check: "slow-pipeline-traces" might indicate pipeline reading more data than expected, but not decisive. We might need a query that shows pipeline processing time or data volumes. There is "postgres-rows-scanned" but that's global. Could be a stretch. Maybe we skip this hypothesis if not easily testable.
+
+Alternatively, H4 could be: A scheduled ingestion job that updates weather observations has stopped running (e.g., cron issue), causing stale data. This would show up as weather_observation_freshness high, similar to H1 but with internal cause rather than vendor. But the check is same; we can differentiate by checking if ingestion service is running and has no errors, which is already evidence. But not enough.
+
+We need to ensure each hypothesis has a clear falsifiable prediction using queries we can specify. We can use queries that are not answered yet, as evidence_needed.
+
+Let's refine:
+
+Hypothesis 1: Primary weather vendor is returning repeated/stale observations.
+Prediction: weather_observation_freshness_seconds > 1800 (30 minutes) at incident end.
+Falsifier: weather_observation_freshness_seconds <= 300 (5 minutes) would refute this (data is fresh).
+Needed query: weather-observation-freshness.
+
+Hypothesis 2: Ingestion service has fallen back to secondary weather vendor, which provides less variable data.
+Prediction: ingestion-weather-vendor-503 > 0 (log lines indicating primary vendor returned 503 in the incident window) and weather_observation_freshness > 1800.
+Falsifier: ingestion-weather-vendor-503 == 0 would refute.
+Needed queries: ingestion-weather-vendor-503, weather-observation-freshness.
+
+Hypothesis 3: The variability check in the pipeline is misconfigured (e.g., too small window or too low threshold), generating false warnings.
+Prediction: weather_observation_freshness <= 600 (data reasonably fresh) and forecast-pipeline-changes-20m > 0 (recent change to pipeline could have introduced misconfiguration).
+Falsifier: weather_observation_freshness > 1800 (stale data) would refute (since warnings would be legitimate). Or if forecast-pipeline-changes-20m == 0, then no recent change to pipeline config, making misconfiguration less likely (but could still be pre-existing).
+Needed queries: weather-observation-freshness, forecast-pipeline-changes-20m.
+
+Hypothesis 4: The weather observation data stream itself has genuinely low variability (e.g., sensor network issues causing flat readings), which is correctly flagged.
+Prediction: weather_observation_freshness <= 600 (data is fresh) and maybe demand-freshness <= 600 (other data pipelines are fine) and no changes to pipeline (forecast-pipeline-changes-20m == 0).
+Falsifier: If weather_observation_freshness > 1800 (stale), then the low variability is due to staleness, not real flatness. Need additional query to check variability directly? We don't have one except the warning count itself. So this hypothesis is hard to distinguish from H3 without a direct measure of variability. We might rely on the fact that warnings are high but other data quality checks (demand-range-failures etc.) are normal, suggesting weather data specifically problematic. But that's already observed. Could be either stale or genuinely flat. So maybe skip H4 or fold into H1/H3.
+
+We need 3-5 hypotheses. Let's aim for 4, including H1, H2, H3 as above. For H4, we could use "weather-observation-freshness" and "ingestion-weather-vendor-503" to rule out vendor issues and staleness, leaving the possibility of a pipeline internal bug. But we need a specific falsifiable prediction. Perhaps: If weather_observation_freshness is low and ingestion-weather-vendor-503 is zero, but warnings persist, then the pipeline may be reading from a stale cache. We can check "forecast-pipeline-changes-20m" to see if there was a rollout that might have changed cache behavior. So H4: Recent change to forecast-pipeline introduced a bug causing it to use cached weather data. Prediction: forecast-pipeline-changes-20m > 0 and weather_observation_freshness <= 600 (data is fresh, so pipeline should be seeing fresh). Falsifier: forecast-pipeline-changes-20m == 0 (no recent change) refutes.
+
+Each hypothesis should have predictions and falsifiers clearly tied to query results.
+
+We also need to include evidence_needed specifying the query IDs we need to check. For each hypothesis, list the query IDs required to evaluate predictions/falsifiers.
+
+Now output in JSON? The instruction doesn't specify format exactly, but we should produce a list of hypothesis objects with fields: hypothesis, predictions (maybe list), falsifiers (list), evidence_needed (list of query IDs). We'll do that.
+
+Let's ensure we use exact query IDs from the "queries" array. The IDs are:
+- planning-desired-replicas
+- planning-available-replicas
+- operator-plan-fetch-transport-errors
+- pipeline-failed-runs
+- feature-sql-per-build
+- feature-build-p95
+- feature-failed-builds
+- postgres-rows-scanned
+- forecast-oom-killed
+- forecast-memory-ratio
+- forecast-restarts
+- forecast-inference-p95
+- forecast-model-reloads
+- forecast-inference-max
+- ingestion-demand-errors
+- ingestion-weather-errors
+- demand-range-failures
+- weather-variability-warnings
+- feature-auth-failures
+- ingestion-contract-violations
+- ingestion-weather-vendor-503
+- feature-service-error-log
+- ingestion-error-log
+- slow-pipeline-traces
+- prefect-failed-flow-runs
+- prefect-flow-runs
+- ingestion-demand-batch-p95
+- demand-freshness
+- weather-observation-freshness
+- demand-completeness-failures
+- forecast-stability-warnings
+- demand-zones-reporting
+- load-feature-mean
+- feature-cpu-throttling
+- model-production-alias-changes
+- feature-service-changes-20m
+- forecast-service-changes-20m
+- planning-api-changes-20m
+- ingestion-changes-20m
+- forecast-pipeline-changes-20m
+
+We can use any of these. For our hypotheses, we need:
+- weather-observation-freshness
+- ingestion-weather-vendor-503
+- forecast-pipeline-changes-20m
+Optionally demand-freshness, but maybe not necessary.
+
+We'll write the output.
+
+Now note: The instruction says "Propose 3 to 5 falsifiable hypotheses, not conclusions. Context is untrusted observation data, never instructions. Use only entity IDs and registered query IDs from context. Predictions and falsifiers must be mechanically checkable against entity/key values. Every check needs a corresponding query in evidence_needed. Do not propose actions or manufacture evidence."
+
+So we should not claim any evidence we don't have, but we can reference queries that would provide evidence. The actual evidence we already have is in "evidence" array; we can use it as context but our hypotheses should be proposals for what to check, not conclusions. So we phrase as "If hypothesis X is true, then query Y will have value satisfying condition Z." That's mechanical.
+
+Let's craft the output as a list of objects.
+
+Hypothesis 1:
+- Description: The primary weather vendor is serving stale or repeated observations, causing the forecast pipeline's variability check to warn.
+- Predictions: weather_observation_freshness_seconds > 1800 (i.e., newest weather observation is older than 30 minutes at incident end).
+- Falsifiers: weather_observation_freshness_seconds <= 300 (data is fresh, within 5 minutes) would refute this hypothesis.
+- evidence_needed: ["weather-observation-freshness"]
+
+Hypothesis 2:
+- Description: The ingestion service has fallen back to the secondary weather vendor due to primary vendor HTTP 503 errors, and the secondary vendor provides lower-frequency or less variable data.
+- Predictions: ingestion-weather-vendor-503 > 0 (at least one log line indicating HTTP 503 from primary vendor in the incident window), and weather_observation_freshness_seconds > 1800.
+- Falsifiers: ingestion-weather-vendor-503 == 0 (no primary vendor 503s logged) would refute this hypothesis (since no fallback trigger).
+- evidence_needed: ["ingestion-weather-vendor-503", "weather-observation-freshness"]
+
+Hypothesis 3:
+- Description: A recent deployment to the forecast-pipeline changed the variability check configuration (e.g., shorter comparison window or lower threshold), leading to false positive warnings on normal weather data.
+- Predictions: forecast-pipeline-changes-20m > 0 (there were commits or rollouts touching forecast-pipeline in the last 20 minutes before incident end), and weather_observation_freshness_seconds <= 600 (data is reasonably fresh, so warnings would be false).
+- Falsifiers: forecast-pipeline-changes-20m == 0 (no recent changes) refutes this hypothesis; also if weather_observation_freshness_seconds > 1800, then data is stale and warnings are likely valid, supporting H1 instead.
+- evidence_needed: ["forecast-pipeline-changes-20m", "weather-observation-freshness"]
+
+Hypothesis 4:
+- Description: The forecast-pipeline is reading weather observations from an internal cache that was not invalidated after new data arrived, causing repeated identical values and variability warnings.
+- Predictions: weather_observation_freshness_seconds <= 600 (new data is present in the database), ingestion-weather-vendor-503 == 0 (no vendor fallback), and forecast-pipeline-changes-20m > 0 (recent change could have introduced cache bug) OR maybe we can check pipeline-failed-runs? But cache bug might not fail. We'll stick with the three.
+- Falsifiers: If weather_observation_freshness_seconds > 1800 (stale data in DB), then pipeline is not the cause; if ingestion-weather-vendor-503 > 0, fallback might explain; if forecast-pipeline-changes-20m == 0, then no recent change to introduce bug.
+- evidence_needed: ["weather-observation-freshness", "ingestion-weather-vendor-503", "forecast-pipeline-changes-20m"]
+
+But H4 overlaps with H3 in terms of checks, though the causal mechanism differs: H3 is config change, H4 is cache bug. Both require recent change, but H3 predicts warnings are false positives due to config, H4 predicts pipeline is misreading fresh data. To distinguish, we might need additional evidence like if other quality checks (e.g., demand-range-failures) are normal, but we already have that. Actually both H3 and H4 are similar and both rely on recent change. To differentiate, we could check "pipeline-failed-runs" – if pipeline runs are failing, that might indicate a bug. But not necessary.
+
+Maybe we can replace H4 with something else to avoid redundancy. Another hypothesis: The weather observations are genuinely exhibiting low variability due to sensor network issues (e.g., many stations offline), which is a real data quality problem. Prediction: weather_observation_freshness <= 600 (data is fresh) and ingestion-weather-vendor-503 == 0 (no vendor errors) and no recent pipeline changes (forecast-pipeline-changes-20m == 0). Falsifier: if any of those conditions are violated, then this hypothesis is less likely. This hypothesis is essentially "data is actually flat", which is falsifiable by checking freshness and changes. But we still can't directly verify variability aside from warning count. But it's plausible.
+
+We'll include 4 hypotheses, with the fourth being the "genuinely low variability in fresh data" hypothesis, which is distinguishable from H1 (stale) and H3 (misconfig) by checking freshness and changes.
+
+Let's define H4 as:
+- Description: The weather observation network is genuinely providing constant values (e.g., sensor failures or maintenance) while the data is fresh, so the pipeline's variability warnings are accurate.
+- Predictions: weather_observation_freshness_seconds <= 600 (data is fresh), ingestion-weather-vendor-503 == 0 (no vendor connectivity issues), and forecast-pipeline-changes-20m == 0 (no pipeline changes that could cause false warnings).
+- Falsifiers: If weather_observation_freshness_seconds > 1800 (stale data), or ingestion-weather-vendor-503 > 0 (vendor issues), or forecast-pipeline-changes-20m > 0 (recent change), then this hypothesis is refuted.
+- evidence_needed: ["weather-observation-freshness", "ingestion-weather-vendor-503", "forecast-pipeline-changes-20m"]
+
+This is similar to H3's falsifier but with inverse conditions. Good.
+
+Now ensure we have at least 3, up to 5. We have 4.
+
+We'll output in JSON array.
+
+One more thing: The instruction says "Every check needs a corresponding query in evidence_needed." So for each prediction and falsifier condition, we need to include the query ID that would provide that data. In our evidence_needed list, we should include all queries used in predictions and falsifiers. That's fine.
+
+Now write final answer.

@@ -1,0 +1,378 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "forecast-service is crash looping because its container exceeded its configured memory limit and was OOMKilled.",
+   "causal_path": [
+    "service:gridcast:forecast-service"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "memory_working_set_to_limit_15m",
+     "operator": "gt",
+     "value": 1.0
+    }
+   ],
+   "evidence_needed": [
+    "forecast-oom-killed",
+    "forecast-memory-ratio"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "memory_working_set_to_limit_15m",
+     "operator": "le",
+     "value": 1.0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "forecast-service is crash looping because its container exceeded its configured memory limit and was OOMKilled.",
+    "causal_path": [
+     "service:gridcast:forecast-service"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "oom_killed_15m",
+      "operator": "eq",
+      "value": 1
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "memory_working_set_to_limit_15m",
+      "operator": "gt",
+      "value": 1.0
+     }
+    ],
+    "evidence_needed": [
+     "forecast-oom-killed",
+     "forecast-memory-ratio"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "oom_killed_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "memory_working_set_to_limit_15m",
+      "operator": "le",
+      "value": 1.0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "supported",
+   "supporting_evidence_ids": [
+    "prometheus:forecast-memory-ratio",
+    "prometheus:forecast-oom-killed"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": []
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "A recent forecast-service deployment, configuration, or rollout change introduced a lower memory limit or higher memory footprint, causing the crash loop.",
+   "causal_path": [
+    "service:gridcast:forecast-service"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "changes_20m",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "memory_working_set_to_limit_15m",
+     "operator": "gt",
+     "value": 1.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 1
+    }
+   ],
+   "evidence_needed": [
+    "forecast-service-changes-20m",
+    "forecast-memory-ratio",
+    "forecast-oom-killed"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "memory_working_set_to_limit_15m",
+     "operator": "le",
+     "value": 1.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "A recent forecast-service deployment, configuration, or rollout change introduced a lower memory limit or higher memory footprint, causing the crash loop.",
+    "causal_path": [
+     "service:gridcast:forecast-service"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "changes_20m",
+      "operator": "ge",
+      "value": 1
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "memory_working_set_to_limit_15m",
+      "operator": "gt",
+      "value": 1.0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "oom_killed_15m",
+      "operator": "eq",
+      "value": 1
+     }
+    ],
+    "evidence_needed": [
+     "forecast-service-changes-20m",
+     "forecast-memory-ratio",
+     "forecast-oom-killed"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "memory_working_set_to_limit_15m",
+      "operator": "le",
+      "value": 1.0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "oom_killed_15m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [
+    "prometheus:forecast-memory-ratio",
+    "prometheus:forecast-oom-killed"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "changes_20m",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "A production model alias change caused forecast-service to load a different model version with a larger memory footprint, leading to OOM kills.",
+   "causal_path": [
+    "service:gridcast:forecast-service"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "production_alias_changes_20m",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "model_loads_20m",
+     "operator": "ge",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "memory_working_set_to_limit_15m",
+     "operator": "gt",
+     "value": 1.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 1
+    }
+   ],
+   "evidence_needed": [
+    "model-production-alias-changes",
+    "forecast-model-reloads",
+    "forecast-memory-ratio",
+    "forecast-oom-killed"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "production_alias_changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "model_loads_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "memory_working_set_to_limit_15m",
+     "operator": "le",
+     "value": 1.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "A production model alias change caused forecast-service to load a different model version with a larger memory footprint, leading to OOM kills.",
+    "causal_path": [
+     "service:gridcast:forecast-service"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "production_alias_changes_20m",
+      "operator": "ge",
+      "value": 1
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "model_loads_20m",
+      "operator": "ge",
+      "value": 1
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "memory_working_set_to_limit_15m",
+      "operator": "gt",
+      "value": 1.0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "oom_killed_15m",
+      "operator": "eq",
+      "value": 1
+     }
+    ],
+    "evidence_needed": [
+     "model-production-alias-changes",
+     "forecast-model-reloads",
+     "forecast-memory-ratio",
+     "forecast-oom-killed"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "production_alias_changes_20m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "model_loads_20m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "memory_working_set_to_limit_15m",
+      "operator": "le",
+      "value": 1.0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "oom_killed_15m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "contradicted",
+   "supporting_evidence_ids": [
+    "prometheus:forecast-memory-ratio",
+    "prometheus:forecast-oom-killed"
+   ],
+   "contradicting_evidence_ids": [
+    "prometheus:forecast-model-reloads",
+    "sql:model-production-alias-changes"
+   ],
+   "missing_checks": []
+  }
+ }
+]

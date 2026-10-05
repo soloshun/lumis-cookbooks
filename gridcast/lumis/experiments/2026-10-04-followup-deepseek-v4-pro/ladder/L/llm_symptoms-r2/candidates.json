@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Upstream demand data source stalled :: The upstream system that produces demand records stopped emitting or heavily delayed new demand data around 21:40Z, before records reached gridcast ingestion. :: The demand feed upstream is stalled, leaving service:gridcast:ingestion with no new input to advance."
+ },
+ {
+  "entity": "service:gridcast:ingestion consumer fault",
+  "text": "service:gridcast:ingestion consumer fault :: A consumer/processing thread inside the service deadlocked, crashed, or became resource-exhausted, so the service stopped polling or committing new input. :: service:gridcast:ingestion itself stopped advancing its input despite demand data likely being available."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Demand message broker/event transport issue :: A broker partition leader loss, ISR degradation, or consumer-group rebalance problem prevented new demand messages from being delivered to ingestion. :: The transport/broker layer is failing to deliver newly produced demand records to service:gridcast:ingestion."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "External demand API or credential failure :: An expired credential, exhausted quota, or throttling caused repeated fetch failures, so fresh demand could not be pulled by ingestion. :: service:gridcast:ingestion cannot acquire fresh demand because the external API/credential path is failing."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Network path/firewall failure :: A network partition, DNS failure, or firewall rule change blocked connectivity between service:gridcast:ingestion and the upstream demand source or broker. :: A network connectivity failure is preventing demand data from reaching service:gridcast:ingestion."
+ }
+]

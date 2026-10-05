@@ -1,0 +1,485 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "The planning-api service was scaled to zero replicas, leaving no available planning-api pods to serve requests during the incident.",
+   "causal_path": [
+    "service:gridcast:planning-api"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "desired_replicas",
+     "operator": "eq",
+     "value": 0.0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "eq",
+     "value": 0.0
+    }
+   ],
+   "evidence_needed": [
+    "planning-desired-replicas",
+    "planning-available-replicas"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "desired_replicas",
+     "operator": "gt",
+     "value": 0.0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "gt",
+     "value": 0.0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "The planning-api service was scaled to zero replicas, leaving no available planning-api pods to serve requests during the incident.",
+    "causal_path": [
+     "service:gridcast:planning-api"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "desired_replicas",
+      "operator": "eq",
+      "value": 0.0
+     },
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "available_replicas",
+      "operator": "eq",
+      "value": 0.0
+     }
+    ],
+    "evidence_needed": [
+     "planning-desired-replicas",
+     "planning-available-replicas"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "desired_replicas",
+      "operator": "gt",
+      "value": 0.0
+     },
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "available_replicas",
+      "operator": "gt",
+      "value": 0.0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "supported",
+   "supporting_evidence_ids": [
+    "prometheus:planning-available-replicas",
+    "prometheus:planning-desired-replicas"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": []
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "The forecast-pipeline service failed at least two runs in the 15-minute incident window.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2.0
+    }
+   ],
+   "evidence_needed": [
+    "pipeline-failed-runs"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2.0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "The forecast-pipeline service failed at least two runs in the 15-minute incident window.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "ge",
+      "value": 2.0
+     }
+    ],
+    "evidence_needed": [
+     "pipeline-failed-runs"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "lt",
+      "value": 2.0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2.0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "The grid-operator service experienced transport errors while fetching plans from planning-api, explaining the PlanningApiUnreachable symptom.",
+   "causal_path": [
+    "service:gridcast:grid-operator",
+    "service:gridcast:planning-api"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:grid-operator",
+     "key": "plan_fetch_transport_errors_5m",
+     "operator": "gt",
+     "value": 0.0
+    }
+   ],
+   "evidence_needed": [
+    "operator-plan-fetch-transport-errors"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:grid-operator",
+     "key": "plan_fetch_transport_errors_5m",
+     "operator": "eq",
+     "value": 0.0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "The grid-operator service experienced transport errors while fetching plans from planning-api, explaining the PlanningApiUnreachable symptom.",
+    "causal_path": [
+     "service:gridcast:grid-operator",
+     "service:gridcast:planning-api"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:grid-operator",
+      "key": "plan_fetch_transport_errors_5m",
+      "operator": "gt",
+      "value": 0.0
+     }
+    ],
+    "evidence_needed": [
+     "operator-plan-fetch-transport-errors"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:grid-operator",
+      "key": "plan_fetch_transport_errors_5m",
+      "operator": "eq",
+      "value": 0.0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "supported",
+   "supporting_evidence_ids": [
+    "prometheus:operator-plan-fetch-transport-errors"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": []
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "Forecast-pipeline Prefect flow runs started during the incident window ended in FAILED or CRASHED states at least twice.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "ge",
+     "value": 2.0
+    }
+   ],
+   "evidence_needed": [
+    "prefect-failed-flow-runs"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "lt",
+     "value": 2.0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "Forecast-pipeline Prefect flow runs started during the incident window ended in FAILED or CRASHED states at least twice.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "ge",
+      "value": 2.0
+     }
+    ],
+    "evidence_needed": [
+     "prefect-failed-flow-runs"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "lt",
+      "value": 2.0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "ge",
+     "value": 2.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "lt",
+     "value": 2.0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 5,
+  "hypothesis": {
+   "id": "H5",
+   "statement": "The planning-api zero-replica state co-occurred with downstream failures in both forecast-pipeline and grid-operator, consistent with a single planning-api dependency failure.",
+   "causal_path": [
+    "service:gridcast:planning-api",
+    "service:gridcast:forecast-pipeline",
+    "service:gridcast:grid-operator"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "desired_replicas",
+     "operator": "eq",
+     "value": 0.0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "eq",
+     "value": 0.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2.0
+    },
+    {
+     "entity_id": "service:gridcast:grid-operator",
+     "key": "plan_fetch_transport_errors_5m",
+     "operator": "gt",
+     "value": 0.0
+    }
+   ],
+   "evidence_needed": [
+    "planning-desired-replicas",
+    "planning-available-replicas",
+    "pipeline-failed-runs",
+    "operator-plan-fetch-transport-errors"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "desired_replicas",
+     "operator": "gt",
+     "value": 0.0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "gt",
+     "value": 0.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2.0
+    },
+    {
+     "entity_id": "service:gridcast:grid-operator",
+     "key": "plan_fetch_transport_errors_5m",
+     "operator": "eq",
+     "value": 0.0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H5",
+    "statement": "The planning-api zero-replica state co-occurred with downstream failures in both forecast-pipeline and grid-operator, consistent with a single planning-api dependency failure.",
+    "causal_path": [
+     "service:gridcast:planning-api",
+     "service:gridcast:forecast-pipeline",
+     "service:gridcast:grid-operator"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "desired_replicas",
+      "operator": "eq",
+      "value": 0.0
+     },
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "available_replicas",
+      "operator": "eq",
+      "value": 0.0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "ge",
+      "value": 2.0
+     },
+     {
+      "entity_id": "service:gridcast:grid-operator",
+      "key": "plan_fetch_transport_errors_5m",
+      "operator": "gt",
+      "value": 0.0
+     }
+    ],
+    "evidence_needed": [
+     "planning-desired-replicas",
+     "planning-available-replicas",
+     "pipeline-failed-runs",
+     "operator-plan-fetch-transport-errors"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "desired_replicas",
+      "operator": "gt",
+      "value": 0.0
+     },
+     {
+      "entity_id": "service:gridcast:planning-api",
+      "key": "available_replicas",
+      "operator": "gt",
+      "value": 0.0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "lt",
+      "value": 2.0
+     },
+     {
+      "entity_id": "service:gridcast:grid-operator",
+      "key": "plan_fetch_transport_errors_5m",
+      "operator": "eq",
+      "value": 0.0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [
+    "prometheus:operator-plan-fetch-transport-errors",
+    "prometheus:planning-available-replicas",
+    "prometheus:planning-desired-replicas"
+   ],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "ge",
+     "value": 2.0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "lt",
+     "value": 2.0
+    }
+   ]
+  }
+ }
+]

@@ -1,0 +1,156 @@
+{
+  "hypotheses": [
+    {
+      "id": "H1",
+      "statement": "An unoptimized SQL access pattern in feature-service is causing the PostgreSQL scan surge, and the resulting database load is slowing down the forecast pipeline.",
+      "causal_path": [
+        "service:gridcast:feature-service",
+        "service:gridcast:postgres"
+      ],
+      "predictions": [
+        {
+          "entity_id": "service:gridcast:feature-service",
+          "key": "sql_statements_per_build",
+          "operator": "gt",
+          "value": 1000
+        }
+      ],
+      "evidence_needed": [
+        "feature-sql-per-build",
+        "postgres-rows-scanned",
+        "slow-pipeline-traces"
+      ]
+    , 
+    "falsifiers": [
+      {
+        "entity_id": "service:gridcast:postgres",
+        "key": "rows_scanned_per_s",
+        "operator": "lt",
+        "value": 1000
+      }
+    ]},
+    {
+      "id": "H2",
+      "statement": "A forecast-pipeline run is issuing expensive PostgreSQL queries (e.g., unindexed scans or missing predicate pushdown) during the incident window, driving the scan surge and its own latency.",
+      "causal_path": [
+        "service:gridcast:forecast-pipeline",
+        "service:gridcast:postgres"
+      ],
+      "predictions": [
+        {
+          "entity_id": "service:gridcast:forecast-pipeline",
+          "key": "slow_trace_duration_ms",
+          "operator": "gt",
+          "value": 3000
+        }
+      ],
+      "evidence_needed": [
+        "slow-pipeline-traces",
+        "postgres-rows-scanned",
+        "prefect-flow-runs"
+      ]
+    , 
+    "falsifiers": [
+      {
+        "entity_id": "service:gridcast:postgres",
+        "key": "rows_scanned_per_s",
+        "operator": "lt",
+        "value": 1000
+      }
+    ]},
+    {
+      "id": "H3",
+      "statement": "A recent change to the forecast-service caused it to issue expensive PostgreSQL queries, triggering a surge in rows scanned and thereby slowing the forecast pipeline.",
+      "causal_path": [
+        "service:gridcast:forecast-service",
+        "service:gridcast:postgres"
+      ],
+      "predictions": [
+        {
+          "entity_id": "service:gridcast:forecast-service",
+          "key": "model_reloads_30m",
+          "operator": "gt",
+          "value": 0
+        }
+      ],
+      "evidence_needed": [
+        "forecast-model-reloads",
+        "postgres-rows-scanned",
+        "slow-pipeline-traces"
+      ]
+    , 
+    "falsifiers": [
+      {
+        "entity_id": "service:gridcast:forecast-service",
+        "key": "model_reloads_30m",
+        "operator": "eq",
+        "value": 0
+      }
+    ]},
+    {
+      "id": "H4",
+      "statement": "A bulk ingestion process from ingestion is generating high PostgreSQL load, and the forecast pipeline is slow because it contends on the same database.",
+      "causal_path": [
+        "service:gridcast:ingestion",
+        "service:gridcast:postgres"
+      ],
+      "predictions": [
+        {
+          "entity_id": "service:gridcast:ingestion",
+          "key": "demand_batch_errors_10m",
+          "operator": "eq",
+          "value": 0
+        },
+        {
+          "entity_id": "service:gridcast:ingestion",
+          "key": "weather_batch_errors_10m",
+          "operator": "eq",
+          "value": 0
+        }
+      ],
+      "evidence_needed": [
+        "ingestion-demand-errors",
+        "ingestion-weather-errors",
+        "postgres-rows-scanned",
+        "slow-pipeline-traces"
+      ]
+    , 
+    "falsifiers": [
+      {
+        "entity_id": "service:gridcast:postgres",
+        "key": "rows_scanned_per_s",
+        "operator": "lt",
+        "value": 1000
+      }
+    ]},
+    {
+      "id": "H5",
+      "statement": "The forecast-service is reloading or swapping its model frequently, causing it to read large amounts of data from PostgreSQL and slow down the forecast pipeline.",
+      "causal_path": [
+        "service:gridcast:forecast-service",
+        "service:gridcast:postgres"
+      ],
+      "predictions": [
+        {
+          "entity_id": "service:gridcast:forecast-service",
+          "key": "model_reloads_30m",
+          "operator": "gt",
+          "value": 0
+        }
+      ],
+      "evidence_needed": [
+        "forecast-model-reloads",
+        "postgres-rows-scanned",
+        "slow-pipeline-traces"
+      ]
+    , 
+    "falsifiers": [
+      {
+        "entity_id": "service:gridcast:forecast-service",
+        "key": "model_reloads_30m",
+        "operator": "eq",
+        "value": 0
+      }
+    ]}
+  ]
+}

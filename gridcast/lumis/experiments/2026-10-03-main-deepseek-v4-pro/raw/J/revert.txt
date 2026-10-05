@@ -1,0 +1,4 @@
+reverting 20261003T171457Z-J-planning-api-scaled-to-zero-48c3
+committed 1e02f10 revert: "chore(planning-api): scale to 0 replica(s)"
+Waiting for deployment "planning-api" rollout to finish: 0 of 1 updated replicas are available...
+deployment "planning-api" successfully rolled out

@@ -1,0 +1,34 @@
+{
+ "started_at": "2026-10-03T22:00:27.198140+00:00",
+ "args": {
+  "scenarios": [
+   "G",
+   "H",
+   "I",
+   "B"
+  ],
+  "systems": [
+   "rules",
+   "single_pass",
+   "lumis"
+  ],
+  "repeats": 2,
+  "rules_repeats": 5,
+  "model": "deepseek/deepseek-v4-pro-0813"
+ },
+ "lumis_sdk": {
+  "commit": "c757a749e26cddcf27338f1950f71c9f31980934",
+  "dirty": true
+ },
+ "cookbooks": {
+  "commit": "f4f33eea4db69a0bbfed68549d95d2a5f3532579",
+  "dirty": true
+ },
+ "python": "3.12.13",
+ "platform": "macOS-26.6.2-arm64-arm-64bit",
+ "budgets": "SDK investigator/evidence budgets raised to schema maxima; no pydantic-ai request/tool/token caps (see experiment.unbounded)",
+ "workarounds": [
+  "investigator.py: no parallel_tool_calls, tool retries=2, reasoning on",
+  "external_evidence.py: SQL via snapshot provider"
+ ]
+}

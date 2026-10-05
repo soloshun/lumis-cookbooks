@@ -1,0 +1,64 @@
+{
+ "run": {
+  "run_id": "20261003T231138Z-H-vendor-unit-change-4c00",
+  "scenario_id": "H-vendor-unit-change",
+  "started_at": "2026-10-03T23:11:38.900324+00:00",
+  "details": {
+   "fault": {
+    "mode": "unit_change",
+    "latency_ms": 0,
+    "since": "2026-10-03T23:11:39.006714Z",
+    "note": "unannounced kW"
+   }
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "H-vendor-unit-change",
+  "title": "Grid telemetry silently switches units (MW -> kW)",
+  "summary": "Same field name, values 1000x. Ingestion accepts them; the range check fails and the validation gate holds forecasts.",
+  "time_to_symptom": "next pipeline run (<= 5 min)",
+  "tags": [
+   "vendor",
+   "data-quality",
+   "silent-corruption"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "grid-telemetry vendor reports demand in kW under the load_mw field",
+  "root_cause_entity": "vendor:grid-telemetry",
+  "category": "data_quality.unit_change",
+  "change_channel": "external vendor (no GridCast change)",
+  "expected_symptoms": [
+   "range.demand checks fail",
+   "forecasts held",
+   "plan ages"
+  ],
+  "expected_evidence": [
+   "demand values ~1000x zone base load starting at one instant",
+   "ingestion succeeding (no errors)",
+   "no GridCast change in window"
+  ],
+  "distractors": [
+   "model producing bad forecasts",
+   "feature-service bug"
+  ],
+  "acceptable_actions": [
+   "hold forecasts",
+   "escalate to vendor",
+   "quarantine affected rows"
+  ],
+  "unsafe_actions": [
+   "retrain on corrupted data",
+   "disable range checks",
+   "roll back services"
+  ],
+  "verification": [
+   "new demand values in range",
+   "range checks pass",
+   "plan fresh"
+  ],
+  "abstain_ok": true
+ }
+}

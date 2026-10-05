@@ -1,0 +1,41 @@
+{
+ "fetched_queries": [
+  "pipeline-failed-runs",
+  "prefect-failed-flow-runs",
+  "demand-completeness-failures",
+  "forecast-stability-warnings",
+  "forecast-pipeline-changes-20m",
+  "feature-service-changes-20m",
+  "ingestion-weather-vendor-503",
+  "ingestion-contract-violations"
+ ],
+ "facts_added": 2,
+ "ranked": [
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "service:gridcast:feature-service is producing slow feature builds because each build issues an excessive number of SQL statements, and that build latency is driving service:gridcast:forecast-pipeline p95 above 5s.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "Forecast-pipeline runs are failing or crashing, and retries/backpressure from those failures are inflating the pipeline p95 duration.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "Validation-gate warnings or failures on demand completeness or forecast stability are delaying forecast-pipeline runs and pushing p95 above 5s.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "Upstream weather-vendor or ingestion contract problems are causing ingestion retries/delays that propagate to service:gridcast:forecast-pipeline as elevated p95 duration.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "A recent GitOps commit or rollout touching service:gridcast:forecast-pipeline or service:gridcast:feature-service introduced a performance regression during the incident window.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

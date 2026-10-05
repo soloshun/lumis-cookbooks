@@ -1,0 +1,16 @@
+[
+ {
+  "name": "DatabaseScanSurge",
+  "entity": "service:gridcast:postgres",
+  "summary": "PostgreSQL rows scanned/s is ~10x above normal",
+  "active_at": "2026-10-03 15:38:12.944281+00:00",
+  "severity": "ticket"
+ },
+ {
+  "name": "ForecastPipelineSlow",
+  "entity": "service:gridcast:forecast-pipeline",
+  "summary": "Forecast pipeline p95 duration above 5s",
+  "active_at": "2026-10-03 15:38:12.944281+00:00",
+  "severity": "ticket"
+ }
+]

@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "Weather vendor primary service internal failure :: A bad deploy, configuration change, or internal bug caused service:gridcast:weather-vendor-wx-primary to return HTTP 5xx on weather observation requests. :: The fault originates in `service:gridcast:weather-vendor-wx-primary`; its elevated 5xx rate is the direct cause of the `service:gridcast:ingestion` weather_observations failures."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Ingestion service sending malformed requests :: A recent change or bug in service:gridcast:ingestion caused it to send malformed or unexpected weather_observations requests, triggering server-side 5xx errors in weather-vendor-wx-primary. :: The fault originates in `service:gridcast:ingestion`; the `weather-vendor-wx-primary` 5xx increase is a downstream symptom of bad requests from ingestion."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "Network or service mesh transport failure :: Intermittent connectivity, DNS, TLS, or service-mesh issues between ingestion and weather-vendor-wx-primary caused timeouts or failed requests, surfacing as 5xx on the provider side and ingestion errors on the client side. :: The fault originates in the transport path between `service:gridcast:ingestion` and `service:gridcast:weather-vendor-wx-primary`, not in application code."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "Upstream external weather provider failure :: The external weather data provider that weather-vendor-wx-primary depends on failed, rate-limited, or returned errors, causing weather-vendor-wx-primary to proxy those failures as 5xx responses. :: The fault originates in the upstream external weather provider, cascading through `service:gridcast:weather-vendor-wx-primary` to `service:gridcast:ingestion`."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "Resource exhaustion in weather-vendor-wx-primary :: A traffic spike, connection leak, or thread-pool saturation exhausted capacity in weather-vendor-wx-primary, causing it to return 5xx on a subset of weather observation requests. :: The fault originates in `service:gridcast:weather-vendor-wx-primary`, but the mechanism is resource exhaustion rather than a code or configuration defect."
+ }
+]

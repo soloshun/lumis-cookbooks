@@ -1,0 +1,4 @@
+injecting D-memory-pressure: Forecast service memory limit cut below its working set
+committed 0d90de9 chore(forecast-service): set limits cpu=1 memory=160Mi
+run 20261004T171143Z-D-memory-pressure-a745 (ground truth: .gridcast/chaos/runs/20261004T171143Z-D-memory-pressure-a745.json)
+symptoms expected: 1-3 min

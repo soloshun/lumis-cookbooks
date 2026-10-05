@@ -1,0 +1,13 @@
+{
+ "id": "gridcast-20261003T222459Z-44b603",
+ "affected_entities": [
+  "service:gridcast:forecast-pipeline",
+  "service:gridcast:ingestion"
+ ],
+ "symptoms": [
+  "ForecastPipelineSlow: Forecast pipeline p95 duration above 5s",
+  "IngestionErrors: Ingestion of demand is failing"
+ ],
+ "started_at": "2026-10-03T22:09:27Z",
+ "ended_at": "2026-10-03T22:24:59Z"
+}

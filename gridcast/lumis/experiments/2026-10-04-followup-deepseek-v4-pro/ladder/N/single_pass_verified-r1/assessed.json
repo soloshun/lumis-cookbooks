@@ -1,0 +1,43 @@
+{
+ "fetched_queries": [
+  "demand-freshness",
+  "weather-observation-freshness",
+  "pipeline-failed-runs",
+  "prefect-failed-flow-runs",
+  "demand-completeness-failures",
+  "demand-zones-reporting",
+  "forecast-pipeline-changes-20m",
+  "feature-service-changes-20m",
+  "feature-auth-failures",
+  "postgres-rows-scanned"
+ ],
+ "facts_added": 2,
+ "ranked": [
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "Stale demand or weather observations from ingestion may have caused forecast-pipeline to build the new forecast from non-current inputs, which could shift it more than 10 percent from the published plan.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "One or more forecast-pipeline runs may have failed or crashed during the incident window, leaving a partial or fallback forecast that differed from the published plan.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Incomplete demand coverage may have caused the validation gate to pass a forecast built from fewer zones than the published plan, producing a deviation.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:postgres",
+   "text": "A feature-service or database access anomaly may have generated incorrect or missing feature values used by forecast-pipeline, causing the forecast to shift.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "A recent code or configuration change to the forecasting path may have altered forecast behavior and caused the new forecast to diverge from the published plan.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

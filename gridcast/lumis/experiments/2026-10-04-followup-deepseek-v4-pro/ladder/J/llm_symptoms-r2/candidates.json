@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "Planning API backend outage :: The planning API service crashed, was OOM-killed, or became unresponsive and stopped accepting connections from the grid operator. :: The planning API backend itself was briefly unavailable. This is the most direct cause of `PlanningApiUnreachable`. This ranks as the most likely primary root cause."
+ },
+ {
+  "entity": "service:gridcast:grid-operator",
+  "text": "API gateway/load balancer routing failure :: The gateway or load balancer in front of the planning API lost healthy upstream endpoints or had a routing/configuration problem, so it could not forward grid-operator requests. :: The ingress layer failed to route traffic to an otherwise healthy planning API."
+ },
+ {
+  "entity": "service:gridcast:grid-operator",
+  "text": "Service discovery/DNS failure :: Service discovery or DNS returned stale or empty endpoints for the planning API, causing the grid operator to resolve the API hostname to an unreachable or invalid address. :: The grid operator could not locate a valid planning API endpoint because service discovery returned bad data."
+ },
+ {
+  "entity": "service:gridcast:grid-operator",
+  "text": "Network policy or security group block :: A firewall, security group, or network policy change blocked the port or path between the grid operator and the planning API while the service itself remained healthy. :: Traffic between the grid operator and planning API was blocked at the network layer."
+ },
+ {
+  "entity": "service:gridcast:grid-operator",
+  "text": "Client-side egress/config issue in grid operator :: The grid operator exhausted its outbound connection pool or had a stale proxy/endpoint configuration, causing its connection attempts to fail before reaching a healthy planning API. :: The fault originated in the grid operator itself rather than in the planning API or network."
+ }
+]

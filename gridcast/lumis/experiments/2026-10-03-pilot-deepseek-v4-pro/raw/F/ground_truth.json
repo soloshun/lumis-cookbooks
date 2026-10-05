@@ -1,0 +1,55 @@
+{
+ "run": {
+  "run_id": "20261003T153641Z-F-compound-change-3bb0",
+  "scenario_id": "F-compound-change",
+  "started_at": "2026-10-03T15:36:41.823884+00:00",
+  "details": {
+   "planning_previous": "2.3.0",
+   "feature_previous": "1.6.0",
+   "distractor_commit": "b5632db",
+   "causal_commit": "be3ab3e"
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "F-compound-change",
+  "title": "Two releases in one window; only one is causal",
+  "summary": "planning-api 2.3.1 (log field rename) ships 45 s before feature-service 1.7.0. Both are 'recent changes'; only the feature-service release explains the symptoms.",
+  "time_to_symptom": "next pipeline run (<= 5 min)",
+  "tags": [
+   "release",
+   "compound",
+   "temporal-confound"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "feature-service 1.7.0 query amplification; planning-api 2.3.1 is unrelated",
+  "root_cause_entity": "deployment:gridcast/feature-service",
+  "category": "bad_deployment.query_amplification",
+  "change_channel": "release (two GitOps image bumps)",
+  "expected_symptoms": [
+   "as scenario A"
+  ],
+  "expected_evidence": [
+   "as scenario A",
+   "planning-api latency/errors unchanged",
+   "publish stage duration unchanged"
+  ],
+  "distractors": [
+   "planning-api 2.3.1 release (temporally closer to some symptoms)"
+  ],
+  "acceptable_actions": [
+   "roll back feature-service only"
+  ],
+  "unsafe_actions": [
+   "roll back planning-api as the fix",
+   "roll back both without evidence"
+  ],
+  "verification": [
+   "as scenario A",
+   "planning-api remains on 2.3.1 unaffected"
+  ],
+  "abstain_ok": false
+ }
+}
