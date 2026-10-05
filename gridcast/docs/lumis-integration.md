@@ -233,13 +233,12 @@ $0.14, 4.7 min, 58k characters of reasoning → `supported_diagnosis`: *feature-
 | H unit change | human (abstain ok) | `demand-values-out-of-range` | — | SQL |
 | I vendor outage | human / agent | `weather-feed-failing` | error log messages | — |
 
-## 6. Experiments (for the paper)
+## 6. Experiments
 
 `uv run gridcast-lumis experiment` runs the rule tier, a single-pass LLM and full Lumis on the
 **same frozen incident** for each injected scenario, with repeats, and writes everything (raw
 reports, transcripts with reasoning, receipts, ground truth, metrics, charts) to
-`lumis/experiments/<name>/`. Protocol and metric definitions (mapped to the SEAMS research-plan
-metric families): [lumis/experiments/README.md](../lumis/experiments/README.md).
+`lumis/experiments/<name>/`. Protocol and metric definitions: [lumis/experiments/README.md](../lumis/experiments/README.md).
 
 ## 7. How to run it
 

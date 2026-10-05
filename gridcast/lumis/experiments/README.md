@@ -2,9 +2,8 @@
 
 Each subfolder is one experiment run, self-contained, with raw artefacts and formatted results.
 Produced by `uv run gridcast-lumis experiment` (code: `src/gridcast_lumis/experiment.py`,
-`experiment_report.py`). Metric families follow the SEAMS 2027 paper's research plan
-(`seams_2027/paper/main.tex`, § Research Plan: reasoning, efficiency, abstention quality,
-safety; causal-path scoring; comparative baselines).
+`experiment_report.py`). Metric families: reasoning, efficiency, abstention quality,
+safety; causal-path scoring; comparative baselines.
 
 ## Protocol
 
@@ -31,7 +30,7 @@ sequenceDiagram
 
 Systems (all read-only; none can act on the estate):
 
-| System | What it is | Paper baseline |
+| System | What it is | Baseline |
 |---|---|---|
 | `rules` | Lumis deterministic triage only (signatures in `lumis.yaml`), no model | (i) rule tier alone |
 | `single_pass` | All triage evidence collected first, then **one** structured LLM completion (SDK candidate baseline, `generation_only`), candidates mechanically assessed | (ii) single-pass LLM, same bounded context |
@@ -85,7 +84,7 @@ Ground-truth entities (`deployment:/vendor:/model:`) are mapped onto graph IDs
 ├── results.jsonl            one row per (scenario, system, repeat) — the raw metric records
 ├── results.csv              the same, flat
 ├── metrics.json             aggregated per system + reproducibility
-├── summary.md               formatted tables (paper metric families) + charts
+├── summary.md               formatted tables (metric families) + charts
 ├── charts/*.png             recall by system, top-1 by scenario, latency
 └── raw/<scenario>/
     ├── inject.txt, revert.txt, alerts.json, incident.json, graph.json (prepared graph + discovery)

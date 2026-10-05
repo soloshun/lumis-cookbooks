@@ -92,8 +92,8 @@ uv run gridcastctl chaos revert
 | [docs/testing.md](docs/testing.md) | test layers and the pre-push manual test plan |
 | [docs/lumis-integration.md](docs/lumis-integration.md) | how Lumis connects: what it reads, incident lifecycle, deterministic triage, agent, how to run, reports, production intake, results |
 | [lumis/README.md](lumis/README.md) | the `gridcast-lumis` harness: drills, benchmarks, experiments, reports |
-| [lumis/experiments/README.md](lumis/experiments/README.md) | experiment protocol, systems, metric definitions (SEAMS plan), results layout |
-| [docs/research-notes.md](docs/research-notes.md) | Experiment setup, results, caveats and what changed (for the paper) |
+| [lumis/experiments/README.md](lumis/experiments/README.md) | experiment protocol, systems, metric definitions, results layout |
+| [docs/research-notes.md](docs/research-notes.md) | Experiment setup, results, caveats and what changed |
 
 ## Repository layout
 
