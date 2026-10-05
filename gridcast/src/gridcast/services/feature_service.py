@@ -3,8 +3,7 @@
 POST /v1/feature-runs builds features for every zone and the next `horizon_hours` hours at an
 hour-aligned cut-off and persists them in `features.*`. The lag-feature builder is selected by
 the release flag `lag_resolution` (see `gridcast.features.store`). The release flag `load_unit`
-selects the unit the load features are written in; the model is trained on MW, so `kw` is a
-training/serving skew (scenario N).
+selects the unit the load features are written in (`mw` or `kw`).
 """
 
 import dataclasses

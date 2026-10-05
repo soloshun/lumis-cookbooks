@@ -26,7 +26,7 @@ class DatabaseSettings(BaseSettings):
     max_overflow: int = 5
     pool_timeout_seconds: float = 10.0
     # Connections are recycled periodically, like most production pools. This is what makes a
-    # credential rotation surface minutes later rather than immediately (scenario C).
+    # credential rotation surface minutes later rather than immediately.
     pool_recycle_seconds: int = 300
     connect_timeout_seconds: int = 5
     statement_timeout_ms: int = 60_000

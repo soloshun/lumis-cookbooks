@@ -34,6 +34,12 @@ PROMPT = (
 )
 MAX_OUT = 8000
 READABLE = ("src/", "deploy/", "infra/")
+# Never readable by an investigator: the fault-injection tooling (it names every scenario) and
+# the simulators of the outside world (vendors, telemetry historian, weather and demand truth),
+# whose code an operator of a real estate would not have.
+HIDDEN = ("src/gridcast/chaos/", "src/gridcast/ctl/", "src/gridcast/weather/", "src/gridcast/demand/",
+          "src/gridcast/services/vendor_faults.py", "src/gridcast/services/weather_vendor.py",
+          "src/gridcast/services/grid_telemetry.py")
 KINDS = ("pods", "deployments", "replicasets", "events", "services", "configmaps")
 
 
@@ -88,25 +94,28 @@ def build_agent(model, model_settings, incident) -> "Agent":  # noqa: ANN001, F8
         args = ["kubectl", "--context", "kind-gridcast", "-n", "gridcast", "get", kind]
         return _run([*args, *([name] if name else []), "-o", "yaml"])
 
-    @agent.tool_plain
-    def git_log(repo: Literal["gitops", "source"], max_count: int = 20) -> str:
-        """Recent commits (hash, time, author, subject) of the GitOps or source repository."""
-        root = GRIDCAST / ".gridcast" / "gitops" if repo == "gitops" else GRIDCAST.parent
-        return _run(["git", "log", f"-{min(max_count, 50)}", "--format=%H %cI %an %s"], cwd=root)
+    # GitOps history only. The source repository's history is the cookbook's own development
+    # history: its commit subjects and diffs describe the scenarios (a ground-truth leak found
+    # after the 2026-10-05 run, research notes §7b). Lumis likewise sees no source subjects.
+    gitops = GRIDCAST / ".gridcast" / "gitops"
 
     @agent.tool_plain
-    def git_show(repo: Literal["gitops", "source"], commit: str) -> str:
-        """Full diff of one commit."""
-        root = GRIDCAST / ".gridcast" / "gitops" if repo == "gitops" else GRIDCAST.parent
+    def git_log(max_count: int = 20) -> str:
+        """Recent commits (hash, time, author, subject) of the GitOps repository."""
+        return _run(["git", "log", f"-{min(max_count, 50)}", "--format=%H %cI %an %s"], cwd=gitops)
+
+    @agent.tool_plain
+    def git_show(commit: str) -> str:
+        """Full diff of one GitOps commit."""
         if not commit.isalnum():
             return "error: commit must be a hash"
-        return _run(["git", "show", "--stat", "--patch", commit], cwd=root)
+        return _run(["git", "show", "--stat", "--patch", commit], cwd=gitops)
 
     @agent.tool_plain
     def read_file(path: str) -> str:
         """Read a file of the GridCast repository under src/, deploy/ or infra/."""
         clean = Path(path).as_posix().lstrip("/")
-        if ".." in clean or not clean.startswith(READABLE) or ".env" in clean:
+        if ".." in clean or not clean.startswith(READABLE) or clean.startswith(HIDDEN) or ".env" in clean:
             return "error: only src/, deploy/ and infra/ are readable"
         target = GRIDCAST / clean
         return _clip(target.read_text()) if target.is_file() else "error: no such file"

@@ -197,6 +197,8 @@ mechanism, and conclusion precision.
 | right diagnosis anywhere in output | 0.60 | 0.10 | 0.23 | 0.57 | 0.53 | **0.97** |
 | concluded (precision) | 5 (1.00) | — | — | 9 (0.89) | 3 (1.00) | **24 (0.96)** |
 | hard set K–O, correct diagnoses | 0/25 | 0/10 | 2/10 | 2/10 | 2/10 | **9/10** |
+| *excluding N (leak, §7c): all 14 scenarios* | 0.57 | 0.04 | 0.18 | 0.54 | 0.54 | **0.89** |
+| *excluding N: hard set K, L, M, O* | 0/20 | 0/8 | 2/8 | 2/8 | 2/8 | **7/8** |
 | model cost per run | $0 | $0.005 | $0.015 | $0.035 | $0.035 | $0.14 |
 | median seconds per run | 0.13 | — | — | 224 | 224 | 225 |
 
@@ -216,7 +218,8 @@ What the ladder shows:
   right (0.50 either way). The single-pass hypotheses were wrong because they never looked at the
   cause, not because nobody checked them.
 * **The agent's reach is the difference on hard faults.** On K–O Lumis made 9/10 correct
-  diagnoses, against 2/10 for single-pass. The decisive facts were outside the pre-collected
+  diagnoses, against 2/10 for single-pass (7/8 against 2/8 without N, whose Lumis runs could read
+  a leaked label, §7c). The decisive facts were outside the pre-collected
   bundle: the timeout commit (K), the CPU-limit commit (M), the `load_unit=kw` release flag in
   `releases.yaml` and the feature monitor (N), and the zones-reporting count (O).
 * **Remaining Lumis misses.** C: both runs, one degraded by the provider failure and one naming
@@ -241,6 +244,11 @@ is recommended before publication.
 
 ## 7b. Lumis vs an unguided tool agent (2026-10-05)
 
+> **Correction (2026-10-05, after the run): the N half of this comparison is invalid.** The tool
+> agent's Git tools reached the cookbook's own history, whose commit subjects and diffs describe
+> the scenarios, and both N runs read them. Lumis' N runs could read a docstring naming the
+> scenario. Only A is a clean comparison. See §7c. The table below is kept as recorded.
+
 Folder: `lumis/experiments/2026-10-05-tool-agent-deepseek-v4-pro/` (report: `agents/summary.md`,
 charts: `agents/charts/effort.png`, `agents/charts/tool-mix.png`). Two scenarios, one medium (A,
 query amplification) and one hard (N, silent kW/MW unit skew), with 2 repeats each and the same
@@ -259,10 +267,11 @@ model, reasoning effort and frozen incidents. The model runs were sequential.
 
 What it shows:
 
-* **On these two scenarios the tool agent was as accurate as Lumis.** Given the same telemetry,
-  Git and source access, a strong reasoning model found both causes unaided, including the
-  silent unit skew in N, which single-pass got wrong in both runs (§7). This is the
-  honest result. Lumis' edge here is not accuracy.
+* **On A, the clean scenario, the tool agent was as accurate as Lumis** (2/2 each). Given the
+  same telemetry, Git and source access, a strong reasoning model found the query amplification
+  unaided. Lumis' edge on A is not accuracy. N cannot be judged (§7c).
+* **A alone, effort:** tool agent 81 tool calls (19 failed), 46 model requests, 1.46 M input
+  tokens, $0.44; Lumis 44 tool calls (2 failed), 19 requests, 0.66 M input tokens, $0.44.
 * **It needed about 1.7× the tool calls, 2.3× the model requests and 2.1× the input tokens.**
   61% of its calls were telemetry queries it wrote itself, against 31% for Lumis. 30 of its
   calls failed: SQL against guessed column names (`created_at`, `forecast_mw`, `check`) and
@@ -285,7 +294,7 @@ What it shows:
   forecast publishing), while Lumis' were options, two of them explicitly marked for human
   review. The tool agent's 12 path-guard denials were guessed paths and directory reads (e.g.
   `src`, `deploy/`, `gridcast/src/...`). None reached for `.env`, secrets or the chaos state.
-* **Limits.** Two scenarios, 2 repeats, one model. The tool agent's read access is at least as broad
+* **Limits.** One clean scenario (A), 2 repeats, one model. The tool agent's read access is at least as broad
   as Lumis' (raw PromQL, LogQL and SQL, plus `kubectl get`), so this isolates Lumis' boundaries
   and verification, not its data access. In a smoke test on a healthy estate before the run, the
   tool agent never converged and exhausted 60 requests: it has no stopping point when there is
@@ -308,6 +317,38 @@ Scoring fixes found while analysing this run (each applies to every system):
   ladder. The run-time scorer now maps hosted resources itself, and this run's labels were
   recomputed from the raw reports.
 
+## 7c. Ground-truth leaks found after the runs (2026-10-05)
+
+While choosing reasoning excerpts for a write-up, we found that Lumis' N reasoning quoted a
+docstring: the `load_unit` flag "is a training/serving skew (scenario N)". A full scan of every
+tool result of every run (`raw/*/*/transcript.json`) for scenario labels found two channels:
+
+| Channel | Who could see it | Runs exposed | Effect |
+|---|---|---|---|
+| Docstring in `services/feature_service.py` (allowlisted for Lumis) naming the `kw` flag as "scenario N", added 2026-10-04 with scenario N | Lumis (and the tool agent's file reads) | Follow-up: Lumis runs that read the file in A, C, D, F, M, N, O; tool-agent run: Lumis A and N; tool agent N r1 | **Direct leak for N.** For the other scenarios the label names a different fault (it reveals only that this is a test estate) |
+| The tool agent's `git_log`/`git_show` on the *source* repository, i.e. the cookbook's own development history ("silent scenarios N (training/serving skew)", "harder scenarios K, L and M", and the diffs documenting them) | Tool agent only (Lumis' source-repo Git returns no subjects and diffs only allowlisted files) | Tool-agent runs A r1/r2 (subjects only, nothing about A's mechanism) and N r1/r2 (subjects plus the scenario-documentation diff) | **Direct leak for the tool agent's N runs**; meta-awareness on A |
+
+Not affected: the main run (the docstring did not exist yet; its transcripts contain no label),
+the GitOps history (realistic authors and messages only), and the ladder rungs without tools
+(llm_symptoms, llm_graph, single_pass, single_pass_verified read no code).
+
+What it changes:
+
+* N is excluded from claims about Lumis and the tool agent. Without N, Lumis' follow-up results
+  barely move: 25/28 correct top-1 diagnoses (0.89, against 0.90), hard set 7/8 against 2/8 for
+  single-pass, and 21 of 22 conclusions correct.
+* Lumis' N diagnosis was mechanically supported by telemetry (a 20-minute mean of the
+  `load_lag_24h` feature of 129,748, against about 533 normally), so the evidence check did not
+  depend on the docstring, but naming the mechanism may have.
+* The tool-agent comparison stands on A only (§7b).
+
+Fixes (cookbook): the docstring and a `config.py` comment no longer name scenarios; the tool
+agent's Git tools see the GitOps history only; its file reads exclude the fault-injection tooling
+(`chaos/`, `ctl/`) and the simulators of the outside world (vendors, telemetry historian, weather
+and demand truth); and `lumis/tests/test_no_ground_truth_leak.py` fails if any file Lumis or the
+tool agent can read names a scenario. A clean rerun of N (both systems, about 45 minutes) would
+restore that comparison; it has not been run.
+
 ## 7a. Models not evaluated
 
 Only DeepSeek v4 was used for every reported model run (`deepseek/deepseek-v4-pro-0813` with
@@ -325,7 +366,10 @@ allows.
 * Synthetic estate and faults. Faults are realistic in channel and symptom but chosen by us;
   the scenario set is not a sample of real incidents.
 * One model family (DeepSeek v4, §7a), few repeats, and no human baseline.
-* The tool-agent comparison (§7b) covers two scenarios only.
+* The tool-agent comparison (§7b) has one clean scenario (A); N leaked (§7c).
+* Agent-readable source code was written by the scenario authors. Two leaks were found and
+  fixed after the runs (§7c); a regression test now guards against labels, but subtler hints
+  (realistic but suggestive comments or release notes) cannot be excluded by a test.
 * Post-hoc scoring corrections and LLM-assigned mechanism labels (reported next to the originals).
 * The estate defects above affected the main run; the follow-up fixes them, but there may be
   others we have not found.
