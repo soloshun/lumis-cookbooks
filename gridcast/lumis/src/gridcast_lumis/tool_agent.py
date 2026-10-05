@@ -29,7 +29,8 @@ PROMPT = (
     "GridCast estate (Kubernetes namespace `gridcast`). Use the read-only tools to find the root "
     "cause. Then return 3 to 5 competing root-cause hypotheses, most likely first, each naming the "
     "component where the fault originates (use service:gridcast:<name> IDs when you can), the "
-    "mechanism and a short statement, plus suggested next steps. You cannot change anything."
+    "mechanism and a short statement, plus suggested next steps. You cannot change anything. "
+    "Budget: about 40 tool calls; stop as soon as you have enough evidence and answer."
 )
 MAX_OUT = 8000
 READABLE = ("src/", "deploy/", "infra/")
@@ -158,9 +159,10 @@ async def investigate(model_id: str, incident) -> tuple[Diagnosis | None, list, 
         agent = build_agent(model, settings, incident)
         with capture_run_messages() as messages:
             try:
-                # A runaway guard only (Lumis' runs used about 11 requests).
+                # A runaway guard only (Lumis' runs used about 11 requests). In a smoke test on a
+                # healthy estate the agent never converged and exhausted 60 requests.
                 result = await asyncio.wait_for(
-                    agent.run(prompt, usage_limits=UsageLimits(request_limit=60)), timeout=1800)
+                    agent.run(prompt, usage_limits=UsageLimits(request_limit=100)), timeout=1800)
                 return result.output, list(messages), None
             except Exception as exc:  # noqa: BLE001
                 return None, list(messages), f"{type(exc).__name__}: {str(exc)[:300]}"
