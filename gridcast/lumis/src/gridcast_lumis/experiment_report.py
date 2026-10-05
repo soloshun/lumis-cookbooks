@@ -141,7 +141,7 @@ def write_report(folder: Path) -> Path:
              "Generated from `results.jsonl`; raw artefacts in `raw/`. Metric definitions: README.md.", ""]
     if agg:
         header = "| metric | " + " | ".join(LABEL[s] for s in systems) + " |"
-        lines += ["## Metrics by system (SEAMS research-plan families)", "", header,
+        lines += ["## Metrics by system (metric families)", "", header,
                   "|---|" + "---|" * len(systems)]
         keys = [("runs", "runs"), ("errors", "harness/system errors"), ("agent_errors", "agent errors"),
                 ("top1_recall", "top-1 recall"), ("top3_recall", "top-3 recall"),

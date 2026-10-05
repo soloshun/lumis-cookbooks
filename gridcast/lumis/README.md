@@ -53,7 +53,7 @@ uv run gridcast-lumis drill A [--use-agent]    # inject -> alert -> Lumis -> sco
 uv run gridcast-lumis bench --scenario J --iterations 50            # deterministic latency
 uv run gridcast-lumis bench --scenario J --iterations 200 --reuse-prepared
 uv run gridcast-lumis report                   # results/summary.md + charts
-uv run gridcast-lumis experiment --name my-run --model deepseek/deepseek-v4-pro-0813   # paper experiment
+uv run gridcast-lumis experiment --name my-run --model deepseek/deepseek-v4-pro-0813   # full experiment
 uv run gridcast-lumis graph --format mermaid     # logical service graph as Mermaid
 uv run gridcast-lumis watch --interval 30      # production-style alert polling loop
 ```

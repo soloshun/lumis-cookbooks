@@ -306,7 +306,7 @@ async def run_system(system: str, prepared: PreparedProject, incident: Incident,
 
 
 def metrics_for(row: dict, truth: dict, hosts: dict[str, str] | None = None) -> dict:
-    """SEAMS research-plan metric families for one run (see experiments/README)."""
+    """Metric families for one run (see experiments/README)."""
     gt = truth["ground_truth"]
     expected = graph_entity(gt["root_cause_entity"])
     m: dict = {"system": row["system"], "seconds": row["seconds"], "error": row.get("error"),

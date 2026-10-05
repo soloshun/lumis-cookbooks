@@ -40,7 +40,7 @@ We also ask what it costs, and whether it is safe.
 | Model | `deepseek/deepseek-v4-pro-0813`, reasoning effort high, OpenRouter (`allow_fallbacks: false`, `require_parameters: true`) |
 | Budgets | pydantic-ai request/tool/token caps lifted; SDK broker budgets at schema maxima ("let the model do its own thing") |
 | Protocol | Per scenario: estate quiet and 20-minute cooldown → inject → first fresh alert → 120 s settle → one frozen incident (alert entities, window = first alert − 10 min … now) → all systems on that same incident → ground truth read → revert |
-| Metrics | SEAMS research-plan families: top-k entity recall, causal-path score, unsupported-hypothesis rate, efficiency (time, tokens, cost), abstention, safety. Post hoc: mechanism score |
+| Metrics | Metric families: top-k entity recall, causal-path score, unsupported-hypothesis rate, efficiency (time, tokens, cost), abstention, safety. Post hoc: mechanism score |
 | Code | `lumis/src/gridcast_lumis/experiment.py`, `experiment_report.py`, `rescore.py`; SDK `soloshun/lumis-sdk` |
 
 ## 2a. The systems compared, and exactly how they differ
