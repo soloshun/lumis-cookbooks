@@ -1,0 +1,9 @@
+[
+ {
+  "name": "ForecastShiftedVsPlan",
+  "entity": "service:gridcast:forecast-pipeline",
+  "summary": "A new forecast deviated from the published plan by more than 10%",
+  "active_at": "2026-10-04 23:13:57.944281+00:00",
+  "severity": "ticket"
+ }
+]

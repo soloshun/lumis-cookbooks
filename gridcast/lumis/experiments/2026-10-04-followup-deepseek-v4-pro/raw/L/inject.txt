@@ -1,0 +1,7 @@
+injecting L-decoy-release-data-gap: A fresh release next to a silent upstream data gap
+committed 5b280bb deploy(planning-api): 2.3.0 -> 2.3.1
+Waiting for deployment "planning-api" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "planning-api" rollout to finish: 1 old replicas are pending termination...
+deployment "planning-api" successfully rolled out
+run 20261004T213807Z-L-decoy-release-data-gap-3432 (ground truth: .gridcast/chaos/runs/20261004T213807Z-L-decoy-release-data-gap-3432.json)
+symptoms expected: ~10-12 min (freshness alert), later held forecasts

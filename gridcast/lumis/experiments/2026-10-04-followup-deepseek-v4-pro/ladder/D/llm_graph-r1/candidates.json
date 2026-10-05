@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "forecast-service application fault :: A recent release or configuration change to forecast-service introduced a fatal startup error (e.g. unhandled panic, missing required configuration, or OOM during initialization), causing the container to exit immediately and enter CrashLoopBackOff. :: The fault originates in the forecast-service deployment itself."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Postgres database dependency failure :: forecast-service cannot establish or maintain a healthy connection to Postgres because the database is unreachable, rejecting credentials, or has an incompatible schema for the running forecast-service version. :: The database dependency is causing forecast-service to fail during startup or health checks."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Upstream forecast-pipeline traffic :: forecast-pipeline is sending requests, payloads, or concurrency to forecast-service that trigger a panic or resource exhaustion in forecast-service, causing repeated pod exits. :: The crash loop is triggered by traffic from the forecast-pipeline upstream."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Kubernetes platform/probe issue :: A liveness or readiness probe misconfiguration, container resource limit, or node-level resource pressure is causing Kubernetes to repeatedly kill the forecast-service pod even if the application itself may not be crashing internally. :: The restarts are caused by platform-level controls rather than a forecast-service application fault."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Ingestion data quality issue :: Ingestion has written malformed, oversized, or unexpected weather/telemetry data into Postgres that forecast-service reads during startup or request handling, causing forecast-service to crash. :: A data-quality fault from ingestion propagates through the database and crashes forecast-service."
+ }
+]

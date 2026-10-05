@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Upstream input data delay or malformed payload :: The forecast-pipeline input fetcher received missing, late, or invalid upstream data, causing a validation failure or retry hold. :: Most likely, because two failures within 15 minutes fits retry/backoff against a bad or delayed input payload."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Compute resource exhaustion in the forecast-pipeline executor :: Pipeline executor pods were OOMKilled or CPU-throttled due to peak batch load or a memory leak. :: Likely if the incident aligns with other midnight batch workloads competing for shared infrastructure."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Scheduler/orchestrator lock contention in the forecast-pipeline :: An earlier pipeline run held a lock, lease, or state marker and caused subsequent runs to block or fail. :: Possible when a first run does not release its lock and the retry collides with the stale run."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Recent configuration or deployment change in the forecast-pipeline :: A config or version change introduced an invalid parameter, feature flag, or path that caused runtime failure. :: Possible if a deployment or configuration change was applied shortly before the incident and then reverted."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Downstream storage/output dependency failure :: The pipeline failed or held while writing output because its object storage or database destination was unavailable or slow. :: Possible if failures occur specifically at the output commit or persistence stage."
+ }
+]

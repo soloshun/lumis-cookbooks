@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "weather-vendor-wx-primary :: The external primary weather vendor began returning HTTP 5xx responses for weather_observations, so ingestion could not fetch observations and recorded ingestion failures. :: Vendor-side degradation/outage is the most direct explanation for the simultaneous vendor 5xx spike and ingestion errors."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "ingestion :: A recent ingestion code, config, or API-client change is sending malformed or unsupported weather_observations requests that cause the vendor primary to fail with 5xx responses. :: Ingestion-originated bad requests are driving the vendor error rate, rather than the vendor failing on its own."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "ingestion :: The weather_observations ingestion path did not fail over to service:gridcast:weather-vendor-wx-secondary, so primary-vendor errors propagated directly into ingestion failures. :: A missing or ineffective fallback path turned a primary-vendor issue into a full ingestion incident."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "weather-vendor-wx-primary :: The primary vendor account or weather_observations feed is misconfigured, rate-limited, or quota-exhausted, causing the vendor to reject ingestion requests with server-side errors. :: A feed-specific vendor-side misconfiguration is plausible, without requiring a full vendor outage."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "postgres :: Ingestion cannot persist weather_observations because Postgres is unavailable, slow, or full, causing ingestion to fail even after successfully fetching from the vendor. :: A downstream persistence failure would explain ingestion errors, but it is weaker because it does not directly explain the vendor-primary 5xx spike."
+ }
+]

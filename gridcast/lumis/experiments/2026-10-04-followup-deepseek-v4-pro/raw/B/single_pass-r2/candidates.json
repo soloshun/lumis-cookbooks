@@ -1,0 +1,458 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:weather-vendor-wx-primary",
+    "service:gridcast:ingestion",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "evidence_needed": [
+    "weather-observation-freshness"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "le",
+     "value": 300
+    }
+   ],
+   "id": "H1",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "gt",
+     "value": 1800
+    }
+   ],
+   "statement": "The primary weather vendor is serving stale or repeated observations, causing the forecast pipeline's variability check to warn."
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "The primary weather vendor is serving stale or repeated observations, causing the forecast pipeline's variability check to warn.",
+    "causal_path": [
+     "service:gridcast:weather-vendor-wx-primary",
+     "service:gridcast:ingestion",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_observation_freshness_seconds",
+      "operator": "gt",
+      "value": 1800
+     }
+    ],
+    "evidence_needed": [
+     "weather-observation-freshness"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_observation_freshness_seconds",
+      "operator": "le",
+      "value": 300
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "gt",
+     "value": 1800
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "le",
+     "value": 300
+    }
+   ]
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:weather-vendor-wx-primary",
+    "service:gridcast:ingestion",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "evidence_needed": [
+    "ingestion-weather-vendor-503",
+    "weather-observation-freshness"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "id": "H2",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "gt",
+     "value": 1800
+    }
+   ],
+   "statement": "The ingestion service has fallen back to the secondary weather vendor due to primary vendor HTTP 503 errors, and the secondary vendor provides lower-frequency or less variable data."
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "The ingestion service has fallen back to the secondary weather vendor due to primary vendor HTTP 503 errors, and the secondary vendor provides lower-frequency or less variable data.",
+    "causal_path": [
+     "service:gridcast:weather-vendor-wx-primary",
+     "service:gridcast:ingestion",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_observation_freshness_seconds",
+      "operator": "gt",
+      "value": 1800
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-weather-vendor-503",
+     "weather-observation-freshness"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "gt",
+     "value": 1800
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "evidence_needed": [
+    "forecast-pipeline-changes-20m",
+    "weather-observation-freshness"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "gt",
+     "value": 1800
+    }
+   ],
+   "id": "H3",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "le",
+     "value": 600
+    }
+   ],
+   "statement": "A recent deployment to the forecast-pipeline changed the variability check configuration (e.g., shorter comparison window or lower threshold), leading to false positive warnings on normal weather data."
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "A recent deployment to the forecast-pipeline changed the variability check configuration (e.g., shorter comparison window or lower threshold), leading to false positive warnings on normal weather data.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_observation_freshness_seconds",
+      "operator": "le",
+      "value": 600
+     }
+    ],
+    "evidence_needed": [
+     "forecast-pipeline-changes-20m",
+     "weather-observation-freshness"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_observation_freshness_seconds",
+      "operator": "gt",
+      "value": 1800
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "le",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "gt",
+     "value": 1800
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:ingestion",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "evidence_needed": [
+    "weather-observation-freshness",
+    "ingestion-weather-vendor-503",
+    "forecast-pipeline-changes-20m"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "gt",
+     "value": 1800
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "id": "H4",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "le",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "statement": "The weather observation network is genuinely providing constant values (e.g., sensor failures or maintenance) while the data is fresh, so the pipeline's variability warnings are accurate."
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "The weather observation network is genuinely providing constant values (e.g., sensor failures or maintenance) while the data is fresh, so the pipeline's variability warnings are accurate.",
+    "causal_path": [
+     "service:gridcast:ingestion",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_observation_freshness_seconds",
+      "operator": "le",
+      "value": 600
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "weather-observation-freshness",
+     "ingestion-weather-vendor-503",
+     "forecast-pipeline-changes-20m"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_observation_freshness_seconds",
+      "operator": "gt",
+      "value": 1800
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "le",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "gt",
+     "value": 1800
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ]
+  }
+ }
+]

@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Forecast pipeline's own processing capacity is the bottleneck. :: The forecast-pipeline deployment/pod is CPU-throttled, memory-pressured, or running a performance regression under increased job volume, causing internal stages to queue and end-to-end p95 duration to exceed 5s. :: The fault originates inside the forecast-pipeline itself, not in an upstream dependency."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "PostgreSQL is degraded or overloaded. :: The shared postgres instance is experiencing slow queries, lock contention, or connection-pool exhaustion on the forecast-pipeline's read/write path, making database calls block and inflating pipeline duration. :: The forecast-pipeline is slow because its database dependency is degraded."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Forecast-service is degraded or overutilized. :: The forecast-service ML inference/serving path is responding slowly to forecast-pipeline calls due to model latency, resource saturation, or downstream postgres delays. :: The forecast-pipeline is slow because its ML forecast-service dependency is degraded."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Feature-service is degraded or overutilized. :: Feature-service is returning feature data to forecast-pipeline more slowly than normal due to its own CPU/GC pressure, request pile-up, or downstream postgres contention. :: The forecast-pipeline is slow because feature-service, an upstream provider, has elevated latency."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "Planning-api is degraded or overloaded. :: Planning-api is saturated by critical grid-operator traffic or its own resource limits, causing forecast-pipeline calls to planning-api to stall, queue, or retry. :: The forecast-pipeline is slow because its critical planning-api dependency is overloaded."
+ }
+]

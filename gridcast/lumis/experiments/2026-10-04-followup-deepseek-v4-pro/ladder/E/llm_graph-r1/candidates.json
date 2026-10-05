@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "k8s:gridcast:deployment:forecast-pipeline :: The forecast-pipeline pods are CPU-throttled, memory-pressured, or experiencing garbage-collection pauses, so internal processing slows even when dependencies remain healthy. :: Fault originates in forecast-pipeline itself; local resource saturation best explains an isolated p95 duration above 5s."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "service:gridcast:forecast-service :: Forecast-service inference or serving latency increased due to queuing or cold starts, causing forecast-pipeline to block on downstream forecast-service calls. :: Fault originates in forecast-service; slow ML serving inflates forecast-pipeline p95."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "service:gridcast:feature-service :: Feature-service feature retrieval or computation became slower, so forecast-pipeline waited longer for feature inputs in its critical path. :: Fault originates in feature-service; its latency propagates directly into forecast-pipeline duration."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: Forecast-pipeline queries to Postgres are slowed by lock contention, elevated load, or an unoptimized query plan, increasing database wait time. :: Fault originates in Postgres; database latency propagates directly into forecast-pipeline p95."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "service:gridcast:planning-api :: planning-api responded slowly or intermittently to forecast-pipeline requests, causing blocking or retries in forecast-pipeline stages. :: Fault originates in planning-api; forecast-pipeline p95 rises because it spends longer waiting on planning-api calls."
+ }
+]

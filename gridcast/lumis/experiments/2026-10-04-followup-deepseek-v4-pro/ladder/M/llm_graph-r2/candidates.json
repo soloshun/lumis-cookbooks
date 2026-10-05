@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Recent forecast-pipeline rollout or resource saturation :: A newly rolled-out forecast-pipeline pod or deployment is CPU-throttled, memory-pressured, or running a performance-regressed code path, causing its own processing to exceed the 5s p95 threshold. :: The fault originates in k8s:gridcast:deployment:forecast-pipeline and is the most likely because the symptom is isolated to forecast-pipeline and its deployment shows multiple ReplicaSets consistent with recent changes."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Shared Postgres database latency :: Forecast-pipeline queries to Postgres are slow due to lock contention, a heavy query, or connection-pool exhaustion, inflating pipeline duration. :: The fault originates in service:gridcast:postgres, a direct critical dependency of forecast-pipeline, so database latency would directly raise forecast-pipeline p95."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Feature-service degradation :: Feature-service is saturated or degraded, causing forecast-pipeline to block on feature computation/retrieval calls. :: The fault originates in service:gridcast:feature-service, which is a direct dependency of forecast-pipeline and appears to primarily serve it, so its latency would manifest mainly in forecast-pipeline."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Forecast-service degradation :: Forecast-service model inference is slow due to resource saturation or request queueing, causing forecast-pipeline to wait on inference responses. :: The fault originates in service:gridcast:forecast-service, a direct single-consumer dependency of forecast-pipeline, so its slowdown would directly inflate forecast-pipeline duration."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "Planning-api degradation :: Planning-api is saturated or degraded, causing forecast-pipeline to block on planning-data or context calls. :: The fault originates in service:gridcast:planning-api; although planning-api is shared with grid-operator, a slowdown on the forecast-pipeline path would appear as ForecastPipelineSlow."
+ }
+]

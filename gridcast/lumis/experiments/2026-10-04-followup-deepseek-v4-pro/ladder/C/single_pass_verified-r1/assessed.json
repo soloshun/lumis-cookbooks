@@ -1,0 +1,38 @@
+{
+ "fetched_queries": [
+  "feature-service-error-log",
+  "feature-service-changes-20m",
+  "feature-cpu-throttling",
+  "forecast-pipeline-changes-20m",
+  "postgres-rows-scanned"
+ ],
+ "facts_added": 2,
+ "ranked": [
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "feature-service 5xx rate is elevated because feature builds are failing due to PostgreSQL authentication failures.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "feature-service pods are CPU throttled, causing request handling to slow or fail and raising the 5xx rate.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:postgres",
+   "text": "The PostgreSQL database serving feature-service is experiencing elevated scan activity, causing feature builds to time out or fail and raising 5xx responses.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:feature-service",
+   "text": "A recent deployment or configuration change to feature-service introduced a regression causing the elevated 5xx rate.",
+   "state": "contradicted"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "A recent change in the upstream forecast-pipeline altered feature-service request patterns, causing feature-service to return 5xx errors.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:grid-telemetry",
+  "text": "Upstream demand data source failure :: The external demand telemetry source became unavailable or returned intermittent timeouts/5xx errors during the window, causing ingestion's demand pull/consume requests to fail. :: Fault originates in service:gridcast:grid-telemetry, the external vendor feeding demand data to ingestion."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Ingestion service deployment/config fault :: A bad rollout or configuration change to the ingestion service introduced an error in the demand ingestion path and recovered after rollback or restart. :: Fault originates in service:gridcast:ingestion itself."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Database dependency failure :: Postgres was degraded\u2014connection pool exhaustion, slow/locked queries, or write failures\u2014so ingestion could not persist demand records. :: Fault originates in service:gridcast:postgres."
+ },
+ {
+  "entity": "service:gridcast:grid-telemetry",
+  "text": "Upstream demand data contract mismatch :: Demand payload schema or values changed unexpectedly and failed ingestion's validation/parsing, causing demand records to be rejected. :: Fault originates in service:gridcast:grid-telemetry due to malformed demand data."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Ingestion pod resource exhaustion :: The active ingestion pod hit CPU or memory limits or OOMKilled during a demand data spike, causing transient ingestion errors until it recovered or was rescheduled. :: Fault originates in k8s:gridcast:pod:ingestion-75cb4c9d78-ppfgf."
+ }
+]

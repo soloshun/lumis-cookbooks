@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "service:gridcast:weather-vendor-wx-primary :: The external primary weather vendor API is returning HTTP 5xx errors on weather_observations requests, so ingestion cannot successfully fetch observations. :: Most likely: the primary weather vendor is degraded or partially down, directly causing both the vendor 5xx rate and the ingestion errors."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "service:gridcast:ingestion :: A bad configuration, expired credential, or code regression in ingestion is sending malformed/unauthorized requests to weather-vendor-wx-primary, causing the vendor to respond with 5xx and ingestion to fail. :: Ingestion-side request or configuration fault is responsible for the vendor 5xx and failed weather_observations ingestion."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-secondary",
+  "text": "service:gridcast:weather-vendor-wx-secondary :: The fallback to weather-vendor-wx-secondary is not working or not automatically engaged when the primary vendor fails, leaving ingestion dependent on the failing primary. :: A broken or missing secondary-vendor fallback path is extending a primary-vendor failure into sustained ingestion failure."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "service:gridcast:ingestion :: The ingestion service is resource-saturated or crash-looping, causing failed weather_observations processing and retry storms that also drive elevated 5xx/error rates against the vendor. :: Ingestion-service instability is the originating fault, with vendor 5xx appearing as a secondary symptom of retries/backpressure."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: Ingestion cannot persist fetched weather observations to postgres due to a database fault or capacity problem, causing ingestion errors while the vendor 5xx rate is a coincidental or backpressure-induced secondary signal. :: A database write-path failure underlies the ingestion failure, independent of or amplified by the vendor 5xx issue."
+ }
+]

@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "1 :: A recent code or configuration change introduced a bug in demand parsing/validation/transform logic. :: The failure originates inside the ingestion service\u2019s own demand-processing path."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "2 :: The upstream demand feed began sending malformed, schema-incompatible, or truncated records at the incident start. :: Ingestion fails because inbound demand data violates the service\u2019s expected format."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "3 :: The persistent store or message bus that receives ingested demand became unavailable or too slow, causing write failures. :: Ingestion reports demand errors because it cannot successfully write or forward records."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "4 :: An expired or rotated credential or token caused authentication or authorization failure on a source or sink connection. :: Demand ingestion fails at an external API or database boundary due to auth, not demand content."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "5 :: CPU, memory, thread-pool, or connection-pool exhaustion caused demand ingestion threads to fail or stall. :: The ingestion service lacked capacity during the incident window, producing demand ingestion errors."
+ }
+]

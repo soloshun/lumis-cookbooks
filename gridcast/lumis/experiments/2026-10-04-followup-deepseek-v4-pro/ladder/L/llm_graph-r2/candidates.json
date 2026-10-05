@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:grid-telemetry",
+  "text": "service:gridcast:grid-telemetry :: The external demand feed from grid-telemetry has stalled or stopped delivering new records, so ingestion's demand watermark is not advancing. :: Input demand stopped advancing at the source."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "service:gridcast:ingestion :: The ingestion consumer or processing pipeline is stuck internally, such as a crash loop, consumer lag, poison record, or deadlock, so demand offsets cannot advance. :: Ingestion processing is stalled."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: Lock contention, slow queries, or connection exhaustion in Postgres is blocking ingestion's state/checkpoint writes, preventing demand progress from being recorded. :: The database is blocking ingestion progress."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "service:gridcast:weather-vendor-wx-primary :: A primary weather-feed failure or delayed fallback causes ingestion to block waiting for weather inputs, so demand records stop advancing. :: Weather feed dependency is stalling ingestion."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "k8s:gridcast:deployment:ingestion :: A recent bad rollout or configuration change in the ingestion Deployment left the active pod unhealthy or misconfigured, halting consumption. :: The ingestion deployment itself caused the stall."
+ }
+]

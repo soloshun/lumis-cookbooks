@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Upstream demand data source emitted malformed or schema-incompatible payloads :: The upstream demand feed began returning payloads that failed schema validation or contained malformed records, causing service:gridcast:ingestion to reject all demand ingestion messages. :: An upstream data format or schema change caused demand ingestion to fail from 18:21:12Z to 18:33:27Z."
+ },
+ {
+  "entity": "service:gridcast:ingestion configuration or feature-flag change",
+  "text": "service:gridcast:ingestion configuration or feature-flag change :: A recent configuration deployment or feature-flag toggle introduced an invalid validation rule, incorrect topic, or wrong endpoint, causing demand messages to be rejected by service:gridcast:ingestion. :: A configuration change in service:gridcast:ingestion caused demand ingestion failures until reverted or corrected."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Credential/secret store outage or rotation for demand source authentication :: The credential or token used by service:gridcast:ingestion to authenticate to the upstream demand source expired or was rotated early, causing upstream API calls to return authentication failures. :: Expired or rotated source credentials caused demand ingestion to fail during the incident window."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Backing datastore or cache dependency of service:gridcast:ingestion :: The database or cache backing demand ingestion became unavailable, exhausted its connection pool, or timed out, causing write/read failures in service:gridcast:ingestion. :: A dependency outage in the backing datastore caused ingestion processing to fail."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Network or DNS resolution failure between service:gridcast:ingestion and demand source/broker :: A transient DNS resolution failure or network partition prevented service:gridcast:ingestion from reaching the upstream demand source or message broker. :: Transient network/DNS failure isolated service:gridcast:ingestion from its demand source."
+ }
+]

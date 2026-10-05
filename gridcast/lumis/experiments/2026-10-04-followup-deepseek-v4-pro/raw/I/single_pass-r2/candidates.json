@@ -1,0 +1,193 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:weather-vendor-wx-primary",
+    "service:gridcast:ingestion"
+   ],
+   "evidence_needed": [
+    "ingestion-weather-vendor-503 -> value > 0",
+    "ingestion-weather-errors -> value > 0",
+    "ingestion-contract-violations -> value == 0",
+    "ingestion-demand-errors -> value == 0"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "id": "H1",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "The primary weather vendor returned HTTP 503/5xx responses to ingestion during the incident window, causing weather_observations ingestion batches to fail."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis requests unregistered evidence"
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:weather-vendor-wx-primary",
+    "service:gridcast:ingestion"
+   ],
+   "evidence_needed": [
+    "ingestion-contract-violations -> value > 0",
+    "ingestion-weather-vendor-503 -> value == 0",
+    "ingestion-weather-errors -> value > 0",
+    "ingestion-error-log -> contains contract-violation rejections"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "id": "H2",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "statement": "Weather vendor payloads violated the ingestion contract/schema during the incident window, causing ingestion to reject weather observation batches."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis requests unregistered evidence"
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:weather-vendor-wx-primary",
+    "service:gridcast:ingestion"
+   ],
+   "evidence_needed": [
+    "ingestion-weather-vendor-503 -> value > 0",
+    "ingestion-weather-errors -> value > 0"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "id": "H3",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "statement": "Ingestion did not fail over to the secondary weather vendor when the primary vendor returned 5xx/503, so weather observation batch failures continued."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis requests unregistered evidence"
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:ingestion"
+   ],
+   "evidence_needed": [
+    "ingestion-changes-20m -> value > 0",
+    "ingestion-error-log -> contains weather batch failure lines",
+    "ingestion-weather-vendor-503 -> value == 0",
+    "ingestion-weather-errors -> value > 0"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "id": "H4",
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "statement": "A recent GitOps commit or rollout touching ingestion introduced a regression in weather-observation batch processing during the incident window."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis requests unregistered evidence"
+ }
+]

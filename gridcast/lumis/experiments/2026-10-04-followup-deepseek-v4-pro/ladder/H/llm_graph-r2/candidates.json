@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "service:gridcast:forecast-pipeline :: The forecast-pipeline's own job/container is crash-looping or being OOM-killed due to a recent code or configuration change, so each run is interrupted and reported as held or failed. :: The fault originates inside the forecast-pipeline itself, not in an upstream dependency."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: Postgres is experiencing slow queries, connection exhaustion, or lock contention, causing the forecast-pipeline's database reads/writes to time out and fail. :: The forecast pipeline is failing because required Postgres operations cannot complete successfully."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "service:gridcast:feature-service :: Feature-service is returning errors or high latency for feature requests, causing the forecast-pipeline feature-fetch stage to exceed retry or timeout thresholds. :: The forecast pipeline is failing because its feature inputs from feature-service are missing, slow, or invalid."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "service:gridcast:forecast-service :: Forecast-service is returning model inference errors or invalid response payloads, causing the pipeline's forecasting step to fail validation and abort. :: The forecast pipeline is failing because forecast-service inference is degraded."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "service:gridcast:planning-api :: Planning-api is unavailable or erroring on plan/constraint requests, so forecast-pipeline cannot obtain required planning inputs and the run is held or fails. :: The forecast pipeline is failing because upstream planning-api is not serving the required plan data."
+ }
+]

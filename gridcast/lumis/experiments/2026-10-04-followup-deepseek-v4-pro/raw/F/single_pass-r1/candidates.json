@@ -1,0 +1,18 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "causal_path": [
+    "service:gridcast:feature-service",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "evidence_needed": [],
+   "falsifiers": [],
+   "id": "H1",
+   "predictions": [],
+   "statement": "Feature-service build latency is on the critical path of slow forecast-pipeline runs. Context reports feature-build-p95=9.75s and feature-sql-per-build=1272. If forecast-pipeline waits on feature builds, slow pipeline traces should exceed the incident threshold."
+  },
+  "accepted_by_lumis": false,
+  "rejection": "schema: 3 validation errors for Hypothesis\npredictions\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short\nevidence_needed\n  Tuple should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]\n    For further information visit https://errors.pydantic.dev/2.13/v/too_short\nfalsifiers\n  Tuple should have at least 1 item afte"
+ }
+]

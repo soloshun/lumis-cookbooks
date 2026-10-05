@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "service:gridcast:forecast-pipeline :: A newly deployed pipeline version or configuration change altered forecast generation or plan-comparison logic, causing the new forecast to deviate more than 10% from the published plan. :: Self-originated change in the affected service is the most likely cause of a sudden, isolated forecast deviation."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "service:gridcast:feature-service :: feature-service served stale, corrupted, or newly versioned features into forecast-pipeline, shifting model inputs enough to move the forecast more than 10% from plan. :: Upstream feature drift or version mismatch is the leading external-cause hypothesis."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "service:gridcast:forecast-service :: forecast-service served a new or degraded model artifact or weights, producing materially different predictions that propagated to forecast-pipeline. :: A model or version change in the inference path is a plausible cause of sudden forecast deviation."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "service:gridcast:planning-api :: planning-api returned an updated or incorrectly versioned published plan used as the comparison baseline, making the forecast appear off by more than 10%. :: A baseline or plan version mismatch could trigger the alert without a true forecast error."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: postgres returned incomplete, stale, or incorrectly joined rows to forecast-pipeline or feature-service, causing the forecast to be computed from an inconsistent data snapshot. :: A database consistency or versioning issue is plausible but less likely to affect only forecast-pipeline."
+ }
+]

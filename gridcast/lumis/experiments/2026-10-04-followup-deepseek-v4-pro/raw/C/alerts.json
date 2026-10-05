@@ -1,0 +1,9 @@
+[
+ {
+  "name": "ServiceErrorRate",
+  "entity": "service:gridcast:feature-service",
+  "summary": "feature-service 5xx ratio above 5%",
+  "active_at": "2026-10-04 16:38:57.944281+00:00",
+  "severity": "ticket"
+ }
+]

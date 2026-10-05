@@ -1,0 +1,257 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "The demand telemetry source stopped or delayed sending demand readings to ingestion, while weather ingestion remained healthy.",
+   "causal_path": [
+    "service:gridcast:grid-telemetry -> service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "ge",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "lt",
+     "value": 600
+    }
+   ],
+   "evidence_needed": [
+    "demand-freshness",
+    "weather-observation-freshness"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "lt",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "ge",
+     "value": 600
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "Ingestion itself stalled across both demand and weather ingestion paths, so neither input advanced during the incident.",
+   "causal_path": [
+    "service:gridcast:grid-telemetry -> service:gridcast:ingestion",
+    "service:gridcast:weather-vendor-wx-primary -> service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "ge",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "ge",
+     "value": 600
+    }
+   ],
+   "evidence_needed": [
+    "demand-freshness",
+    "weather-observation-freshness"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "lt",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_observation_freshness_seconds",
+     "operator": "lt",
+     "value": 600
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "Demand batch calls from ingestion to the demand telemetry source are hanging or severely slowed, so no new demand is committed despite no recorded demand batch errors.",
+   "causal_path": [
+    "service:gridcast:grid-telemetry -> service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_p95_seconds_10m",
+     "operator": "ge",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-demand-batch-p95",
+    "ingestion-demand-errors"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_p95_seconds_10m",
+     "operator": "lt",
+     "value": 600
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "Demand vendor payloads are being rejected as contract violations, so demand readings are not ingested even though demand batch errors remain zero.",
+   "causal_path": [
+    "service:gridcast:grid-telemetry -> service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "eq",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-contract-violations",
+    "ingestion-demand-errors"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_batch_errors_10m",
+     "operator": "gt",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 5,
+  "hypothesis": {
+   "id": "H5",
+   "statement": "A recent GitOps commit or rollout touching ingestion introduced a silent demand-processing stall.",
+   "causal_path": [
+    "service:gridcast:ingestion"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-changes-20m"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H5",
+    "statement": "A recent GitOps commit or rollout touching ingestion introduced a silent demand-processing stall.",
+    "causal_path": [
+     "service:gridcast:ingestion"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "ingestion-changes-20m"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ }
+]

@@ -1,0 +1,939 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "Forecast-pipeline p95 latency may be caused by the pipeline's own orchestration: flow runs failing, retrying, or tracing as slow, possibly after a recent pipeline change.",
+   "causal_path": [
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "ge",
+     "value": 5000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "pipeline-failed-runs",
+    "prefect-failed-flow-runs",
+    "slow-pipeline-traces",
+    "forecast-pipeline-changes-20m"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "lt",
+     "value": 5000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H1",
+    "statement": "Forecast-pipeline p95 latency may be caused by the pipeline's own orchestration: flow runs failing, retrying, or tracing as slow, possibly after a recent pipeline change.",
+    "causal_path": [
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "slow_trace_duration_ms",
+      "operator": "ge",
+      "value": 5000
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "changes_20m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "pipeline-failed-runs",
+     "prefect-failed-flow-runs",
+     "slow-pipeline-traces",
+     "forecast-pipeline-changes-20m"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_runs_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "failed_flow_runs",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "slow_trace_duration_ms",
+      "operator": "lt",
+      "value": 5000
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "changes_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "unresolved",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "ge",
+     "value": 5000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "slow_trace_duration_ms",
+     "operator": "lt",
+     "value": 5000
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "Forecast-pipeline p95 latency may be caused by delayed, incomplete, or invalid upstream demand/weather data, triggering pipeline validation retries or stalls.",
+   "causal_path": [
+    "service:gridcast:weather-vendor-wx-primary",
+    "service:gridcast:weather-vendor-wx-secondary",
+    "service:gridcast:ingestion",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "demand_range_failures_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "weather_variability_warnings_30m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "demand-zones-reporting",
+    "demand-completeness-failures",
+    "demand-range-failures",
+    "weather-variability-warnings",
+    "ingestion-contract-violations",
+    "ingestion-weather-vendor-503",
+    "ingestion-demand-errors",
+    "ingestion-weather-errors"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "demand_range_failures_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "weather_variability_warnings_30m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H2",
+    "statement": "Forecast-pipeline p95 latency may be caused by delayed, incomplete, or invalid upstream demand/weather data, triggering pipeline validation retries or stalls.",
+    "causal_path": [
+     "service:gridcast:weather-vendor-wx-primary",
+     "service:gridcast:weather-vendor-wx-secondary",
+     "service:gridcast:ingestion",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "lt",
+      "value": 4
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "completeness_demand_failures_20m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "demand_range_failures_15m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "weather_variability_warnings_30m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "demand-zones-reporting",
+     "demand-completeness-failures",
+     "demand-range-failures",
+     "weather-variability-warnings",
+     "ingestion-contract-violations",
+     "ingestion-weather-vendor-503",
+     "ingestion-demand-errors",
+     "ingestion-weather-errors"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:grid-telemetry",
+      "key": "zones_reporting_demand_20m",
+      "operator": "eq",
+      "value": 4
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "completeness_demand_failures_20m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "demand_range_failures_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-pipeline",
+      "key": "weather_variability_warnings_30m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "contract_violation_log_lines",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:ingestion",
+      "key": "weather_vendor_503_log_lines",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "contradicted",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [
+    "prometheus:demand-range-failures",
+    "prometheus:weather-variability-warnings"
+   ],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "eq",
+     "value": 4
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "weather_vendor_503_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  }
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "Forecast-pipeline latency may be caused by feature-service dependency degradation, including slow builds, failed builds, DB auth failures, or throttling.",
+   "causal_path": [
+    "service:gridcast:feature-service",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "build_p95_seconds",
+     "operator": "ge",
+     "value": 5
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "failed_builds_10m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "error_log",
+     "operator": "ne",
+     "value": ""
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "cpu_throttled_ratio_5m",
+     "operator": "ge",
+     "value": 0.5
+    }
+   ],
+   "evidence_needed": [
+    "feature-build-p95",
+    "feature-failed-builds",
+    "feature-auth-failures",
+    "feature-service-error-log",
+    "feature-cpu-throttling"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "build_p95_seconds",
+     "operator": "lt",
+     "value": 5
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "failed_builds_10m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "error_log",
+     "operator": "eq",
+     "value": ""
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "cpu_throttled_ratio_5m",
+     "operator": "lt",
+     "value": 0.5
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H3",
+    "statement": "Forecast-pipeline latency may be caused by feature-service dependency degradation, including slow builds, failed builds, DB auth failures, or throttling.",
+    "causal_path": [
+     "service:gridcast:feature-service",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "build_p95_seconds",
+      "operator": "ge",
+      "value": 5
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "failed_builds_10m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "db_auth_failure_log_lines",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "error_log",
+      "operator": "ne",
+      "value": ""
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "cpu_throttled_ratio_5m",
+      "operator": "ge",
+      "value": 0.5
+     }
+    ],
+    "evidence_needed": [
+     "feature-build-p95",
+     "feature-failed-builds",
+     "feature-auth-failures",
+     "feature-service-error-log",
+     "feature-cpu-throttling"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "build_p95_seconds",
+      "operator": "lt",
+      "value": 5
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "failed_builds_10m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "db_auth_failure_log_lines",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "error_log",
+      "operator": "eq",
+      "value": ""
+     },
+     {
+      "entity_id": "service:gridcast:feature-service",
+      "key": "cpu_throttled_ratio_5m",
+      "operator": "lt",
+      "value": 0.5
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "contradicted",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [
+    "prometheus:feature-build-p95",
+    "prometheus:feature-failed-builds"
+   ],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "error_log",
+     "operator": "ne",
+     "value": ""
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "cpu_throttled_ratio_5m",
+     "operator": "ge",
+     "value": 0.5
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "db_auth_failure_log_lines",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "error_log",
+     "operator": "eq",
+     "value": ""
+    },
+    {
+     "entity_id": "service:gridcast:feature-service",
+     "key": "cpu_throttled_ratio_5m",
+     "operator": "lt",
+     "value": 0.5
+    }
+   ]
+  }
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "Forecast-pipeline latency may be caused by forecast-service inference degradation: slow inference, memory pressure, restarts, or model reloads.",
+   "causal_path": [
+    "service:gridcast:forecast-service",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "ge",
+     "value": 5
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_max_10m_seconds",
+     "operator": "ge",
+     "value": 5
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "memory_working_set_to_limit_15m",
+     "operator": "ge",
+     "value": 0.9
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 1
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "restarts_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "model_loads_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "forecast-inference-p95",
+    "forecast-inference-max",
+    "forecast-memory-ratio",
+    "forecast-oom-killed",
+    "forecast-restarts",
+    "forecast-model-reloads",
+    "model-production-alias-changes"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "lt",
+     "value": 5
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_max_10m_seconds",
+     "operator": "lt",
+     "value": 5
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "memory_working_set_to_limit_15m",
+     "operator": "lt",
+     "value": 0.9
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "oom_killed_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "restarts_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "model_loads_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": true,
+  "assessment": {
+   "hypothesis": {
+    "id": "H4",
+    "statement": "Forecast-pipeline latency may be caused by forecast-service inference degradation: slow inference, memory pressure, restarts, or model reloads.",
+    "causal_path": [
+     "service:gridcast:forecast-service",
+     "service:gridcast:forecast-pipeline"
+    ],
+    "predictions": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "inference_p95_seconds",
+      "operator": "ge",
+      "value": 5
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "inference_max_10m_seconds",
+      "operator": "ge",
+      "value": 5
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "memory_working_set_to_limit_15m",
+      "operator": "ge",
+      "value": 0.9
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "oom_killed_15m",
+      "operator": "eq",
+      "value": 1
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "restarts_15m",
+      "operator": "gt",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "model_loads_20m",
+      "operator": "gt",
+      "value": 0
+     }
+    ],
+    "evidence_needed": [
+     "forecast-inference-p95",
+     "forecast-inference-max",
+     "forecast-memory-ratio",
+     "forecast-oom-killed",
+     "forecast-restarts",
+     "forecast-model-reloads",
+     "model-production-alias-changes"
+    ],
+    "falsifiers": [
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "inference_p95_seconds",
+      "operator": "lt",
+      "value": 5
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "inference_max_10m_seconds",
+      "operator": "lt",
+      "value": 5
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "memory_working_set_to_limit_15m",
+      "operator": "lt",
+      "value": 0.9
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "oom_killed_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "restarts_15m",
+      "operator": "eq",
+      "value": 0
+     },
+     {
+      "entity_id": "service:gridcast:forecast-service",
+      "key": "model_loads_20m",
+      "operator": "eq",
+      "value": 0
+     }
+    ]
+   },
+   "sources": [
+    "single_pass"
+   ],
+   "state": "contradicted",
+   "supporting_evidence_ids": [],
+   "contradicting_evidence_ids": [
+    "prometheus:forecast-inference-max",
+    "prometheus:forecast-memory-ratio",
+    "prometheus:forecast-model-reloads",
+    "prometheus:forecast-oom-killed",
+    "prometheus:forecast-restarts"
+   ],
+   "missing_checks": [
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "ge",
+     "value": 5
+    },
+    {
+     "entity_id": "service:gridcast:forecast-service",
+     "key": "inference_p95_seconds",
+     "operator": "lt",
+     "value": 5
+    }
+   ]
+  }
+ },
+ {
+  "rank": 5,
+  "hypothesis": {
+   "id": "H5",
+   "statement": "Forecast-pipeline latency may be caused by planning-api capacity degradation or failed plan reads while the pipeline waits for plans.",
+   "causal_path": [
+    "service:gridcast:planning-api",
+    "service:gridcast:forecast-pipeline"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "lt",
+     "value": "planning-desired-replicas"
+    },
+    {
+     "entity_id": "service:gridcast:grid-operator",
+     "key": "plan_fetch_transport_errors_5m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "planning-desired-replicas",
+    "planning-available-replicas",
+    "operator-plan-fetch-transport-errors",
+    "planning-api-changes-20m"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "available_replicas",
+     "operator": "ge",
+     "value": "planning-desired-replicas"
+    },
+    {
+     "entity_id": "service:gridcast:grid-operator",
+     "key": "plan_fetch_transport_errors_5m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:planning-api",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "schema: 2 validation errors for Hypothesis\npredictions.0\n  Value error, ordered comparison requires a numeric value [type=value_error, input_value={'entity_id': 'service:gr...nning-desired-replicas'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error\nfalsifiers.0\n  Value error, ordered comparison requires a numeric value [type=value_error, input_value={'entity_id': 'service:gr...nning-desired-replicas'}, input_type=dict]\n    For further information"
+ }
+]

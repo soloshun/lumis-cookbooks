@@ -1,0 +1,46 @@
+{
+ "id": "gen-1791136883-AieJhXitqJWSOm3L4nFN",
+ "object": "chat.completion",
+ "created": 1791136883,
+ "model": "deepseek/deepseek-v4-pro-0813",
+ "provider": "Together",
+ "system_fingerprint": "default",
+ "service_tier": null,
+ "choices": [
+  {
+   "index": 0,
+   "logprobs": null,
+   "finish_reason": "stop",
+   "native_finish_reason": "stop",
+   "message": {
+    "role": "assistant",
+    "content": "{\"hypotheses\":[{\"id\":\"H1\",\"statement\":\"The forecast-pipeline p95 duration increase is caused by slow model inference in forecast-service, where the slowest single inference in the last 10 minutes reached 8.718 seconds.\",\"causal_path\":[ \"service:gridcast:forecast-service\", \"service:gridcast:forecast-pipeline\" ],\"predictions\":[{\"entity_id\":\"service:gridcast:forecast-service\",\"key\":\"inference_p95_seconds\",\"operator\":\"gt\",\"value\":5.0}],\"evidence_needed\":[ \"forecast-inference-p95\" ] ,\"falsifiers\":[{\"entity_id\":\"service:gridcast:forecast-service\",\"key\":\"inference_p95_seconds\",\"operator\":\"lt\",\"value\":5.0}]},{\"id\":\"H2\",\"statement\":\"The forecast-pipeline p95 duration increase is caused by a recent model production-alias change in forecast-service, which triggered a model reload and a slow inference path.\",\"causal_path\":[ \"service:gridcast:forecast-service\", \"service:gridcast:forecast-pipeline\" ],\"predictions\":[{\"entity_id\":\"service:gridcast:forecast-service\",\"key\":\"model_loads_20m\",\"operator\":\"gt\",\"value\":0},{\"entity_id\":\"service:gridcast:forecast-service\",\"key\":\"production_alias_changes_20m\",\"operator\":\"gt\",\"value\":0}],\"evidence_needed\":[ \"forecast-model-reloads\", \"model-production-alias-changes\" ],\"falsifiers\":[{\"entity_id\":\"service:gridcast:forecast-service\",\"key\":\"model_loads_20m\",\"operator\":\"eq\",\"value\":0},{\"entity_id\":\"service:gridcast:forecast-service\",\"key\":\"production_alias_changes_20m\",\"operator\":\"eq\",\"value\":0}]},{\"id\":\"H3\",\"statement\":\"The forecast-pipeline p95 duration increase is caused by a slow Prefect flow run in the forecast-pipeline itself, independent of forecast-service inference.\",\"causal_path\":[ \"service:gridcast:forecast-pipeline\" ],\"predictions\":[{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"slow_trace_duration_ms\",\"operator\":\"gt\",\"value\":3000}],\"evidence_needed\":[ \"slow-pipeline-traces\" ],\"falsifiers\":[{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"slow_trace_duration_ms\",\"operator\":\"lt\",\"value\":3000}]},{\"id\":\"H4\",\"statement\":\"The forecast-pipeline p95 duration increase is caused by a failed or crashed Prefect flow run in the forecast-pipeline.\",\"causal_path\":[ \"service:gridcast:forecast-pipeline\" ],\"predictions\":[{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"failed_flow_runs\",\"operator\":\"gt\",\"value\":0}],\"evidence_needed\":[ \"prefect-failed-flow-runs\" ],\"falsifiers\":[{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"failed_flow_runs\",\"operator\":\"eq\",\"value\":0}]},{\"id\":\"H5\",\"statement\":\"The forecast-pipeline p95 duration increase is caused by a recent change (GitOps commit or rollout) to forecast-pipeline or forecast-service.\",\"causal_path\":[ \"service:gridcast:forecast-pipeline\", \"service:gridcast:forecast-service\" ],\"predictions\":[{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"changes_20m\",\"operator\":\"gt\",\"value\":0},{\"entity_id\":\"service:gridcast:forecast-service\",\"key\":\"changes_20m\",\"operator\":\"gt\",\"value\":0}],\"evidence_needed\":[ \"forecast-pipeline-changes-20m\", \"forecast-service-changes-20m\" ],\"falsifiers\":[{\"entity_id\":\"service:gridcast:forecast-pipeline\",\"key\":\"changes_20m\",\"operator\":\"eq\",\"value\":0},{\"entity_id\":\"service:gridcast:forecast-service\",\"key\":\"changes_20m\",\"operator\":\"eq\",\"value\":0}]}]}",
+    "refusal": null,
+    "reasoning": null
+   }
+  }
+ ],
+ "usage": {
+  "prompt_tokens": 15156,
+  "completion_tokens": 882,
+  "total_tokens": 16038,
+  "cost": 0.02349864,
+  "is_byok": false,
+  "prompt_tokens_details": {
+   "cached_tokens": 0,
+   "cache_write_tokens": 0,
+   "audio_tokens": 0,
+   "video_tokens": 0
+  },
+  "cost_details": {
+   "upstream_inference_cost": 0.02349864,
+   "upstream_inference_prompt_cost": 0.02000592,
+   "upstream_inference_completions_cost": 0.00349272
+  },
+  "completion_tokens_details": {
+   "reasoning_tokens": 0,
+   "image_tokens": 0,
+   "audio_tokens": 0
+  }
+ }
+}

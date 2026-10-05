@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Worker-pool saturation inside service:gridcast:forecast-pipeline :: A burst of heavy forecast jobs or a stalled job saturated the pipeline's worker/thread pool, causing tasks to queue and p95 duration to exceed 5s. :: This best explains the isolated 17-minute slowdown and self-recovery without external dependency alerts."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Upstream data feed latency :: Slow or timing-out responses from the upstream weather/observation feed caused forecast workers to block on I/O. :: Upstream latency would slow the forecast pipeline while its own compute and error rates appear normal."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Model inference slowdown in service:gridcast:forecast-pipeline :: CPU/GPU contention, cold starts, or a model-serving slowdown increased per-inference time in the forecast pipeline. :: Inference latency directly raises end-to-end forecast duration and can recover as load shifts."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Forecast database/query path degradation :: A slow query, missing index, or connection-pool exhaustion in the forecast database caused DB calls to block forecast workers. :: Database degradation often presents as p95 latency in a dependent service without a corresponding error spike."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Bad deploy or config change in service:gridcast:forecast-pipeline :: A recent deploy or configuration change introduced extra retries, validation, or an inefficient code path that increased per-forecast duration. :: An isolated service-specific change could match the exact incident window and recover after rollback or config revert."
+ }
+]

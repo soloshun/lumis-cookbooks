@@ -1,0 +1,45 @@
+{
+ "fetched_queries": [
+  "forecast-inference-p95",
+  "demand-freshness",
+  "weather-observation-freshness",
+  "demand-completeness-failures",
+  "postgres-rows-scanned",
+  "forecast-pipeline-changes-20m",
+  "forecast-service-changes-20m",
+  "feature-service-changes-20m",
+  "slow-pipeline-traces",
+  "pipeline-failed-runs",
+  "prefect-failed-flow-runs",
+  "prefect-flow-runs"
+ ],
+ "facts_added": 3,
+ "ranked": [
+  {
+   "entity": "service:gridcast:forecast-service",
+   "text": "A recent production model alias change in service:gridcast:forecast-service caused a model reload and slowed model inference enough to push service:gridcast:forecast-pipeline p95 duration above 5s.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "Stale or incomplete input data from service:gridcast:ingestion caused service:gridcast:forecast-pipeline to wait, retry, or run extra validation, increasing p95 duration above 5s.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:postgres",
+   "text": "Elevated database load on service:gridcast:postgres slowed forecast-pipeline database reads and contributed to the p95 duration above 5s.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "Forecast-pipeline run failures or retries caused repeated work and therefore elevated p95 duration above 5s.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "A recent commit or rollout to service:gridcast:forecast-pipeline or its direct supplier services introduced a slow execution path, producing the observed pipeline p95 above 5s.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

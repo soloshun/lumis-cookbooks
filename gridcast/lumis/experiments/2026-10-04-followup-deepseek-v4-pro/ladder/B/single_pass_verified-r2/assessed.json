@@ -1,0 +1,31 @@
+{
+ "fetched_queries": [
+  "weather-observation-freshness",
+  "ingestion-weather-vendor-503",
+  "forecast-pipeline-changes-20m"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:weather-vendor-wx-primary",
+   "text": "The primary weather vendor is serving stale or repeated observations, causing the forecast pipeline's variability check to warn.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:weather-vendor-wx-primary",
+   "text": "The ingestion service has fallen back to the secondary weather vendor due to primary vendor HTTP 503 errors, and the secondary vendor provides lower-frequency or less variable data.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "The weather observation network is genuinely providing constant values (e.g., sensor failures or maintenance) while the data is fresh, so the pipeline's variability warnings are accurate.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "A recent deployment to the forecast-pipeline changed the variability check configuration (e.g., shorter comparison window or lower threshold), leading to false positive warnings on normal weather data.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

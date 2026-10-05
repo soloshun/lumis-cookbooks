@@ -1,0 +1,11 @@
+{
+ "id": "gridcast-20261005T010044Z-5ee52c",
+ "affected_entities": [
+  "service:gridcast:forecast-pipeline"
+ ],
+ "symptoms": [
+  "ForecastPipelineFailing: Forecast pipeline held or failed at least twice in 15 minutes"
+ ],
+ "started_at": "2026-10-05T00:48:42Z",
+ "ended_at": "2026-10-05T01:00:44Z"
+}

@@ -1,0 +1,18 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "ForecastPipelineSlow: queuing/saturation inside forecast-pipeline :: Request concurrency exceeded the available worker/compute capacity, causing forecast jobs to wait in queue before execution. :: The p95 duration is driven by queuing latency inside the forecast-pipeline rather than by individual job execution time."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "ForecastPipelineSlow: slow upstream input dependency :: An upstream data/input service feeding the forecast-pipeline became slow or started timing out, causing forecast jobs to block on I/O. :: Forecast pipeline latency is inflated by slow responses from a required upstream dependency."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "ForecastPipelineSlow: slow history/feature database queries :: Historical data or feature queries became slower or exhausted their connection pool, delaying data retrieval for each forecast run. :: Forecast jobs spend excessive time waiting on history/feature reads from the database."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "ForecastPipelineSlow: regression or heavier compute path in forecast-pipeline :: A recent deployment or configuration change introduced a regression or a more expensive model computation path. :: The forecast computation itself became slower after a code or configuration change."
+ }
+]

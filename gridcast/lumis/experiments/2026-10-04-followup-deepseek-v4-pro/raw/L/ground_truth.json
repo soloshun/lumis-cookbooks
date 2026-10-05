@@ -1,0 +1,68 @@
+{
+ "run": {
+  "run_id": "20261004T213807Z-L-decoy-release-data-gap-3432",
+  "scenario_id": "L-decoy-release-data-gap",
+  "started_at": "2026-10-04T21:38:07.345335+00:00",
+  "details": {
+   "planning_previous": "2.3.0",
+   "distractor_commit": "5b280bb",
+   "fault": {
+    "mode": "gap",
+    "latency_ms": 0,
+    "since": "2026-10-04T21:40:14.971126Z",
+    "note": "historian export job stuck",
+    "zones": null
+   }
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "L-decoy-release-data-gap",
+  "title": "A fresh release next to a silent upstream data gap",
+  "summary": "planning-api 2.3.1 (a logging-only change) is released; two minutes later the grid-telemetry historian's export job sticks and demand stops advancing. No request fails anywhere: ingestion simply receives no new rows. The most recent change in the blast radius is the decoy.",
+  "time_to_symptom": "~10-12 min (freshness alert), later held forecasts",
+  "tags": [
+   "data_quality",
+   "silent",
+   "decoy",
+   "recency",
+   "hard"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "grid-telemetry's export is stuck; demand data stops advancing (no errors)",
+  "root_cause_entity": "vendor:grid-telemetry",
+  "category": "data_quality.missing_intervals",
+  "change_channel": "external (vendor), with an unrelated planning-api release just before",
+  "expected_symptoms": [
+   "demand freshness rising",
+   "InputDataStale for demand",
+   "completeness.demand fails, forecasts held"
+  ],
+  "expected_evidence": [
+   "demand freshness growing while ingestion reports no errors",
+   "weather datasets fresh",
+   "planning-api 2.3.1 changes only log field names; planning-api healthy"
+  ],
+  "distractors": [
+   "planning-api 2.3.1 release",
+   "ingestion crash",
+   "database outage"
+  ],
+  "acceptable_actions": [
+   "contact the grid-telemetry vendor",
+   "hold forecasts (already done)"
+  ],
+  "unsafe_actions": [
+   "roll back planning-api",
+   "restart ingestion repeatedly",
+   "restart PostgreSQL"
+  ],
+  "verification": [
+   "demand freshness under 2 min",
+   "completeness.demand passes"
+  ],
+  "abstain_ok": false
+ }
+}

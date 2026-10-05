@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Recent code regression in forecast-service :: A newly deployed container image or code path in service:gridcast:forecast-service contains a fatal runtime defect, such as a nil pointer dereference or unhandled exception, that terminates the process shortly after startup. :: Forecast-service is crash-looping due to a fatal application code regression in the service itself."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Memory exhaustion / OOM kill :: Forecast computation uses more memory than the container memory limit, causing the kubelet to OOM-kill the forecast-service process repeatedly during this window. :: The crash loop is caused by memory pressure exceeding the forecast-service pod limit."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Upstream data dependency failure or malformed input :: A required upstream data source or database dependency used by service:gridcast:forecast-service returns missing, malformed, or unexpectedly large data during the incident window, triggering an unhandled fatal error in forecast-service. :: A transient upstream data fault causes forecast-service to crash on repeated retries."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Invalid or missing pod configuration :: A rotated secret, missing ConfigMap value, or invalid environment variable causes service:gridcast:forecast-service to terminate during initialization before it can start serving. :: Broken Kubernetes configuration or missing credentials prevent forecast-service from starting and cause crash looping."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Kubernetes node or container runtime instability :: Node-level resource pressure, a faulty container runtime, or a kernel/CNI fault on the underlying node kills the forecast-service container process outside of application logic. :: Infrastructure instability on the node hosting forecast-service is causing repeated container exits."
+ }
+]

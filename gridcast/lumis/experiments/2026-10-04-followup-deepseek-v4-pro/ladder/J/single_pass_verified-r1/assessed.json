@@ -1,0 +1,32 @@
+{
+ "fetched_queries": [
+  "planning-api-changes-20m",
+  "pipeline-failed-runs",
+  "demand-completeness-failures",
+  "forecast-stability-warnings"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:planning-api",
+   "text": "The planning-api Deployment was scaled to zero, leaving the planning-api Service without endpoints and causing grid-operator plan fetches to fail.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:planning-api",
+   "text": "A recent GitOps commit or rollout touching planning-api changed the Deployment, reducing desired_replicas to zero.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "An upstream failure in forecast-pipeline or ingestion triggered the incident.",
+   "state": "contradicted"
+  },
+  {
+   "entity": "service:gridcast:grid-operator",
+   "text": "Grid-operator plan fetch failures are caused by an independent network or Service-level disconnect between grid-operator and planning-api, not by missing planning-api replicas.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": true
+}

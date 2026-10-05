@@ -1,0 +1,43 @@
+{
+ "fetched_queries": [
+  "forecast-pipeline-changes-20m",
+  "feature-service-changes-20m",
+  "forecast-service-changes-20m",
+  "planning-api-changes-20m",
+  "prefect-failed-flow-runs",
+  "prefect-flow-runs",
+  "ingestion-demand-batch-p95",
+  "demand-completeness-failures",
+  "forecast-stability-warnings",
+  "demand-zones-reporting"
+ ],
+ "facts_added": 4,
+ "ranked": [
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "A failed or crashed Prefect flow run in forecast-pipeline caused retries, queueing, or resource contention that inflated the p95 duration.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "Slow demand batch ingestion upstream made forecast-pipeline runs block or wait for input data.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "Validation-gate data-quality warnings, specifically demand completeness or forecast stability, caused forecast-pipeline runs to stall, revalidate, or be retried.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Incomplete demand telemetry, where fewer than the four catalogued load zones reported demand, caused the pipeline to wait on or fail completeness processing.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "A recent deployment or configuration change to forecast-pipeline or one of its related services introduced a latency regression that increased forecast-pipeline p95 duration.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

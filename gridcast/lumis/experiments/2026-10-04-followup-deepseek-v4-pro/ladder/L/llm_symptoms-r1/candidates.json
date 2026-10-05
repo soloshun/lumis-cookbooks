@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Upstream demand data source stopped emitting or was delayed :: The external producer or feed that supplies demand records to service:gridcast:ingestion stalled, so no new demand timestamps advanced. :: Demand input went stale because the upstream feed stopped emitting data."
+ },
+ {
+  "entity": "service:gridcast:ingestion deadlocked on a malformed or slow record",
+  "text": "service:gridcast:ingestion deadlocked on a malformed or slow record :: A processing thread in the ingestion service blocked on a malformed record or a hanging external call, preventing the consumer from advancing the demand stream. :: The ingestion service itself stalled while handling a bad or slow record."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Demand message broker delivery failure or consumer lag :: The broker topic or partition carrying demand input experienced a leader failure or accumulated consumer lag, so new records were not delivered to service:gridcast:ingestion. :: The messaging layer delayed demand delivery, making ingestion see no new data."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Ingestion scheduler job missed or failed :: The scheduled job that triggers demand ingestion failed or did not run, so no new demand batch was pulled during the incident window. :: A missed scheduled import caused demand input to stop advancing."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Credential or authentication failure for upstream demand API :: Expired or revoked credentials caused service:gridcast:ingestion to fail authentication against the upstream demand API, blocking data retrieval. :: Authentication failure prevented ingestion from pulling fresh demand data."
+ }
+]

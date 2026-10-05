@@ -1,0 +1,29 @@
+{
+ "fetched_queries": [
+  "planning-api-changes-20m"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:planning-api",
+   "text": "The planning-api Deployment is scaled to zero desired replicas, leaving the planning-api service with no available backends and causing grid-operator plan fetch transport errors.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:planning-api",
+   "text": "A recent GitOps commit or rollout touching planning-api set the Deployment desired replicas to zero, producing the outage.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:planning-api",
+   "text": "The planning-api Deployment desires at least one replica, but its pods are not ready or available, so the planning-api service has no healthy backends for grid-operator.",
+   "state": "contradicted"
+  },
+  {
+   "entity": "service:gridcast:grid-operator",
+   "text": "The planning-api service has available backends, but the network or service routing path between grid-operator and planning-api is failing, causing transport errors.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": true
+}

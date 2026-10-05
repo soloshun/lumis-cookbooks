@@ -1,0 +1,3 @@
+injecting I-weather-vendor-outage: Primary weather vendor outage
+run 20261004T193138Z-I-weather-vendor-outage-3d54 (ground truth: .gridcast/chaos/runs/20261004T193138Z-I-weather-vendor-outage-3d54.json)
+symptoms expected: ingestion errors immediately; forecast hold after ~20 min

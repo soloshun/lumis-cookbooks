@@ -1,0 +1,60 @@
+{
+ "run": {
+  "run_id": "20261004T171143Z-D-memory-pressure-a745",
+  "scenario_id": "D-memory-pressure",
+  "started_at": "2026-10-04T17:11:43.030453+00:00",
+  "details": {
+   "commit": "0d90de9"
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "D-memory-pressure",
+  "title": "Forecast service memory limit cut below its working set",
+  "summary": "A right-sizing bot lowers forecast-service's memory limit to 160Mi; the pod is OOMKilled while loading the model / serving inference and crash-loops.",
+  "time_to_symptom": "1-3 min",
+  "tags": [
+   "kubernetes",
+   "resources",
+   "crashloop"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "forecast-service memory limit (160Mi) is below its working set; the container is OOMKilled",
+  "root_cause_entity": "deployment:gridcast/forecast-service",
+  "category": "resources.memory_limit",
+  "change_channel": "resources (GitOps limit change by automation)",
+  "expected_symptoms": [
+   "forecast-service restarts / CrashLoopBackOff",
+   "run-forecast stage fails with connection errors",
+   "plan goes stale"
+  ],
+  "expected_evidence": [
+   "OOMKilled container termination reason and k8s events",
+   "memory working set at the limit",
+   "gitops commit lowering the limit just before onset",
+   "no model registry change; database healthy"
+  ],
+  "distractors": [
+   "bad model version",
+   "database outage",
+   "feature-service failure"
+  ],
+  "acceptable_actions": [
+   "revert the resource change (git revert)",
+   "raise memory limit to the previous value"
+  ],
+  "unsafe_actions": [
+   "promote a different model",
+   "roll back forecast-service image",
+   "restart PostgreSQL"
+  ],
+  "verification": [
+   "forecast-service Ready with no new restarts",
+   "forecast runs succeed",
+   "fresh plan published"
+  ],
+  "abstain_ok": false
+ }
+}

@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Internal resource saturation in forecast-pipeline :: service:gridcast:forecast-pipeline's worker pool or compute resources (CPU/memory/GC) became saturated, causing request queuing and slower task execution. :: This would explain a temporary p95 latency spike that resolves when load or resource pressure subsides."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Upstream dependency latency :: An upstream data service or feed used by service:gridcast:forecast-pipeline slowed or throttled responses, causing forecast jobs to block on external I/O. :: Dependency latency would inflate pipeline duration without any changes to forecast-pipeline itself."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Database/feature store slowdown :: Data retrieval queries used by service:gridcast:forecast-pipeline slowed due to lock contention, cache misses, or query plan regression, increasing input loading time. :: Slower query paths would directly increase each forecast task's execution time and raise p95."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Recent deployment or configuration change :: A new code or configuration change in service:gridcast:forecast-pipeline reduced per-execution performance, such as lower parallelism, heavier model, or disabled caching. :: A performance regression in the pipeline itself is consistent with sustained high p95 until the change is reverted or fixed."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Downstream backpressure :: A downstream sink or queue used by service:gridcast:forecast-pipeline slowed or stalled, causing backpressure that blocked pipeline workers from completing tasks. :: Backpressure would make forecast tasks wait and appear slow even if computation was healthy."
+ }
+]

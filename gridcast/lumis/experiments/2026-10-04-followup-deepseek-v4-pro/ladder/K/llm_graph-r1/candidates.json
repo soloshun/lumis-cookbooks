@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:grid-telemetry",
+  "text": "service:gridcast:grid-telemetry :: The external demand telemetry feed stopped sending valid demand records or changed its schema/format without notice, causing ingestion to reject demand data. :: Upstream demand telemetry outage or schema change."
+ },
+ {
+  "entity": "service:gridcast:ingestion / k8s:gridcast:deployment:ingestion",
+  "text": "service:gridcast:ingestion / k8s:gridcast:deployment:ingestion :: A faulty rollout, configuration change, or resource exhaustion inside the ingestion service caused demand data processing to fail. :: Ingestion service internal fault."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: Postgres experienced transient unavailability, high latency, or connection exhaustion while ingestion attempted to persist demand data. :: Database backend failure."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary / service:gridcast:weather-vendor-wx-secondary",
+  "text": "service:gridcast:weather-vendor-wx-primary / service:gridcast:weather-vendor-wx-secondary :: The demand ingestion path depended on weather enrichment, and the primary weather vendor failed while the secondary fallback did not fail over cleanly. :: Weather vendor dependency failure with incomplete fallback."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "k8s:gridcast:service:ingestion :: The Kubernetes Service selector temporarily matched no ready ingestion pods during a rolling update, so demand traffic could not reach a valid endpoint. :: Kubernetes routing or selector failure."
+ }
+]

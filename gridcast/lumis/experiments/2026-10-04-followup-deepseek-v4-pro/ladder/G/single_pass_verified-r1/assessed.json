@@ -1,0 +1,33 @@
+{
+ "fetched_queries": [
+  "demand-zones-reporting",
+  "demand-freshness",
+  "demand-completeness-failures",
+  "ingestion-changes-20m",
+  "ingestion-demand-batch-p95"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Demand vendor payloads violate the ingestion contract, causing demand batch failures while weather ingestion is unaffected.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Upstream demand telemetry from grid-telemetry is incomplete or stale, causing ingestion demand batch failures.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "Demand ingestion batches are timing out or running slowly, causing demand batch failures independent of contract or completeness problems.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "A recent ingestion rollout or GitOps change introduced a defect affecting demand ingestion.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

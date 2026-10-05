@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: Forecast-pipeline SQL queries against Postgres are slow or blocked due to contention, locks, or database resource saturation, increasing each pipeline run's wait time. :: Postgres is the most likely origin because it is a direct serving dependency of forecast-pipeline and a shared critical component; a database slowdown would directly inflate pipeline p95 duration."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "service:gridcast:forecast-pipeline :: The forecast-pipeline deployment/pod is CPU-throttled, memory-pressured, or overloaded, causing internal queueing and slower pipeline execution. :: A self-originated resource saturation or performance regression in forecast-pipeline is consistent with the isolated ForecastPipelineSlow symptom."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "service:gridcast:forecast-service :: Forecast-service calls serving the forecast-pipeline are slower than normal due to model-serving latency or load, adding remote-call delay to the pipeline. :: Forecast-service is a direct serving dependency, and degraded inference latency there would propagate directly into forecast-pipeline p95."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "service:gridcast:feature-service :: Feature-service requests serving the forecast-pipeline are experiencing elevated latency, causing forecast-pipeline steps to block longer on feature retrieval. :: Feature-service is another direct serving dependency of forecast-pipeline, so latency there would directly increase forecast-pipeline duration."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "service:gridcast:planning-api :: Planning-api requests serving the forecast-pipeline are slow or queueing due to planning-api load, delaying pipeline planning steps. :: Planning-api is a direct serving dependency of forecast-pipeline; while less likely than the database or self-overload, its latency could contribute to the p95 slowdown."
+ }
+]

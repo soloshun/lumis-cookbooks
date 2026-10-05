@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "service:gridcast:planning-api :: The planning-api returned an incomplete or truncated demand dataset to forecast-pipeline, causing the demand completeness check to warn repeatedly. :: Upstream demand provider supplied incomplete demand data during the incident window."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: Demand rows read by forecast-pipeline were missing or not yet visible because of a partial write, uncommitted transaction, or read-replica lag. :: The database layer exposed an incomplete view of demand data to the pipeline."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "service:gridcast:ingestion :: The ingestion service fell behind or dropped demand/telemetry records, leaving the demand dataset incomplete when forecast-pipeline ran its quality check. :: Upstream ingestion failed to complete the demand dataset in time."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "service:gridcast:feature-service :: The demand feature produced by feature-service was stale or incomplete, so forecast-pipeline's completeness.demand check failed repeatedly. :: A downstream-provided demand feature was incomplete."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "service:gridcast:forecast-pipeline :: A code regression or configuration drift in forecast-pipeline's own quality check caused false-positive completeness.demand warnings without an upstream data fault. :: The warning originated inside the affected pipeline's own quality-check logic."
+ }
+]

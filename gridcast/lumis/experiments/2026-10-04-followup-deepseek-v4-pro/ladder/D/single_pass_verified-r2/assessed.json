@@ -1,0 +1,24 @@
+{
+ "fetched_queries": [
+  "forecast-service-changes-20m"
+ ],
+ "facts_added": 1,
+ "ranked": [
+  {
+   "entity": "service:gridcast:forecast-service",
+   "text": "forecast-service is crash looping because its container exceeded its configured memory limit and was OOMKilled.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:forecast-service",
+   "text": "A recent forecast-service deployment, configuration, or rollout change introduced a lower memory limit or higher memory footprint, causing the crash loop.",
+   "state": "supported"
+  },
+  {
+   "entity": "service:gridcast:forecast-service",
+   "text": "A production model alias change caused forecast-service to load a different model version with a larger memory footprint, leading to OOM kills.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": true
+}

@@ -1,0 +1,193 @@
+[
+ {
+  "rank": 1,
+  "hypothesis": {
+   "id": "H1",
+   "statement": "The repeated completeness.demand warnings are caused by one or more load zones not reporting demand in the 20 minutes before incident end, reducing zone coverage below the catalogue total of 4.",
+   "causal_path": [
+    "Ingestion/demand telemetry gap",
+    "forecast-pipeline validation gate completeness.demand"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "lt",
+     "value": 4
+    }
+   ],
+   "evidence_needed": [
+    "demand-zones-reporting",
+    "demand-completeness-failures"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:grid-telemetry",
+     "key": "zones_reporting_demand_20m",
+     "operator": "ge",
+     "value": 4
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 2,
+  "hypothesis": {
+   "id": "H2",
+   "statement": "The repeated completeness.demand warnings are caused by stale/late demand data: the newest ingested demand reading was older than the 20-minute completeness window, even if ingestion did not report batch errors.",
+   "causal_path": [
+    "ingestion demand freshness delayed",
+    "forecast-pipeline validation gate completeness.demand"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "gt",
+     "value": 1200
+    }
+   ],
+   "evidence_needed": [
+    "demand-freshness",
+    "demand-completeness-failures"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "demand_freshness_seconds",
+     "operator": "le",
+     "value": 1200
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 3,
+  "hypothesis": {
+   "id": "H3",
+   "statement": "The repeated completeness.demand warnings are caused by a vendor payload contract violation that corrupted or partially rejected demand data without surfacing in demand_batch_errors, leaving completeness checks short.",
+   "causal_path": [
+    "ingestion vendor contract violation",
+    "forecast-pipeline validation gate completeness.demand"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "completeness_demand_failures_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "ingestion-contract-violations",
+    "demand-completeness-failures"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "contract_violation_log_lines",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 4,
+  "hypothesis": {
+   "id": "H4",
+   "statement": "The repeated completeness.demand warnings are caused by a recent commit/rollout touching forecast-pipeline or ingestion in the 20 minutes before incident end, changing validation or input handling.",
+   "causal_path": [
+    "forecast-pipeline change or ingestion change",
+    "validation gate completeness.demand"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "forecast-pipeline-changes-20m",
+    "ingestion-changes-20m",
+    "demand-completeness-failures"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:ingestion",
+     "key": "changes_20m",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ },
+ {
+  "rank": 5,
+  "hypothesis": {
+   "id": "H5",
+   "statement": "The repeated completeness.demand warnings are caused by forecast-pipeline runs failing or crashing before validation completes, producing partial runs that trigger completeness warnings.",
+   "causal_path": [
+    "forecast-pipeline failed run",
+    "validation gate completeness.demand"
+   ],
+   "predictions": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "gt",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "gt",
+     "value": 0
+    }
+   ],
+   "evidence_needed": [
+    "pipeline-failed-runs",
+    "prefect-failed-flow-runs",
+    "demand-completeness-failures"
+   ],
+   "falsifiers": [
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_runs_15m",
+     "operator": "eq",
+     "value": 0
+    },
+    {
+     "entity_id": "service:gridcast:forecast-pipeline",
+     "key": "failed_flow_runs",
+     "operator": "eq",
+     "value": 0
+    }
+   ]
+  },
+  "accepted_by_lumis": false,
+  "rejection": "hypothesis references entity outside incident graph"
+ }
+]

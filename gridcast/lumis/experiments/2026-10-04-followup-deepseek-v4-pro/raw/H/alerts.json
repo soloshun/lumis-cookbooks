@@ -1,0 +1,9 @@
+[
+ {
+  "name": "ForecastPipelineFailing",
+  "entity": "service:gridcast:forecast-pipeline",
+  "summary": "Forecast pipeline held or failed at least twice in 15 minutes",
+  "active_at": "2026-10-05 00:58:42.944281+00:00",
+  "severity": "page"
+ }
+]

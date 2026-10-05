@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Database latency from the shared Postgres dependency :: `service:gridcast:postgres` experienced slow queries, lock contention, or connection pool exhaustion, causing forecast-pipeline database calls to block. :: Most likely because forecast-pipeline is a direct consumer of postgres and database latency is a common driver of p95 duration increases."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Forecast-pipeline compute saturation :: `service:gridcast:forecast-pipeline` had CPU throttling, memory pressure, or GC pauses, so its own processing exceeded the 5s p95 threshold. :: Likely because the alert is isolated to forecast-pipeline and could be explained by a local resource or code-path degradation."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Feature-service latency :: `service:gridcast:feature-service` slowed down, causing forecast-pipeline to wait on feature retrieval or feature computation calls. :: Plausible because feature-service is a direct dependency of forecast-pipeline."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Forecast-service latency :: `service:gridcast:forecast-service` responses became slow or started timing out, blocking forecast-pipeline calls to that service. :: Plausible because forecast-service is another direct dependency of forecast-pipeline and could degrade independently."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "Planning API latency :: `service:gridcast:planning-api` became slow or saturated, delaying the planning data that forecast-pipeline needs during execution. :: Plausible because planning-api is a direct, critical dependency of forecast-pipeline."
+ }
+]

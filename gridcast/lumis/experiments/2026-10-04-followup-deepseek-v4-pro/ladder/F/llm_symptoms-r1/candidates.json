@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "compute_resource_saturation :: Request concurrency exceeded available worker threads or CPU capacity, causing forecast executions to be queued and p95 latency to rise above 5s. :: The forecast-pipeline's own compute capacity was saturated during the incident window."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "upstream_dependency_slowness :: An upstream data or feature store became slow or degraded, causing forecast jobs to block while retrieving input data. :: The forecast pipeline's p95 rose above 5s because it was waiting on a slow upstream dependency."
+ },
+ {
+  "entity": null,
+  "text": "cache_miss_storm :: A cache expiration, eviction, or failure caused a burst of cache misses, forcing expensive recomputation of forecasts or intermediate results. :: A cache miss storm increased forecast execution time and pushed p95 latency over the threshold."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "model_inference_degradation :: The model inference backend serving service:gridcast:forecast-pipeline slowed down due to a bad model version, degraded inference service, or resource contention. :: Slower model inference increased end-to-end forecast duration, causing the p95 breach."
+ },
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "historical_data_query_slowdown :: A query plan regression, missing index, or lock contention slowed retrieval of historical data needed for forecast generation. :: Database query latency contributed to the forecast pipeline's p95 exceeding 5s."
+ }
+]

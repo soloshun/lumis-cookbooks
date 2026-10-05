@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:grid-telemetry",
+  "text": "service:gridcast:grid-telemetry :: The upstream demand feed from grid-telemetry began sending malformed, delayed, or empty payloads at 18:21, causing ingestion demand parsing/validation to fail. :: Upstream demand telemetry failure is most likely because ingestion is the only affected service and grid-telemetry is its direct demand source."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: The Postgres database serving ingestion experienced a connectivity, locking, or capacity issue that made demand inserts/reads fail, surfacing as ingestion errors. :: Persistence-layer failure from the ingestion service's database dependency."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "service:gridcast:ingestion :: A recent deployment/config change or runtime resource exhaustion in the ingestion service introduced a demand-processing bug or overload, causing internal failures. :: Ingestion-internal regression or resource exhaustion."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "service:gridcast:weather-vendor-wx-primary :: The primary weather vendor failed and the secondary fallback was not triggered or configured correctly, so demand ingestion that depends on weather enrichment failed. :: Weather-data dependency failure with a fallback gap."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "k8s:gridcast:service:ingestion :: A Kubernetes Service selector or network policy mismatch prevented demand traffic from reaching the ingestion pod, causing connection/ingestion errors. :: In-cluster routing or network policy fault for ingestion."
+ }
+]

@@ -1,0 +1,42 @@
+{
+ "fetched_queries": [
+  "demand-completeness-failures",
+  "demand-zones-reporting",
+  "ingestion-contract-violations",
+  "ingestion-weather-vendor-503",
+  "forecast-pipeline-changes-20m",
+  "feature-service-changes-20m",
+  "forecast-service-changes-20m",
+  "planning-api-changes-20m",
+  "forecast-inference-p95"
+ ],
+ "facts_added": 4,
+ "ranked": [
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "The forecast-pipeline failure symptom is associated with demand-data validation-gate failures, specifically range and/or completeness checks.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:grid-telemetry",
+   "text": "Demand reporting from fewer than all four load zones starved the pipeline of complete demand inputs, contributing to validation-gate failures.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:ingestion",
+   "text": "Ingestion received malformed vendor payloads or HTTP 503 responses from the primary weather vendor, and the resulting bad or missing data propagated to the forecast pipeline.",
+   "state": "unresolved"
+  },
+  {
+   "entity": "service:gridcast:forecast-pipeline",
+   "text": "A recent GitOps commit or rollout touching forecast-pipeline or a directly connected service introduced a regression that caused the pipeline failures.",
+   "state": "contradicted"
+  },
+  {
+   "entity": "service:gridcast:forecast-service",
+   "text": "Forecast-service inference latency or model reloading delayed pipeline execution beyond its failure threshold.",
+   "state": "contradicted"
+  }
+ ],
+ "concluded": false
+}

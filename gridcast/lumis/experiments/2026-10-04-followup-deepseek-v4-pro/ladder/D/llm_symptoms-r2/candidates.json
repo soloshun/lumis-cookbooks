@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Internal application code defect in service:gridcast:forecast-service :: A newly deployed code path panics or throws an unhandled exception during startup or on first request, causing the process to exit non-zero and Kubernetes to restart it. :: The forecast-service is crash-looping due to an internal code fault."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Invalid configuration or secret used by service:gridcast:forecast-service :: A required environment variable, configuration file, or secret is missing or malformed, causing the service to fail during bootstrap and exit. :: The service cannot start because its configuration or secrets are invalid."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Memory resource exhaustion in service:gridcast:forecast-service container :: The forecast-service container exceeds its memory limit and is killed by the kernel OOM killer, triggering repeated restarts. :: The service is being OOM-killed under memory pressure."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Upstream data dependency of service:gridcast:forecast-service :: An upstream API or data stream returns an unexpected, malformed, or oversized response that forecast-service does not handle, leading to an unhandled exception and crash. :: A bad upstream response is crashing the forecast-service."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Liveness probe configuration for service:gridcast:forecast-service :: A misconfigured liveness probe with an incorrect endpoint, timeout, or threshold marks the container unhealthy and causes Kubernetes to restart it even if the application is otherwise healthy. :: The crash loop may be caused by a false-positive liveness probe failure."
+ }
+]

@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "service:gridcast:forecast-pipeline :: Internal worker-pool exhaustion or CPU/GC pressure caused each forecast task to take longer than 5s at p95. :: The symptom is isolated to forecast-pipeline, which makes an internal capacity or contention issue the most likely explanation."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "service:gridcast:postgres :: A slow query, lock contention, or I/O pressure on the shared postgres database increased forecast-pipeline query latency enough to push p95 above 5s. :: forecast-pipeline depends directly on postgres, and database latency is a common cause of pipeline duration spikes."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "service:gridcast:feature-service :: feature-service responses slowed due to resource pressure or its own data-access path, causing forecast-pipeline to block while fetching features. :: As a direct upstream dependency of forecast-pipeline, feature-service latency would propagate into forecast-pipeline p95."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "service:gridcast:planning-api :: planning-api endpoints consumed by forecast-pipeline slowed under load or contention, making forecast-pipeline calls exceed the 5s p95 target. :: The dependency path from planning-api to forecast-pipeline makes planning-api latency a plausible upstream contributor."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "service:gridcast:forecast-service :: forecast-service reads or writes of forecast artifacts slowed due to storage, serialization, or service degradation, causing the pipeline's persistence step to exceed the threshold. :: If forecast-pipeline uses forecast-service for forecast storage or retrieval, that latency would directly increase pipeline duration."
+ }
+]

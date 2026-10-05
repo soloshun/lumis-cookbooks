@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:grid-telemetry",
+  "text": "External demand feed failure :: The external grid telemetry feed is returning malformed, delayed, or unavailable demand payloads that the ingestion service rejects as invalid. :: This would explain a demand-specific ingestion failure while other ingestion types remain unaffected."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Ingestion service regression :: A recent deployment or configuration change in the ingestion service introduced a validation or schema mismatch that rejects incoming demand records. :: This explains an IngestionErrors spike that is localized to the ingestion service itself."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "Database write failure :: The ingestion service cannot write demand records to PostgreSQL because of connection pool exhaustion, locks, or temporary database unavailability. :: This would appear as ingestion write errors, though other database-backed services would likely also be impacted."
+ },
+ {
+  "entity": "service:gridcast:ingestion",
+  "text": "Ingestion pod resource pressure :: The ingestion pod is crashing, out-of-memory, or hitting CPU limits while processing demand batches, causing intermittent failures. :: A pod-level issue would self-recover once the pod is replaced or load subsides, matching the short incident window."
+ },
+ {
+  "entity": "service:gridcast:weather-vendor-wx-primary",
+  "text": "Weather vendor failure :: The primary weather vendor feed is unavailable and secondary fallback is not taking over, so ingestion fails because it cannot enrich demand records with weather data. :: This is less likely than grid telemetry because it would more likely show weather ingestion errors rather than demand ingestion errors."
+ }
+]

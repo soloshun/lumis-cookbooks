@@ -1,0 +1,22 @@
+[
+ {
+  "entity": "service:gridcast:forecast-pipeline",
+  "text": "Internal forecast-pipeline resource saturation or recent rollout :: The forecast-pipeline pod experienced CPU throttling, memory pressure, garbage-collection pauses, or a bad rollout/config change that saturated its workers and increased per-run processing time. :: The incident is localized to forecast-pipeline and lasted about 17 minutes, which is most consistent with a transient internal capacity or deployment issue in service:gridcast:forecast-pipeline."
+ },
+ {
+  "entity": "service:gridcast:postgres",
+  "text": "PostgreSQL slowdown :: The shared Postgres database experienced slow queries, lock contention, or connection-pool exhaustion on the forecast-pipeline access path. :: service:gridcast:postgres is a direct dependency of forecast-pipeline, so database-side latency would directly inflate forecast-pipeline p95 duration."
+ },
+ {
+  "entity": "service:gridcast:feature-service",
+  "text": "Feature-service degradation :: feature-service responses became slow or error-prone, causing forecast-pipeline to block or retry while fetching features. :: service:gridcast:feature-service is an upstream dependency of forecast-pipeline, and degradation there would propagate into the pipeline's feature-fetch stage."
+ },
+ {
+  "entity": "service:gridcast:forecast-service",
+  "text": "Forecast-service degradation :: forecast-service model inference latency increased, slowing the prediction step of the forecast pipeline. :: service:gridcast:forecast-service is an upstream model-serving dependency of forecast-pipeline, and slower inference would extend pipeline execution time."
+ },
+ {
+  "entity": "service:gridcast:planning-api",
+  "text": "Planning-api degradation :: planning-api responses slowed or timed out, making forecast-pipeline wait on planning or grid constraint inputs before completing forecasts. :: service:gridcast:planning-api is also an upstream dependency of forecast-pipeline, so degraded planning-api latency could push pipeline p95 above the 5s threshold."
+ }
+]

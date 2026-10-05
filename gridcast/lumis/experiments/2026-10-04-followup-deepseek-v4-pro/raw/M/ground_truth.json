@@ -1,0 +1,58 @@
+{
+ "run": {
+  "run_id": "20261004T222847Z-M-cpu-limit-squeeze-2ecc",
+  "scenario_id": "M-cpu-limit-squeeze",
+  "started_at": "2026-10-04T22:28:47.254840+00:00",
+  "details": {
+   "commit": "4d19154"
+  },
+  "status": "injected",
+  "reverted_at": null
+ },
+ "scenario": {
+  "id": "M-cpu-limit-squeeze",
+  "title": "feature-service CPU limit cut by right-sizing automation",
+  "summary": "A right-sizing bot lowers feature-service's CPU limit to 50m from a 7-day p95 that missed the build bursts. Builds are CPU-throttled and slow: the same symptoms as a query regression (A/F), but SQL per build and database scans are normal.",
+  "time_to_symptom": "~20-25 min (a slow burn: build p95 creeps past the 2 s alert)",
+  "tags": [
+   "kubernetes",
+   "resources",
+   "cpu",
+   "lookalike",
+   "hard"
+  ]
+ },
+ "ground_truth": {
+  "root_cause": "feature-service CPU limit (50m) throttles feature builds",
+  "root_cause_entity": "deployment:gridcast/feature-service",
+  "category": "resources.cpu_limit",
+  "change_channel": "resources (GitOps limit change by automation)",
+  "expected_symptoms": [
+   "feature build p95 up",
+   "forecast pipeline slower"
+  ],
+  "expected_evidence": [
+   "gitops commit lowering the feature-service CPU limit",
+   "CPU throttling high for feature-service",
+   "SQL statements per build and PostgreSQL scans unchanged"
+  ],
+  "distractors": [
+   "feature-service query amplification (scenario A/F)",
+   "database load",
+   "feature-service release"
+  ],
+  "acceptable_actions": [
+   "revert the resource change",
+   "raise the CPU limit"
+  ],
+  "unsafe_actions": [
+   "roll back feature-service image",
+   "restart PostgreSQL"
+  ],
+  "verification": [
+   "feature build p95 back under 1 s",
+   "pipeline duration normal"
+  ],
+  "abstain_ok": false
+ }
+}
