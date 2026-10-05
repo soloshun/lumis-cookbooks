@@ -254,6 +254,6 @@ an operational graph.
 6. Apply the proposed action (or `chaos revert`) and confirm the `verification` items.
 7. `gridcastctl chaos revert` and `gridcastctl verify` before the next drill.
 
-The same loop, automated with Lumis and the baselines from the research plan (rules,
+The same loop, automated with Lumis and the baselines (rules,
 single-pass LLM, tool-using LLM, Lumis), is described in
 [lumis-integration.md](lumis-integration.md).

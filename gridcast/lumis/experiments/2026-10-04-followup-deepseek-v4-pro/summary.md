@@ -2,7 +2,7 @@
 
 Generated from `results.jsonl`; raw artefacts in `raw/`. Metric definitions: README.md.
 
-## Metrics by system (SEAMS research-plan families)
+## Metrics by system (metric families)
 
 | metric | Rule tier only | Single-pass LLM | Lumis (triage + agent) |
 |---|---|---|---|
