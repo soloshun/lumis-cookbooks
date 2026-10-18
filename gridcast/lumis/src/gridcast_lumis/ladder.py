@@ -182,8 +182,14 @@ async def verify_single_pass(folder: Path, scenario: str, repeat: int) -> dict |
     context = IncidentContext.model_validate_json((run / "evidence_context.json").read_text())
     candidates = json.loads((run / "candidates.json").read_text())
     project = YamlProject.from_file(PROJECT_FILE)
-    catalog = {q.id: q for q in context.queries}
+    # The model-facing context.queries are redacted (their parameters emptied), so fetching
+    # with them fails for every telemetry source. Fetch with the operator's registered queries,
+    # limited to the ones in this incident's scope. (Correction, 2026-10-18: the recorded
+    # 2026-10-04 runs used context.queries, so only change-record queries returned facts.)
+    scoped = {q.id for q in context.queries}
+    catalog = {q.id: q for q in project.config.queries if q.id in scoped}
     fetched = []
+    failed: list[str] = []
     async with httpx.AsyncClient(timeout=20) as client:
         connectors = local_connectors(project.config, project.base, ()) | evidence_connectors(
             project.config.sources, client)
@@ -196,6 +202,7 @@ async def verify_single_pass(folder: Path, scenario: str, repeat: int) -> dict |
                 fetched += list(await connectors[catalog[query_id].provider].collect(
                     catalog[query_id], context.incident))
             except Exception:  # noqa: BLE001 - unavailable evidence stays unknown
+                failed.append(query_id)
                 continue
     full = context.model_copy(update={"evidence": (*context.evidence, *fetched)})
     order = {"supported": 0, "unresolved": 2, "contradicted": 3}
@@ -215,7 +222,8 @@ async def verify_single_pass(folder: Path, scenario: str, repeat: int) -> dict |
     out = folder / "ladder" / scenario / f"single_pass_verified-r{repeat}"
     out.mkdir(parents=True, exist_ok=True)
     (out / "assessed.json").write_text(json.dumps(
-        {"fetched_queries": list(wanted), "facts_added": len(fetched), "ranked": ranked,
+        {"fetched_queries": list(wanted), "facts_added": len(fetched), "fetch_failed": failed,
+         "ranked": ranked,
          "concluded": concluded}, indent=1))
     return {"system": "single_pass_verified", "seconds": 0.0, "ranked": ranked, "cost_usd": 0.0,
             "concluded": concluded, "facts_added": len(fetched)}

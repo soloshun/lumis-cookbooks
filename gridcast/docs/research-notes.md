@@ -55,7 +55,7 @@ are allowed to do:
 | **llm_symptoms** (LLM, alert only) | The alert symptoms, the affected service IDs and the time window. No graph, no facts | No | No | What a model guesses from the alert alone, like pasting an error into a chat assistant |
 | **llm_graph** | llm_symptoms plus the scoped service graph (topology, owners, criticality) | No | No | The value of topology |
 | **single_pass** | llm_graph plus the query catalog and the ~16–20 facts Lumis collected for the rule signatures, in one structured completion | No | Partly: each hypothesis is checked against the facts already collected, but nobody fetches the evidence its hypotheses name | The value of curated evidence |
-| **single_pass_verified** | The same single-pass answers. Lumis then fetches the evidence each hypothesis names (queries pinned to the incident window) and assesses them, with no new LLM call | Lumis fetches; the model does not | Yes, mechanically | The value of verification, separated from the agent loop |
+| **single_pass_verified** | The same single-pass answers. Lumis was meant to fetch the evidence each hypothesis names (queries pinned to the incident window) and assess them, with no new LLM call. **Correction (18 Oct 2026): in the recorded runs only change-record queries returned facts; see the note under the ladder table** | Lumis fetches; the model does not | Yes, mechanically | Intended: the value of verification, separated from the agent loop |
 | **tool_agent** *(A and N only, §7b)* | Raw read-only tools: PromQL, LogQL and SQL it writes itself, `kubectl get`, Git log/show, and file reads under `src/`, `deploy/`, `infra/`. No query registry, no acceptance rules, no mechanical check | Yes, freely | No | What Lumis' boundaries add over "give a capable model the same telemetry and tools" |
 | **lumis** | Everything: rules first; then the agent with the scoped graph, registered queries, change records, allowlisted code and Git, and multiple turns | Yes, through registered queries and tools | Yes, mechanically; one root cause required to conclude | The full system |
 
@@ -199,8 +199,25 @@ mechanism, and conclusion precision.
 | hard set K–O, correct diagnoses | 0/25 | 0/10 | 2/10 | 2/10 | 2/10 | **9/10** |
 | *excluding N (leak, §7c): all 14 scenarios* | 0.57 | 0.04 | 0.18 | 0.54 | 0.54 | **0.89** |
 | *excluding N: hard set K, L, M, O* | 0/20 | 0/8 | 2/8 | 2/8 | 2/8 | **7/8** |
-| model cost per run | $0 | $0.005 | $0.015 | $0.035 | $0.035 | $0.14 |
+| model cost per run | $0 | $0.005 | $0.015 | $0.035 | $0 (no model call; reuses single-pass's answers) | $0.14 |
 | median seconds per run | 0.13 | — | — | 224 | 224 | 225 |
+
+> **Correction (18 October 2026): the "Single-pass + verification" column does not measure
+> what it says.** Its fetch step looked queries up in the model-facing copy of the query
+> catalogue, whose parameters are emptied by redaction, so every telemetry fetch (Prometheus,
+> Loki, SQL, Tempo, Prefect) failed and the failure was swallowed. Only change-record queries,
+> which need no parameters, returned facts: in every one of the 30 runs, the facts added equal
+> the number of change-record queries fetched (e.g. K run 1 wanted 7 queries and got 1 fact).
+> What the column does show is single-pass's answers re-ranked and re-judged by Lumis'
+> conclusion rule, plus change counts. The drop from 9 conclusions to 3 comes from that stricter
+> rule, not from new evidence. Correctness is unchanged at 0.50 because re-checking can re-rank
+> or drop a hypothesis, never add one: excluding N, in 11 of the 13 runs single-pass got wrong,
+> none of its hypotheses named the right component and mechanism. The bug is fixed in `ladder.py`
+> (`verify_single_pass` now uses the operator's registered queries and records failed fetches).
+> A corrected re-run makes no model call, but it needs the estate's telemetry for the original
+> incident windows, and the estate keeps metrics and logs for 7 days. That telemetry is gone, so
+> the recorded numbers are left as they are, with this note. No other column
+> is affected.
 
 Charts: `ladder/charts/` (overview of all metrics, the ladder, per scenario, original vs hard,
 cost vs correctness).
@@ -213,10 +230,13 @@ What the ladder shows:
   helps it find the right component (top-3 0.83) but not what broke (0.17).
 * **Curated evidence does most of single-pass's work.** single_pass is "Lumis-lite" (§2a);
   close top-1 scores to Lumis on easy scenarios come from Lumis' own graph and evidence.
-* **Verification alone does not close the gap.** Fetching and checking single-pass's own
-  evidence made it more cautious (3 conclusions, all correct, instead of 9) but not more often
-  right (0.50 either way). The single-pass hypotheses were wrong because they never looked at the
-  cause, not because nobody checked them.
+* **Checking cannot add what was never proposed.** *(Corrected 18 Oct 2026: this point
+  originally rested on the verification column, which fetched only change records; see the
+  note under the table.)* Re-judging single-pass's hypotheses can re-rank or drop them, never add
+  one, and (excluding N) in 11 of the 13 runs it got wrong none of its hypotheses named the right
+  component and mechanism. The single-pass hypotheses were wrong because they never looked at the cause: the
+  deciding facts (the timeout commit in K, the CPU-limit commit in M, the zone count in O) were
+  reachable only through requests the loop made itself.
 * **The agent's reach is the difference on hard faults.** On K–O Lumis made 9/10 correct
   diagnoses, against 2/10 for single-pass (7/8 against 2/8 without N, whose Lumis runs could read
   a leaked label, §7c). The decisive facts were outside the pre-collected
@@ -235,7 +255,8 @@ Behaviour notes (follow-up):
   "unsafe suggestion" flags (E, G) are false positives on reading: both suggestions escalate to
   an owner for a decision.
 * **Unsupported candidates:** single-pass 90%, Lumis 12.5% (single-pass's figure is partly
-  structural, see §2a; single_pass_verified is the fair comparison).
+  structural, see §2a; the single_pass_verified column was meant as the fair comparison but
+  fetched only change records, see the correction under the ladder table).
 
 Scoring caveats: the mechanism rubric was revised twice after inspecting outputs (E/G wording,
 then O wording and hyphen/space-insensitive component names). Each revision applies to every
