@@ -1,3 +1,7 @@
 # Local runtime state: GitOps working repo and chaos ground truth
 .gridcast/
 .env
+
+# Alertmanager's Lumis address and key
+infra/alertmanager/secrets/*
+!infra/alertmanager/secrets/README.md

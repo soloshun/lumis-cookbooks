@@ -278,8 +278,10 @@ uv run pytest                                # offline signature tests (no clust
 
 ## 8. From manual trigger to production intake
 
-Today an incident is opened by a command (`run`, `drill`) or by the polling loop (`watch`).
-In production the same intake becomes event-driven:
+The SDK harness opens an incident by a command (`run`, `drill`) or by the polling loop
+(`watch`). For Lumis Core, GridCast now runs a real Alertmanager that posts alerts to Core's
+webhook; see [Sending alerts to Lumis Core](observability.md#sending-alerts-to-lumis-core-alertmanager).
+The shape this section originally proposed:
 
 ```mermaid
 flowchart LR

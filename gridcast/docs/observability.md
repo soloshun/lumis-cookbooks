@@ -104,6 +104,31 @@ checks, operator outcomes) are exported at 0 on start-up, so the first failure i
 Thresholds are calibrated to the healthy estate (pipeline ≈ 1 s, feature build ≈ 0.06 s,
 inference ≈ 0.1 s).
 
+### Sending alerts to Lumis Core (Alertmanager)
+
+Prometheus sends firing alerts to Alertmanager (`gridcast-alertmanager`,
+<http://localhost:9093>), which posts them to Lumis Core's Alertmanager endpoint.
+
+```mermaid
+flowchart LR
+    R["alert rules<br/>(entity label)"] --> P[Prometheus] -->|"alert_relabel_configs:<br/>entity → lumis_entity"| AM["Alertmanager<br/>group_by lumis_entity, wait 30s"]
+    AM -->|"webhook + key"| C["Lumis Core<br/>/v1/estates/&lt;estate&gt;/alerts/alertmanager"]
+```
+
+- **The place an alert is about.** Lumis reads it from `lumis_entity`. Prometheus copies each
+  alert's `entity` label into it (`infra/prometheus/prometheus.yml`), so the rules stay as they
+  are. An alert whose entity is not on Lumis' map is recorded there as skipped.
+- **Grouping.** Alerts are grouped per place (`group_wait` 30 s, `group_interval` 5 m,
+  `repeat_interval` 4 h); resolved alerts are sent too.
+- **Address and key.** These are two git-ignored files in `infra/alertmanager/secrets/`:
+  `lumis-url` and `lumis-key`. The key comes from the Lumis console's onboarding
+  (**Send alerts → Make the key**) and is shown once. See the README in that folder. Until both
+  files exist, notifications fail and are logged; nothing else depends on Alertmanager.
+- **Check delivery** with `docker logs gridcast-alertmanager` and the Lumis console.
+
+The experiment harness in `lumis/` does not use Alertmanager: it reads firing alerts from
+Prometheus directly.
+
 ## Dashboards (Grafana, <http://localhost:3001>)
 
 * **GridCast — Estate overview** (home): business SLO tiles, pipeline duration/outcomes/stages,
