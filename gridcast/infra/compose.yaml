@@ -163,6 +163,21 @@ services:
       - ./prometheus:/etc/prometheus:ro
     mem_limit: 768m
 
+  # Routes Prometheus alerts to Lumis Core. Its address and key are git-ignored files in
+  # ./alertmanager/secrets (see the README there).
+  alertmanager:
+    <<: *defaults
+    image: prom/alertmanager:v0.28.1
+    container_name: gridcast-alertmanager
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    ports: ["${ALERTMANAGER_PORT:-9093}:9093"]
+    volumes:
+      - alertmanager:/alertmanager
+      - ./alertmanager:/etc/alertmanager:ro
+    mem_limit: 128m
+
   loki:
     <<: *defaults
     image: grafana/loki:3.5.3
@@ -240,6 +255,7 @@ volumes:
   s3:
   s3-admin:
   prometheus:
+  alertmanager:
   loki:
   tempo:
   grafana:

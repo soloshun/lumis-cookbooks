@@ -1,0 +1,25 @@
+# Alertmanager: routes GridCast's Prometheus alerts to Lumis Core.
+#
+# Prometheus copies each alert's `entity` label to `lumis_entity` (alert_relabel_configs in
+# ../prometheus/prometheus.yml), the place on the map the alert is about. Alerts are grouped per
+# place, so a burst about one service reaches Lumis as one group.
+#
+# The Core address and its key are files in ./secrets/, which git ignores. See
+# ./secrets/README.md for what to put there. Until both exist, notifications fail and are logged;
+# nothing else in the estate depends on Alertmanager.
+
+route:
+  receiver: lumis
+  group_by: [lumis_entity]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+receivers:
+  - name: lumis
+    webhook_configs:
+      - url_file: /etc/alertmanager/secrets/lumis-url
+        send_resolved: true
+        http_config:
+          authorization:
+            credentials_file: /etc/alertmanager/secrets/lumis-key
